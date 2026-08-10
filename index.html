@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ausstellerportal · MOTO-ZÜRICH 2027</title>
+<style>
+:root{--ink:#0E1E37;--blue:#3165A1;--blue-lt:#539EEF;--signal:#FBF142;--paper:#F4F7FC;--line:#DCE4F0;--text:#12253F;--muted:#63768F;--ok:#1B7A5A;--warn:#B4530E;--stop:#A32A25}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--text);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--blue)}
+:focus-visible{outline:2px solid var(--blue-lt);outline-offset:2px}
+.app{display:flex;min-height:100vh}
+.rail{width:238px;flex:0 0 238px;background:var(--ink);color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand .mark{font-size:19px;font-weight:700;letter-spacing:-.4px}
+.brand .mark span{color:var(--signal)}
+.brand .sub{margin-top:6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#93A9C6}
+.nav{padding:10px 0;flex:1;overflow:auto}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:11px 20px;text-align:left;color:#C6D4E6;cursor:pointer;border-left:3px solid transparent;font-size:14px}
+.nav button:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav button.on{color:#fff;background:rgba(255,255,255,.08);border-left-color:var(--signal);font-weight:600}
+.nav .tag{margin-left:auto;background:var(--signal);color:var(--ink);font-size:11px;font-weight:700;padding:1px 6px;border-radius:2px}
+.railfoot{padding:16px 20px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:#93A9C6}
+.main{flex:1;min-width:0}
+.top{background:#fff;border-bottom:1px solid var(--line);padding:14px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+.top .who{font-weight:700}.top .meta{font-size:13px;color:var(--muted)}
+.demo{margin-left:auto;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--warn);border:1px solid var(--warn);padding:3px 8px;border-radius:2px}
+.wrap{padding:26px 28px 70px;max-width:1180px}
+h1{font-size:26px;letter-spacing:-.6px;margin:0 0 4px;font-weight:700}
+h2{font-size:15px;margin:0 0 14px;font-weight:700}
+h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px}
+.lead{color:var(--muted);margin:0 0 24px;max-width:64ch}
+.grid{display:grid;gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:3px;padding:18px 20px}
+.card.tight{padding:0}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}.kv dt{color:var(--muted)}.kv dd{margin:0;font-weight:600;text-align:right}
+.small{font-size:13px;color:var(--muted)}.hint{font-size:12px;color:var(--muted);margin-top:10px}
+.xx{color:var(--stop);font-weight:700}
+.standhead{background:var(--ink);color:#fff;border-radius:3px;padding:22px 24px;display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end}
+.standhead .nr{font-size:44px;font-weight:700;letter-spacing:-2px;line-height:.95;color:var(--signal)}
+.standhead .col{min-width:104px}
+.standhead .lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#93A9C6;margin-bottom:3px}
+.standhead .val{font-size:17px;font-weight:600}
+.frist{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.frist:last-child{border-bottom:0}
+.frist .date{flex:0 0 92px;font-weight:600;font-size:13px}
+.frist .txt{flex:1}
+.frist .txt em{display:block;font-style:normal;color:var(--muted);font-size:13px}
+.frist button.link{background:none;border:0;padding:0;color:var(--blue);cursor:pointer;text-decoration:underline;font-size:13px}
+.chk{flex:0 0 auto;width:20px;height:20px;border:1px solid var(--muted);border-radius:2px;background:#fff;cursor:pointer;display:grid;place-items:center;color:transparent;font-size:13px;font-weight:700}
+.chk.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.state{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.state.offen{color:var(--warn)}.state.done{color:var(--ok)}.state.stop{color:var(--stop)}
+.planbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.tab{background:#fff;border:1px solid var(--line);border-radius:2px;padding:7px 14px;cursor:pointer}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.planlayout{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+.planbox{background:#fff;border:1px solid var(--line);border-radius:3px;padding:12px}
+svg.plan{width:100%;height:auto;display:block;touch-action:manipulation}
+.st rect{stroke:#fff;stroke-width:.25;cursor:pointer}
+.st text{font-size:1.7px;font-weight:700;pointer-events:none;fill:#fff}
+.st .m2{font-size:1.3px;font-weight:400;fill:rgba(255,255,255,.8)}
+.st.frei rect{fill:#7E93AE}.st.res rect{fill:#B58B2B}.st.verg rect{fill:#334C6D}
+.st.mine rect{fill:var(--signal);stroke:var(--ink);stroke-width:.5}
+.st.mine text{fill:var(--ink)}.st.mine .m2{fill:rgba(14,30,55,.75)}
+.st.sel rect{stroke:var(--ink);stroke-width:.7}
+.zone rect{fill:#E7ECF4;stroke:#CBD6E6;stroke-width:.25}
+.zone text{font-size:1.5px;fill:#7B8CA4;font-weight:600}
+.hall-outline{fill:none;stroke:var(--ink);stroke-width:.4}
+.marker text{font-size:1.6px;font-weight:700;fill:var(--ink)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:2px;padding:10px 16px;cursor:pointer;font-weight:600;display:inline-block;text-decoration:none}
+.btn:hover{background:#27538A}.btn[disabled]{background:#B9C6D8;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--paper)}
+.btn.small{padding:6px 11px;font-size:13px}
+.btn.on{background:var(--ok)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--line);font-weight:700}
+td{padding:11px 14px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right}
+label{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:700}
+input[type=text],input[type=email],input[type=date],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:2px;background:#fff}
+input[type=file]{width:100%;padding:9px;border:1px dashed #B9C6D8;border-radius:2px;background:#fff;font-size:13px}
+textarea{min-height:96px;resize:vertical}
+.field{margin-bottom:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.count{font-size:12px;color:var(--muted);margin-top:4px}
+.req{font-size:12px;color:var(--muted);margin:10px 0 0;padding-left:17px}
+.req li{margin-bottom:3px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips label{display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--text);font-size:14px;margin:0;border:1px solid var(--line);padding:7px 11px;border-radius:2px;background:#fff;cursor:pointer}
+.assets{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.asset{display:block;border:1px solid var(--line);border-radius:3px;padding:12px 14px;background:#fff;text-decoration:none;color:var(--text)}
+.asset:hover{border-color:var(--blue);background:var(--paper)}
+.asset b{display:block;font-size:14px;margin-bottom:2px}
+.asset span{font-size:12px;color:var(--muted)}
+.rules{margin:0;padding-left:18px;font-size:14px}
+.rules li{margin-bottom:5px}
+.swatch{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.swatch div{flex:1 1 84px;border:1px solid var(--line);border-radius:2px;overflow:hidden;font-size:11px}
+.swatch i{display:block;height:32px}
+.swatch span{display:block;padding:5px 7px;color:var(--muted)}
+details{border:1px solid var(--line);border-radius:3px;background:#fff;margin-bottom:10px}
+details summary{padding:15px 18px;cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:14px;align-items:center}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:'+';font-size:20px;color:var(--muted);font-weight:400;line-height:1}
+details[open] summary::after{content:'\2212'}
+details summary em{font-style:normal;font-weight:400;color:var(--muted);font-size:13px;margin-left:auto;text-align:right}
+details .body{padding:0 18px 18px}
+.ideas{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px}
+.idea{border:1px solid var(--line);border-radius:3px;padding:13px;background:#fff;display:flex;flex-direction:column}
+.idea b{font-size:14px;margin-bottom:4px}
+.idea .small{flex:1;margin-bottom:10px}
+.dl{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.dl:last-child{border-bottom:0}
+.points{background:var(--ink);color:#fff;border-radius:3px;padding:20px 22px;margin-bottom:16px;position:sticky;top:64px;z-index:4}
+.points .row{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-end}
+.points .big{font-size:36px;font-weight:700;letter-spacing:-1.5px;line-height:1;color:var(--signal)}
+.points .lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#93A9C6;margin-bottom:4px}
+.bar{height:8px;background:rgba(255,255,255,.15);border-radius:4px;margin-top:16px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--signal);transition:width .2s}
+.mgroup .ghead{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:18px 0 8px}
+.mgroup .ghead span{text-transform:none;letter-spacing:0;font-weight:400;font-style:italic}
+.mass{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:3px;padding:12px 14px;background:#fff;margin-bottom:8px;cursor:pointer}
+.mass.sel{border-color:var(--ok);background:#F2FAF6}
+.mass .box{flex:0 0 auto;width:20px;height:20px;border:1px solid var(--muted);border-radius:2px;display:grid;place-items:center;color:transparent;font-weight:700;font-size:13px;background:#fff;margin-top:2px}
+.mass.sel .box{background:var(--ok);border-color:var(--ok);color:#fff}
+.mass .txt{flex:1}
+.mass .txt b{display:block;margin-bottom:2px}
+.mass .pts{flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:1px solid var(--ok);color:var(--ok);display:grid;place-items:center;font-weight:700;font-size:14px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:6px}
+.slot{border:1px solid var(--line);border-radius:3px;padding:10px 12px;background:#fff;cursor:pointer;text-align:left}
+.slot b{display:block;font-size:14px}
+.slot span{font-size:12px;color:var(--muted)}
+.slot.sel{background:var(--ink);border-color:var(--ink);color:#fff}
+.slot.sel span{color:var(--signal)}
+.slot.voll{opacity:.45;cursor:not-allowed}
+.daghead{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:14px 0 8px}
+.preview{border:1px solid var(--line);border-radius:3px;padding:16px;background:var(--paper)}
+.preview .logo{width:46px;height:46px;background:var(--ink);color:var(--signal);border-radius:2px;display:grid;place-items:center;font-weight:700;font-size:17px}
+.stepper{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.stepper button{width:30px;height:30px;background:#fff;border:0;cursor:pointer;font-size:16px;line-height:1}
+.stepper span{width:36px;display:inline-grid;place-items:center;border-left:1px solid var(--line);border-right:1px solid var(--line);font-weight:600}
+.code{font-family:Consolas,monospace;background:var(--paper);border:1px solid var(--line);padding:8px 11px;border-radius:2px;display:inline-block;letter-spacing:.5px}
+.msg{border-bottom:1px solid var(--line);padding:14px 0}
+.msg:last-of-type{border-bottom:0}
+.msg .from{font-weight:700;font-size:13px}
+.msg .time{color:var(--muted);font-size:12px;margin-left:8px;font-weight:400}
+.msg.own{padding-left:14px;border-left:3px solid var(--signal)}
+.empty{padding:28px 20px;text-align:center;color:var(--muted);font-size:14px}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:3px;font-size:14px;opacity:0;pointer-events:none;transition:.18s ease;z-index:50;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.section{display:none}.section.on{display:block}
+@media (max-width:960px){.planlayout{grid-template-columns:1fr}}
+@media (max-width:860px){
+.app{display:block}
+.rail{width:auto;height:auto;position:static;flex-direction:row;align-items:center;overflow:auto}
+.brand{border-bottom:0;border-right:1px solid rgba(255,255,255,.12);padding:12px 16px;flex:0 0 auto}
+.brand .sub{display:none}
+.nav{display:flex;padding:0;flex:1}
+.nav button{white-space:nowrap;border-left:0;border-bottom:3px solid transparent;padding:14px}
+.nav button.on{border-left:0;border-bottom-color:var(--signal)}
+.railfoot{display:none}
+.top{padding:12px 16px}
+.wrap{padding:18px 16px 60px}
+.two{grid-template-columns:1fr}
+.grid{grid-template-columns:1fr!important}
+.points{position:static}
+h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <div class="mark">MOTO<span>·</span>ZÜRICH</div>
+      <div class="sub">Ausstellerportal 2027</div>
+    </div>
+    <nav class="nav" id="nav">
+      <button data-s="uebersicht" class="on">Übersicht</button>
+      <button data-s="hallenplan">Hallenplan &amp; Stand</button>
+      <button data-s="anreise">Anreise &amp; Parking<span class="tag" id="navAn">!</span></button>
+      <button data-s="technik">Technik &amp; Service<span class="tag" id="navTechnik" hidden>1</span></button>
+      <button data-s="marketing">Marketing &amp; Sichtbarkeit</button>
+      <button data-s="koop">Gemeinsame Aktivitäten<span class="tag" id="navKoop" hidden>1</span></button>
+      <button data-s="aktivitaeten">Aktivitäten am Stand</button>
+      <button data-s="ausweise">Ausweise &amp; Tickets</button>
+      <button data-s="profil">Firmenprofil</button>
+      <button data-s="rechnungen">Dokumente &amp; Rechnungen</button>
+      <button data-s="nachrichten">Nachrichten</button>
+    </nav>
+    <div class="railfoot">19.–21. Februar 2027<br>StageOne &amp; Halle 550, Zürich-Oerlikon</div>
+  </aside>
+  <main class="main">
+    <header class="top">
+      <div>
+        <div class="who">Ihr Unternehmen</div>
+        <div class="meta">Ausstellerkonto MOTO-ZÜRICH 2027</div>
+      </div>
+      <div class="demo">Prototyp</div>
+    </header>
+    <div class="wrap">
+
+      <section class="section on" id="s-uebersicht">
+        <h1>Übersicht</h1>
+        <p class="lead">Ihr Stand, Ihre offenen Aufgaben und alle Fristen bis zum Aufbau. Die MOTO-ZÜRICH findet vom 19. bis 21. Februar 2027 im StageOne und in der Halle 550 in Zürich-Oerlikon statt.</p>
+        <div class="standhead" style="margin-bottom:16px">
+          <div><div class="lab">Ihr Stand</div><div class="nr">D09</div></div>
+          <div class="col"><div class="lab">Halle</div><div class="val">Halle D</div></div>
+          <div class="col"><div class="lab">Bereich</div><div class="val">Adventure Camp</div></div>
+          <div class="col"><div class="lab">Format</div><div class="val">10 × 8 m</div></div>
+          <div class="col"><div class="lab">Fläche</div><div class="val">80 m²</div></div>
+          <div class="col"><div class="lab">Anlieferung</div><div class="val" id="ovAn" style="color:var(--signal)">offen</div></div>
+        </div>
+        <div class="grid" style="grid-template-columns:1.6fr 1fr">
+          <div class="card">
+            <h2>Fristen und offene Aufgaben</h2>
+            <div id="fristen"></div>
+            <div class="hint">Rot markierte Daten sind intern noch nicht festgelegt.</div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <h2>Ihre Ansprechstellen</h2>
+              <dl style="margin:0">
+                <div class="kv"><dt>Standverkauf</dt><dd>Messeleitung</dd></div>
+                <div class="kv"><dt>Technik und Logistik</dt><dd>Technisches Büro</dd></div>
+                <div class="kv"><dt>Marketing</dt><dd>Marketingteam</dd></div>
+              </dl>
+              <button class="btn ghost small" style="margin-top:12px" onclick="go('nachrichten')">Nachricht schreiben</button>
+              <div class="hint">Alle Anfragen laufen über das Portal, damit sie nachvollziehbar bleiben.</div>
+            </div>
+            <div class="card">
+              <h2>Rückblick 2026</h2>
+              <dl style="margin:0">
+                <div class="kv"><dt>Besucher</dt><dd>22'117</dd></div>
+                <div class="kv"><dt>Stärkster Tag</dt><dd>8'882</dd></div>
+                <div class="kv"><dt>Aussteller</dt><dd>85</dd></div>
+                <div class="kv"><dt>Messetage</dt><dd>3</dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="s-hallenplan">
+        <h1>Hallenplan &amp; Stand</h1>
+        <p class="lead">Stand antippen für Format, Fläche und Verfügbarkeit. Freie Flächen können direkt angefragt werden; die Konditionen erhalten Sie mit der Offerte.</p>
+        <div class="planbar">
+          <button class="tab on" data-h="hd">Halle D · Adventure Camp</button>
+          <button class="tab" data-h="h550">Halle 550</button>
+          <button class="tab" data-h="so">StageOne</button>
+          <label style="display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;margin:0 0 0 8px;font-size:14px;color:var(--text);font-weight:400"><input type="checkbox" id="nurFrei"> nur freie Stände hervorheben</label>
+        </div>
+        <div class="planlayout">
+          <div class="planbox">
+            <svg class="plan" id="plan" viewBox="0 0 62 34" role="img" aria-label="Hallenplan"></svg>
+            <div class="legend">
+              <span><i style="background:#7E93AE"></i>frei</span>
+              <span><i style="background:#B58B2B"></i>reserviert</span>
+              <span><i style="background:#334C6D"></i>vergeben</span>
+              <span><i style="background:#FBF142;border:1px solid #0E1E37"></i>Ihr Stand</span>
+              <span><i style="background:#E7ECF4;border:1px solid #CBD6E6"></i>nicht verkäuflich</span>
+            </div>
+          </div>
+          <div class="card detail" id="detail"></div>
+        </div>
+      </section>
+
+      <section class="section" id="s-anreise">
+        <h1>Anreise, Aufbau und Parking</h1>
+        <p class="lead">Die Zufahrt zu den Hallen läuft nur mit gebuchtem Zeitfenster. Wählen Sie je einen Termin für Anlieferung und Abtransport und melden Sie hier auch Ihren Parkbedarf an.</p>
+
+        <div class="grid" style="grid-template-columns:1.5fr 1fr">
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <h2>Anlieferung und Aufbau</h2>
+              <div id="anTage"></div>
+              <div class="two" style="margin-top:16px">
+                <div class="field"><label for="anTor">Zufahrt</label>
+                  <select id="anTor">
+                    <option>Tor Halle 550</option>
+                    <option>Tor StageOne</option>
+                    <option selected>Tor Halle D</option>
+                  </select>
+                </div>
+                <div class="field"><label for="anFz">Fahrzeug</label>
+                  <select id="anFz">
+                    <option>Personenwagen oder Bus</option>
+                    <option selected>Transporter bis 3.5 t</option>
+                    <option>Lastwagen bis 7.5 t</option>
+                    <option>Lastwagen über 7.5 t oder Sattelzug</option>
+                    <option>Anhänger oder Motorradtransporter</option>
+                  </select>
+                </div>
+              </div>
+              <div class="two">
+                <div class="field"><label for="anKz">Kennzeichen</label><input type="text" id="anKz" placeholder="z. B. ZH 000 000"></div>
+                <div class="field"><label for="anTel">Handy der Kontaktperson vor Ort</label><input type="text" id="anTel" placeholder="+41 …"></div>
+              </div>
+              <button class="btn" onclick="buchAn()">Anlieferung buchen</button>
+            </div>
+
+            <div class="card">
+              <h2>Abbau und Abtransport</h2>
+              <div id="abTage"></div>
+              <div class="two" style="margin-top:16px">
+                <div class="field"><label for="abTor">Ausfahrt</label>
+                  <select id="abTor">
+                    <option>Tor Halle 550</option>
+                    <option>Tor StageOne</option>
+                    <option selected>Tor Halle D</option>
+                  </select>
+                </div>
+                <div class="field"><label for="abFz">Fahrzeug</label>
+                  <select id="abFz">
+                    <option>Personenwagen oder Bus</option>
+                    <option selected>Transporter bis 3.5 t</option>
+                    <option>Lastwagen bis 7.5 t</option>
+                    <option>Lastwagen über 7.5 t oder Sattelzug</option>
+                    <option>Anhänger oder Motorradtransporter</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn" onclick="buchAb()">Abtransport buchen</button>
+              <div class="hint">Der Abbau beginnt erst nach Messeschluss am Sonntag, 21. Februar 2027 um <span class="xx">XX:XX</span> Uhr. Früheres Abbauen ist nicht gestattet.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <h2>Ihre Termine</h2>
+              <dl style="margin:0">
+                <div class="kv"><dt>Anlieferung</dt><dd id="sumAn">noch offen</dd></div>
+                <div class="kv"><dt>Zufahrt</dt><dd id="sumAnTor">–</dd></div>
+                <div class="kv"><dt>Abtransport</dt><dd id="sumAb">noch offen</dd></div>
+                <div class="kv"><dt>Ausfahrt</dt><dd id="sumAbTor">–</dd></div>
+              </dl>
+              <button class="btn ghost small" style="margin-top:12px" onclick="toast('Der Zufahrtsschein wird nach der Buchung hier bereitgestellt.')">Zufahrtsschein laden</button>
+              <div class="hint">Den Zufahrtsschein gut sichtbar hinter die Windschutzscheibe legen.</div>
+            </div>
+
+            <div class="card">
+              <h2>Gut zu wissen</h2>
+              <ul class="rules">
+                <li>Zufahrt nur im gebuchten Zeitfenster, Wartebereich <span class="xx">XX</span>.</li>
+                <li>Rangieren und Entladen maximal <span class="xx">XX</span> Minuten, danach Fahrzeug auf den Aussenparkplatz.</li>
+                <li>Torhöhe <span class="xx">XX</span> m, Bodenbelastung <span class="xx">XX</span> kg/m².</li>
+                <li>Hubwagen begrenzt verfügbar, Stapler nur über Technik &amp; Service.</li>
+                <li>Anlieferung ausserhalb der Fenster nur nach Absprache mit dem technischen Büro.</li>
+                <li>Leergut und Verpackung dürfen nicht in den Gängen gelagert werden.</li>
+                <li>StageOne und Halle 550 liegen wenige Gehminuten auseinander – Zufahrt und Zeitfenster gelten pro Halle.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h3>Parkkarten anmelden</h3>
+        <div class="grid" style="grid-template-columns:1.7fr 1fr">
+          <div class="card tight">
+            <table id="parkTable">
+              <thead><tr><th>Karte</th><th class="num" style="width:130px">Anzahl</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <h2>Ihr Bedarf</h2>
+            <dl style="margin:0">
+              <div class="kv"><dt>Angemeldete Karten</dt><dd id="pkAnz">0</dd></div>
+            </dl>
+            <div class="field" style="margin-top:14px"><label for="pkVersand">Zustellung</label>
+              <select id="pkVersand">
+                <option>Abholung am Ausstellerschalter</option>
+                <option>Postversand an die Firmenadresse</option>
+                <option>Digital als QR-Code</option>
+              </select>
+            </div>
+            <button class="btn" style="width:100%" onclick="bestellPark()">Parkbedarf anmelden</button>
+            <div class="hint">Konditionen und Verfügbarkeit bestätigen wir mit der Zuteilung. Anmeldeschluss <span class="xx">XX.XX.2027</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="s-technik">
+        <h1>Technik &amp; Service</h1>
+        <p class="lead">Alles, was Sie für Ihren Stand bestellen können. Mengen erfassen, absenden – die Konditionen erhalten Sie mit der Auftragsbestätigung. Bestellschluss <span class="xx">XX.XX.2027</span>, spätere Bestellungen nur nach Verfügbarkeit.</p>
+        <div class="grid" style="grid-template-columns:1.7fr 1fr">
+          <div class="card tight">
+            <table id="orderTable">
+              <thead><tr><th>Leistung</th><th class="num" style="width:130px">Menge</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <h2>Ihre Bestellung</h2>
+            <dl style="margin:0">
+              <div class="kv"><dt>Positionen</dt><dd id="oPos">0</dd></div>
+            </dl>
+            <div class="field" style="margin-top:14px"><label for="oBem">Bemerkung</label><textarea id="oBem" placeholder="Besonderheiten, Platzierung der Anschlüsse …" style="min-height:70px"></textarea></div>
+            <button class="btn" style="width:100%" onclick="saveOrder()">Bestellung senden</button>
+            <div class="hint">Die Bestellung geht direkt an das technische Büro und wird schriftlich bestätigt.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="s-marketing">
+        <h1>Marketing &amp; Sichtbarkeit</h1>
+        <p class="lead">Zuerst das Material, mit dem Sie selbst kommunizieren. Darunter alles Buchbare – gebucht wird direkt hier im Portal, die Konditionen kommen mit der Bestätigung.</p>
+
+        <div class="card">
+          <h2>Markenmaterial herunterladen</h2>
+          <div class="assets">
+            <a class="asset" href="https://drive.google.com/drive/folders/10FhOxZTYHI1agVjkPer2ftXxWDrHtGJ1?usp=drive_link" target="_blank" rel="noopener"><b>Logos</b><span>alle Varianten</span></a>
+            <a class="asset" href="https://docs.google.com/document/d/10GZxuVzCeDBRiIez1eLzhaSqLWlanrMkmVZQe8MKj3k/edit?usp=drive_link" target="_blank" rel="noopener"><b>Schriften und Farben</b><span>Dokument</span></a>
+            <a class="asset" href="https://drive.google.com/drive/folders/1LYaLMaTQypmkD-DTrKWIEqcJnS9lBK6p?usp=drive_link" target="_blank" rel="noopener"><b>Fotos</b><span>freigegebenes Bildmaterial</span></a>
+            <a class="asset" href="https://drive.google.com/drive/folders/1V2cSWnNaGoRZW9pp0lEHb40JFtK4NisI?usp=drive_link" target="_blank" rel="noopener"><b>Videos</b><span>Clips zur freien Nutzung</span></a>
+            <a class="asset" href="https://drive.google.com/drive/folders/1M-JmqhHCRFi310WLpdPFqVB-h4B0n_cw?usp=drive_link" target="_blank" rel="noopener"><b>Designs und Elemente</b><span>Grafikbausteine</span></a>
+            <a class="asset" href="https://drive.google.com/drive/folders/1OFo1TFeCpy85aGqFSBNrKtrqk-sOvDLM?usp=drive_link" target="_blank" rel="noopener"><b>Plakate und Prints</b><span>Druckvorlagen</span></a>
+            <a class="asset" href="https://drive.google.com/drive/folders/1w6UqO5zcRHuyQEiJPU00-FXWdGKQhKum?usp=drive_link" target="_blank" rel="noopener"><b>Social-Media-Visuals</b><span>fertige Sujets</span></a>
+            <a class="asset" href="https://www.figma.com/design/FHSQtykiJpk4J696hxtJJa/Templates?node-id=0-1" target="_blank" rel="noopener"><b>Figma-Vorlagen</b><span>selbst anpassbar</span></a>
+            <a class="asset" href="https://www.capcut.com/view/7586969438994481681?workspaceId=7569683284981088257" target="_blank" rel="noopener"><b>CapCut-Videovorlage</b><span>Reel in einer Minute</span></a>
+            <a class="asset" href="https://drive.google.com/file/d/1LnjHCKHGYVMsXE9L1QmDCLv_fH-T6_kk/view" target="_blank" rel="noopener"><b>Event-Guide 2026</b><span>Ausgabe des letzten Jahres</span></a>
+          </div>
+          <div class="swatch">
+            <div><i style="background:#0E1E37"></i><span>#0E1E37</span></div>
+            <div><i style="background:#3165A1"></i><span>#3165A1</span></div>
+            <div><i style="background:#539EEF"></i><span>#539EEF</span></div>
+            <div><i style="background:#FBF142"></i><span>#FBF142</span></div>
+            <div><i style="background:#F4F7FC;border-bottom:1px solid #DCE4F0"></i><span>#F4F7FC</span></div>
+          </div>
+          <div class="hint">Schreibweise immer MOTO-ZÜRICH: mit Ü, mit Bindestrich, in Grossbuchstaben, keine Abkürzungen. Reposts auf unseren Kanälen nur mit unseren oder vorab freigegebenen Designs.</div>
+        </div>
+
+        <h3>Ohne Aufpreis</h3>
+        <details open>
+          <summary>Im Standpreis enthalten <em>kostenlos</em></summary>
+          <div class="body">
+            <dl style="margin:0 0 16px">
+              <div class="kv"><dt>1 Social-Media-Beitrag über Sie</dt><dd>in unserem Design</dd></div>
+              <div class="kv"><dt>Gemeinsames Gewinnspiel</dt><dd>Preis stellen Sie, Bewerbung wir</dd></div>
+              <div class="kv"><dt>News für Newsletter oder Blog</dt><dd>eigenes Mailing oder Sammelbeitrag</dd></div>
+              <div class="kv"><dt>Eintrag im Ausstellerverzeichnis</dt><dd>Website und Besucher-App</dd></div>
+            </dl>
+            <h2>News vorschlagen</h2>
+            <div class="two">
+              <div class="field"><label for="nwTitel">Titel</label><input type="text" id="nwTitel" placeholder="z. B. Neuheit erstmals in der Schweiz"></div>
+              <div class="field"><label for="nwKanal">Wunsch</label>
+                <select id="nwKanal">
+                  <option>Eigenes Mailing an unsere Abonnenten</option>
+                  <option>Platzierung im Sammel-Newsletter</option>
+                  <option>Beitrag im Blog auf motozuerich.ch</option>
+                </select>
+              </div>
+            </div>
+            <div class="field"><label for="nwText">Meldung</label><textarea id="nwText" placeholder="Worum geht es?"></textarea></div>
+            <div class="two">
+              <div class="field"><label for="nwFile">Bild hochladen</label><input type="file" id="nwFile"></div>
+              <div class="field"><label for="nwLink">oder Link zu den Dateien</label><input type="text" id="nwLink" placeholder="Drive, WeTransfer, Dropbox"></div>
+            </div>
+            <button class="btn" onclick="sendNews()">News einreichen</button>
+          </div>
+        </details>
+
+        <h3>Buchbare Optionen</h3>
+
+        <details open>
+          <summary>Werbung im gedruckten Event-Guide <em>Deadline <span class="xx">XX.XX.2027</span></em></summary>
+          <div class="body">
+            <p class="small" style="margin-top:0">Format A5, Auflage 4'000 Exemplare, <span class="xx">XX</span> Seiten. Wird am Eingang abgegeben und liegt in beiden Hallen auf: Programm, Hallenübersicht, alphabetisches Ausstellerverzeichnis und alle Besucherinfos. Eine Platzierung ist auch ohne eigene Ausstellungsfläche möglich. <a href="https://drive.google.com/file/d/1LnjHCKHGYVMsXE9L1QmDCLv_fH-T6_kk/view" target="_blank" rel="noopener">Event-Guide 2026 ansehen</a></p>
+            <div class="grid" style="grid-template-columns:1.7fr 1fr">
+              <div class="card tight">
+                <table id="mktTable">
+                  <thead><tr><th>Format</th><th class="num" style="width:130px">Anzahl</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="card">
+                <h2>Ihre Auswahl</h2>
+                <dl style="margin:0">
+                  <div class="kv"><dt>Gewählte Formate</dt><dd id="mPos">0</dd></div>
+                  <div class="kv"><dt>Punkte aus Aktivitäten</dt><dd id="mRab">0 von 100</dd></div>
+                  <div class="kv"><dt>Reduktion</dt><dd id="mAfter">keine</dd></div>
+                </dl>
+                <button class="btn" style="margin-top:14px;width:100%" onclick="saveMkt()">Verbindlich buchen</button>
+                <div class="hint">Die Reduktion stammt aus Ihren nachgewiesenen Punkten unter Gemeinsame Aktivitäten und wird direkt von der Rechnung abgezogen.</div>
+              </div>
+            </div>
+            <div class="two" style="margin-top:16px">
+              <div class="field"><label for="agFile">Druckdaten hochladen</label><input type="file" id="agFile" multiple></div>
+              <div class="field"><label for="agLink">oder Link zu den Dateien</label><input type="text" id="agLink" placeholder="Drive, WeTransfer, Dropbox"></div>
+            </div>
+            <button class="btn ghost" onclick="sendDruck()">Druckdaten senden</button>
+            <ul class="req">
+              <li>Eigenes Layout: druckfähiges PDF oder JPG, CMYK, 300 dpi, 3 mm Beschnitt</li>
+              <li>Wenn wir setzen: Headline 40–60 Zeichen, Fliesstext 600–800 Zeichen, Standnummer</li>
+              <li>Logo separat als SVG, EPS oder PNG mit transparentem Hintergrund</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary>Online-Präsenz im digitalen Katalog <em>günstiger als Print · ganzjährig</em></summary>
+          <div class="body">
+            <p class="small" style="margin-top:0">Der digitale Katalog läuft das ganze Jahr, ist jederzeit änderbar, verlinkt direkt in Ihren Shop und liefert Ihnen Zahlen zur Wirkung. Deutlich günstiger als eine Printplatzierung.</p>
+            <div class="grid" style="grid-template-columns:1.7fr 1fr">
+              <div class="card tight">
+                <table id="onlTable">
+                  <thead><tr><th>Paket</th><th class="num" style="width:140px">Auswählen</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="card">
+                <h2>Vorteile gegenüber Print</h2>
+                <ul class="rules">
+                  <li>Änderungen jederzeit selbst möglich</li>
+                  <li>Sichtbar das ganze Jahr, nicht nur an drei Tagen</li>
+                  <li>Direktlinks in Shop und Social Media</li>
+                  <li>Statistik zu Aufrufen und Klicks</li>
+                  <li>Ihre Aktivitäten am Stand automatisch verlinkt</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>LED-Wall in der Live Arena, 13 Meter <em>Frist <span class="xx">XX.XX.2027</span></em></summary>
+          <div class="body">
+            <p class="small" style="margin-top:0">15-Sekunden-Spots ohne Ton zwischen den Programmpunkten, über alle drei Messetage.</p>
+            <dl style="margin:0">
+              <div class="kv"><dt>Ausspielungen</dt><dd>mindestens 100 pro Kunde</dd></div>
+              <div class="kv"><dt>Spotlänge</dt><dd>15 Sekunden, ohne Ton</dd></div>
+              <div class="kv"><dt>Video</dt><dd>16:9, Full HD 1920 × 1080</dd></div>
+              <div class="kv"><dt>Folien</dt><dd>PowerPoint 16:9</dd></div>
+            </dl>
+            <button class="btn small" style="margin-top:14px" onclick="toast('LED-Wall vorgemerkt. Wir best\u00e4tigen Slot und Konditionen.')">LED-Wall anfragen</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>Design im MOTO-ZÜRICH-Look <em>auf Anfrage</em></summary>
+          <div class="body">
+            <p class="small" style="margin-top:0">Gefällt Ihnen ein bestehendes Visual, passen wir es für Ihre Marke an oder gestalten neu im gleichen Stil.</p>
+            <div class="field">
+              <label for="spText">Was bräuchten Sie?</label>
+              <textarea id="spText" maxlength="400" placeholder="z. B. Ankündigungs-Reel mit unserer Neuheit, 9:16"></textarea>
+              <div class="count"><span id="spCount">0</span> von 400 Zeichen</div>
+            </div>
+            <div class="field">
+              <label>Wo setzen Sie es ein?</label>
+              <div class="chips">
+                <label><input type="checkbox" class="kanal" value="Instagram" checked> Instagram</label>
+                <label><input type="checkbox" class="kanal" value="Facebook"> Facebook</label>
+                <label><input type="checkbox" class="kanal" value="LinkedIn"> LinkedIn</label>
+                <label><input type="checkbox" class="kanal" value="Print"> Print</label>
+              </div>
+            </div>
+            <div class="two">
+              <div class="field"><label for="spFiles">Originaldateien hochladen</label><input type="file" id="spFiles" multiple></div>
+              <div class="field"><label for="spLink">oder Link zu den Dateien</label><input type="text" id="spLink" placeholder="Drive, WeTransfer, Dropbox"></div>
+            </div>
+            <ul class="req">
+              <li>Logo als SVG, EPS oder PNG mit transparentem Hintergrund</li>
+              <li>Fotos unbearbeitet, mindestens 2000 px</li>
+              <li>Keine fremden Marken oder Musik ohne Lizenz</li>
+            </ul>
+            <button class="btn" style="margin-top:14px" onclick="orderPost()">Anfrage senden</button>
+            <div id="postList" style="margin-top:14px"></div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Änderung auf Website oder im Katalog melden <em>innert <span class="xx">XX</span> Arbeitstagen</em></summary>
+          <div class="body">
+            <div class="two">
+              <div class="field">
+                <label for="wcType">Was soll geändert werden?</label>
+                <select id="wcType">
+                  <option>Logo ersetzen</option>
+                  <option>Beschreibung im Verzeichnis</option>
+                  <option>Marken ergänzen oder streichen</option>
+                  <option>Kontakt oder Link</option>
+                  <option>Kategorie wechseln</option>
+                  <option>Anderes</option>
+                </select>
+              </div>
+              <div class="field"><label for="wcFile">Datei anhängen</label><input type="file" id="wcFile"></div>
+            </div>
+            <div class="field"><label for="wcText">Beschreibung der Änderung</label><textarea id="wcText"></textarea></div>
+            <button class="btn" onclick="meldeAenderung()">Änderung senden</button>
+          </div>
+        </details>
+
+        <div class="hint">Creator und Influencer haben einen eigenen Bereich mit eigenen Konditionen – nicht Teil dieses Ausstellerportals.</div>
+      </section>
+
+      <section class="section" id="s-koop">
+        <h1>Gemeinsame Aktivitäten</h1>
+        <p class="lead">Wählen Sie Kommunikationsmassnahmen zugunsten von MOTO-ZÜRICH aus und setzen Sie sie um. Damit reduzieren sich Ihre Marketingkosten um bis zu <span class="xx">XX</span> %. 100 Punkte entsprechen der maximal möglichen Reduktion. Für jede Massnahme ist ein Nachweis nötig – direkt hier im Portal hochladbar.</p>
+
+        <div class="points">
+          <div class="row">
+            <div><div class="lab">Ausgewählt</div><div class="big" id="pSel">0</div></div>
+            <div><div class="lab">Nachgewiesen</div><div class="big" id="pSum" style="color:#fff">0</div></div>
+            <div><div class="lab">Erzielte Reduktion</div><div class="big" id="pPct">0</div></div>
+            <div style="flex:1;min-width:210px"><div class="lab">Maximal möglich</div><div>100 Punkte = <span class="xx">XX</span> % Reduktion</div></div>
+          </div>
+          <div class="bar"><i id="pBar" style="width:0%"></i></div>
+        </div>
+
+        <div id="massList"></div>
+
+        <h3>Nachweise</h3>
+        <div class="grid" style="grid-template-columns:1.2fr 1fr">
+          <div class="card">
+            <h2>Nachweis einreichen</h2>
+            <div class="two">
+              <div class="field"><label for="kAkt">Massnahme</label><select id="kAkt"></select></div>
+              <div class="field"><label for="kDatum">Datum der Umsetzung</label><input type="date" id="kDatum"></div>
+            </div>
+            <div class="two">
+              <div class="field"><label for="kFile">Screenshot, Foto oder Beleg</label><input type="file" id="kFile" multiple></div>
+              <div class="field"><label for="kLink">oder Link zum Beitrag</label><input type="text" id="kLink" placeholder="https://"></div>
+            </div>
+            <div class="field"><label for="kText">Bemerkung</label><textarea id="kText" placeholder="Reichweite, Auflage, Anzahl Flyer …"></textarea></div>
+            <button class="btn" onclick="sendNachweis()">Nachweis senden</button>
+            <div class="hint">Prüfung innert <span class="xx">XX</span> Arbeitstagen. Nachweise spätestens bis <span class="xx">XX.XX.2027</span>, danach verfallen die Punkte.</div>
+          </div>
+          <div class="card tight">
+            <table>
+              <thead><tr><th>Massnahme</th><th class="num">Punkte</th><th>Status</th></tr></thead>
+              <tbody id="kList"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <h3>Spielregeln</h3>
+        <div class="card">
+          <ul class="rules">
+            <li>Beiträge nur mit unseren oder vorab freigegebenen Visuals, Markierung @motozuerich.</li>
+            <li>Rabattcodes für Ihre Kundenbasis stellen wir als QR-Code und Codeliste bereit, gültig bis <span class="xx">XX.XX.2027</span>, Weitergabe nur an Ihre eigenen Kontakte.</li>
+            <li>Punkte gelten nur für die Ausgabe 2027 und sind nicht auszahlbar.</li>
+            <li>Die Reduktion wird direkt von Ihrer Marketingrechnung abgezogen, maximal <span class="xx">XX</span> % pro Rechnung.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="s-aktivitaeten">
+        <h1>Aktivitäten am Stand</h1>
+        <p class="lead">Stände mit Programm halten Besucher deutlich länger. Formate, die 2026 funktioniert haben – und das Formular für Messeprogramm, Event-Guide und Website.</p>
+        <h3>Ideen übernehmen</h3>
+        <div class="ideas" id="ideas"></div>
+        <h3>Aktivität einreichen</h3>
+        <div class="grid" style="grid-template-columns:1.3fr 1fr">
+          <div class="card">
+            <div class="two">
+              <div class="field"><label for="aTitel">Titel</label><input type="text" id="aTitel" placeholder="z. B. Probefahrt Reiseenduro"></div>
+              <div class="field"><label for="aFormat">Format</label>
+                <select id="aFormat">
+                  <option>Probefahrt oder Test</option>
+                  <option>Wettbewerb oder Verlosung</option>
+                  <option>Demo oder Vorführung</option>
+                  <option>Workshop</option>
+                  <option>Gast oder Signierstunde</option>
+                  <option>Premiere oder Neuheit</option>
+                  <option>Messeaktion</option>
+                  <option>Anderes</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="aText">Kurzbeschreibung für den Event-Guide</label>
+              <textarea id="aText" maxlength="200"></textarea>
+              <div class="count"><span id="aCount">0</span> von 200 Zeichen</div>
+            </div>
+            <div class="field">
+              <label>Tage</label>
+              <div class="chips">
+                <label><input type="checkbox" class="atag" value="Fr 19.02." checked> Freitag 19.02.</label>
+                <label><input type="checkbox" class="atag" value="Sa 20.02." checked> Samstag 20.02.</label>
+                <label><input type="checkbox" class="atag" value="So 21.02."> Sonntag 21.02.</label>
+              </div>
+            </div>
+            <div class="two">
+              <div class="field"><label for="aZeit">Zeiten</label><input type="text" id="aZeit" placeholder="z. B. stündlich 10–17 Uhr"></div>
+              <div class="field"><label for="aOrt">Ort</label>
+                <select id="aOrt">
+                  <option>Am eigenen Stand</option>
+                  <option>Live Arena</option>
+                  <option>Action Zone</option>
+                  <option>Adventure Camp, Halle D</option>
+                  <option>Aussenfläche</option>
+                </select>
+              </div>
+            </div>
+            <div class="two">
+              <div class="field"><label for="aBild">Bild hochladen</label><input type="file" id="aBild"></div>
+              <div class="field"><label for="aBedarf">Bedarf an uns</label><input type="text" id="aBedarf" placeholder="z. B. Strom, Ton, Absperrung"></div>
+            </div>
+            <button class="btn" onclick="einreichen()">Aktivität einreichen</button>
+            <div class="hint">Redaktionsschluss Event-Guide: <span class="xx">XX.XX.2027</span>. Online nehmen wir Beiträge bis kurz vor der Messe auf.</div>
+          </div>
+          <div class="card tight">
+            <table>
+              <thead><tr><th>Eingereicht</th><th>Tage</th><th>Status</th></tr></thead>
+              <tbody id="aList"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="s-ausweise">
+        <h1>Ausweise &amp; Tickets</h1>
+        <p class="lead">Das Kontingent an Ausstellerausweisen richtet sich nach Ihrer Standfläche. Erfassen Sie Ihr Standpersonal einzeln oder laden Sie eine Liste hoch.</p>
+        <div class="grid" style="grid-template-columns:1.4fr 1fr">
+          <div class="card">
+            <h2>Standpersonal <span class="small" id="badgeCount"></span></h2>
+            <div class="card tight" style="border:0"><table><tbody id="badgeList"></tbody></table></div>
+            <div class="two" style="margin-top:16px">
+              <div class="field" style="margin:0"><label for="bName">Name</label><input type="text" id="bName" placeholder="Vorname Nachname"></div>
+              <div class="field" style="margin:0"><label for="bRole">Funktion</label><input type="text" id="bRole" placeholder="z. B. Verkauf"></div>
+            </div>
+            <button class="btn" style="margin-top:12px" onclick="addBadge()">Person hinzufügen</button>
+            <div class="two" style="margin-top:20px">
+              <div class="field"><label for="mlFile">Personalliste hochladen</label><input type="file" id="mlFile"></div>
+              <div class="field"><label for="mlLink">oder Link zur Liste</label><input type="text" id="mlLink" placeholder="Drive, Dropbox, WeTransfer"></div>
+            </div>
+            <button class="btn ghost" onclick="uploadListe()">Liste senden</button>
+            <ul class="req">
+              <li>Excel oder CSV mit den Spalten Vorname, Nachname, Funktion</li>
+              <li>Eine Zeile pro Person, keine Umlaute in Dateinamen</li>
+              <li>Vorlage: <a href="#" onclick="toast('Die Vorlage wird hier bereitgestellt.');return false">Muster-Personalliste</a></li>
+            </ul>
+            <div class="hint" id="badgeHint"></div>
+          </div>
+          <div class="card">
+            <h2>Kundeneinladungen</h2>
+            <p class="small" style="margin-top:0">Gutscheincodes für Ihre Kunden. Ein Code gilt für ein Tagesticket, einlösbar im Ticketshop.</p>
+            <div class="code" id="voucher">MZ27-XXXX-XXXX</div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn small" onclick="copyVoucher()">Code kopieren</button>
+              <button class="btn ghost small" onclick="toast('Die Codeliste wird hier als CSV bereitgestellt.')">Codeliste laden</button>
+            </div>
+            <dl style="margin:16px 0 0">
+              <div class="kv"><dt>Kontingent</dt><dd><span class="xx">XX</span></dd></div>
+              <div class="kv"><dt>Eingelöst</dt><dd>0</dd></div>
+              <div class="kv"><dt>Gültig</dt><dd>19.–21.02.2027</dd></div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="s-profil">
+        <h1>Firmenprofil</h1>
+        <p class="lead">Das Datenblatt Ihrer Teilnahme: Stammdaten für Vertrag und Rechnung, Verzeichniseintrag für Website, App und Event-Guide.</p>
+        <div class="grid" style="grid-template-columns:1.2fr 1fr">
+          <div class="card">
+            <h2>Stammdaten</h2>
+            <div class="two">
+              <div class="field"><label for="pName">Firmenname</label><input type="text" id="pName" placeholder="Firmenname"></div>
+              <div class="field"><label for="pUid">UID-Nummer</label><input type="text" id="pUid" placeholder="CHE-…"></div>
+            </div>
+            <div class="two">
+              <div class="field"><label for="pStr">Strasse und Nummer</label><input type="text" id="pStr"></div>
+              <div class="field"><label for="pOrt">PLZ und Ort</label><input type="text" id="pOrt"></div>
+            </div>
+            <div class="two">
+              <div class="field"><label for="pKontakt">Ansprechperson Messe</label><input type="text" id="pKontakt"></div>
+              <div class="field"><label for="pTel">Telefon</label><input type="text" id="pTel"></div>
+            </div>
+            <div class="field"><label for="pRech">Rechnungs-E-Mail</label><input type="email" id="pRech"></div>
+
+            <h2 style="margin-top:24px">Eintrag im Ausstellerverzeichnis</h2>
+            <div class="two">
+              <div class="field"><label for="pCat">Kategorie</label>
+                <select id="pCat">
+                  <option>Motorräder &amp; Importeure</option>
+                  <option>Zubehör &amp; Ausrüstung</option>
+                  <option>Bekleidung</option>
+                  <option>Reisen &amp; Destinationen</option>
+                  <option>Werkstatt &amp; Technik</option>
+                  <option>Clubs &amp; Verbände</option>
+                </select>
+              </div>
+              <div class="field"><label for="pWeb">Website</label><input type="text" id="pWeb"></div>
+            </div>
+            <div class="field"><label for="pBrands">Marken (mit Komma trennen)</label><input type="text" id="pBrands"></div>
+            <div class="field">
+              <label for="pText">Kurzbeschreibung</label>
+              <textarea id="pText" maxlength="300" placeholder="Was zeigen Sie an der Messe?"></textarea>
+              <div class="count"><span id="pCount">0</span> von 300 Zeichen</div>
+            </div>
+            <div class="two">
+              <div class="field"><label for="pMail">Kontakt für Besucher</label><input type="email" id="pMail"></div>
+              <div class="field"><label for="pSocial">Instagram</label><input type="text" id="pSocial" placeholder="@"></div>
+            </div>
+            <div class="two">
+              <div class="field"><label for="pLogo">Logo hochladen</label><input type="file" id="pLogo"></div>
+              <div class="field"><label for="pLogoLink">oder Link zum Logo</label><input type="text" id="pLogoLink" placeholder="Drive, WeTransfer, Dropbox"></div>
+            </div>
+            <ul class="req" style="margin-bottom:16px"><li>SVG bevorzugt, sonst PNG mit transparentem Hintergrund, mindestens 1000 px breit</li><li>Ein Logo pro Firma, keine zusammengesetzten Markenleisten</li></ul>
+            <button class="btn" onclick="saveProfile()">Datenblatt speichern</button>
+            <span class="small" id="savedAt" style="margin-left:12px"></span>
+          </div>
+          <div>
+            <div class="card">
+              <h2>So sehen Besucher Ihren Eintrag</h2>
+              <div class="preview">
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <div class="logo" id="vLogo">?</div>
+                  <div style="flex:1">
+                    <div style="font-weight:700" id="vName">Firmenname</div>
+                    <div class="small" id="vMeta"></div>
+                  </div>
+                </div>
+                <p style="margin:12px 0 8px" id="vText"></p>
+                <div class="small" id="vBrands"></div>
+              </div>
+              <div class="hint">Der Eintrag geht nach dem Speichern zur Freigabe an die Messeleitung.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="s-rechnungen">
+        <h1>Dokumente &amp; Rechnungen</h1>
+        <p class="lead">Die geltenden Unterlagen zu Ihrer Teilnahme. Rechnungen erscheinen hier automatisch, sobald die Anbindung an die Buchhaltung aktiv ist.</p>
+        <div class="card tight" style="margin-bottom:16px">
+          <table>
+            <thead><tr><th>Dokument</th><th>Stand</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Allgemeine Geschäftsbedingungen</b><div class="small">geltende Fassung für die Ausgabe 2027</div></td><td>Version <span class="xx">XX</span></td><td class="num"><button class="btn ghost small" onclick="toast('Die aktuellen AGB werden hier verlinkt oder hinterlegt.')">Öffnen</button></td></tr>
+              <tr><td><b>Teilnahmebedingungen</b><div class="small">Anmeldung, Fristen, Rücktritt</div></td><td>Version <span class="xx">XX</span></td><td class="num"><button class="btn ghost small" onclick="toast('Wird hier hinterlegt.')">Öffnen</button></td></tr>
+              <tr><td><b>Technisches Merkblatt</b><div class="small">Standbau, Brandschutz, Elektro</div></td><td>folgt</td><td class="num"><button class="btn ghost small" disabled>Öffnen</button></td></tr>
+              <tr><td><b>Anlieferungs- und Aufbauplan</b><div class="small">Zeitfenster, Tore, Wege</div></td><td>folgt</td><td class="num"><button class="btn ghost small" disabled>Öffnen</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Rechnungen</h3>
+        <div class="card">
+          <div class="empty">
+            Hier erscheinen Ihre Rechnungen mit Betrag, Fälligkeit und Zahlungsstatus,<br>sobald die Schnittstelle zur Buchhaltung aktiv ist.
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="s-nachrichten">
+        <h1>Nachrichten</h1>
+        <p class="lead">Direkter Draht zur Messeleitung. Antwort in der Regel innert eines Arbeitstages.</p>
+        <div class="card">
+          <div id="thread"></div>
+          <div class="field" style="margin:18px 0 0">
+            <label for="msgText">Neue Nachricht</label>
+            <textarea id="msgText" placeholder="Ihre Frage an die Messeleitung"></textarea>
+          </div>
+          <button class="btn" onclick="sendMsg()">Nachricht senden</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+function go(id){
+  document.querySelectorAll('.section').forEach(function(s){s.classList.toggle('on',s.id==='s-'+id)});
+  document.querySelectorAll('#nav button').forEach(function(b){b.classList.toggle('on',b.dataset.s===id)});
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){go(b.dataset.s)}});
+var toastTimer;
+function toast(t){var el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show')},2800)}
+var XX='<span class="xx">XX.XX.2027</span>';
+
+var fristen=[
+  {d:XX,t:'Datenblatt und Verzeichniseintrag erfassen',s:'Logo und Beschreibung fehlen noch',go:'profil'},
+  {d:XX,t:'Event-Guide: Buchung und Druckdaten',s:'Redaktionsschluss Print',go:'marketing'},
+  {d:XX,t:'Anlieferung und Abtransport buchen',s:'Ohne Zeitfenster keine Zufahrt',go:'anreise'},
+  {d:XX,t:'Parkbedarf anmelden',s:'Anmeldeschluss',go:'anreise'},
+  {d:XX,t:'Technik und Mobiliar bestellen',s:'Danach nur nach Verf\u00fcgbarkeit',go:'technik'},
+  {d:XX,t:'Aktivit\u00e4ten am Stand einreichen',s:'F\u00fcr Programm und Event-Guide',go:'aktivitaeten'},
+  {d:XX,t:'Standpersonal erfassen',s:'Einzeln oder als Liste',go:'ausweise'},
+  {d:XX,t:'Nachweise gemeinsame Aktivit\u00e4ten',s:'Danach verfallen die Punkte',go:'koop'},
+  {d:'17.02.2027',t:'Aufbau Tag 1',s:'Anlieferung nur mit Zeitfenster',go:'anreise'},
+  {d:'18.02.2027',t:'Aufbau Tag 2',s:'Standabnahme am Abend',go:'anreise'},
+  {d:'19.\u201321.02.2027',t:'MOTO-Z\u00dcRICH 2027',s:'StageOne und Halle 550, Z\u00fcrich-Oerlikon'}
+];
+function renderFristen(){
+  document.getElementById('fristen').innerHTML=fristen.map(function(f,i){
+    return '<div class="frist"><button class="chk '+(f.done?'done':'')+'" onclick="toggleFrist('+i+')" aria-label="abhaken">\u2713</button><div class="date">'+f.d+'</div><div class="txt"><div>'+f.t+'</div><em>'+f.s+(f.go?' \u00b7 <button class="link" onclick="go(\''+f.go+'\')">jetzt erledigen</button>':'')+'</em></div></div>';
+  }).join('');
+}
+function toggleFrist(i){fristen[i].done=!fristen[i].done;renderFristen()}
+renderFristen();
+
+/* ---------- Hallenplan ---------- */
+function mk(id,x,y,w,h,hall,lage){return {id:id,x:x,y:y,w:w,h:h,hall:hall,lage:lage}}
+var S=0.86;
+function rowRTL(defs,y,h,hall,lage,x0){
+  var x=x0,out=[];
+  defs.forEach(function(d){
+    var w=d[1]*S;
+    x-=w;
+    out.push(mk(d[0],x,y,w,h,hall,lage));
+    x-=0.4;
+  });
+  return out;
+}
+var HD=[].concat(
+  rowRTL([['D13',6],['D14',6],['D15',8],['D16',8],['D17',7],['D18',13]],2.5,4,'Halle D','Nordwand',59),
+  rowRTL([['D01',10],['D02',10]],8,8,'Halle D','Mittelblock, beidseitig offen',59),
+  rowRTL([['D03',5],['D05',8],['D07',5]],8,4,'Halle D','Mittelblock, Nordgang',59-2*(10*S)-0.8),
+  rowRTL([['D04',5],['D06',8],['D08',5]],12,4,'Halle D','Mittelblock, S\u00fcdgang',59-2*(10*S)-0.8),
+  rowRTL([['D09',10],['D10',5],['D11',5],['D12',5]],8,8,'Halle D','Mittelblock, beidseitig offen',59-2*(10*S)-0.8-(18*S)-1.2),
+  rowRTL([['D19',10],['D20',10],['D21',10],['D22',10],['D23',15]],22,5,'Halle D','S\u00fcdreihe',59)
+);
+var H550=[].concat(
+  rowRTL([['H01',8],['H02',6],['H03',6],['H04',10],['H05',6],['H06',6]],2.5,5,'Halle 550','Nordreihe',59),
+  rowRTL([['H07',8],['H08',6],['H09',10],['H10',6],['H11',8]],10,6,'Halle 550','Mittelblock',59),
+  rowRTL([['H12',6],['H13',6],['H14',8],['H15',6],['H16',6]],19,5,'Halle 550','Mittelblock',59),
+  rowRTL([['H17',10],['H18',10],['H19',8],['H20',8]],27,4,'Halle 550','S\u00fcdreihe',59)
+);
+var SO=[];
+var zones={
+  hd:[{x:2,y:8,w:7,h:12,t:'Lager'}],
+  h550:[{x:2,y:24,w:9,h:7,t:'Action Zone'}],
+  so:[]
+};
+var marker={
+  hd:[{x:44,y:33,t:'Foyer / Eingang Ost \u25b6'},{x:2,y:33,t:'\u25c0 West'}],
+  h550:[{x:44,y:33,t:'Eingang \u25b6'},{x:2,y:33,t:'\u25c0 Durchgang StageOne'}],
+  so:[]
+};
+var vergeben=['D01','D05','D13','D18','D19','D23','H01','H04','H09','H14','H17'];
+var reserviert=['D03','D11','D20','H07','H12'];
+var MINE='D09';
+function status(s){return s.id===MINE?'mine':vergeben.indexOf(s.id)>-1?'verg':reserviert.indexOf(s.id)>-1?'res':'frei'}
+var hall='hd', selected=null;
+function stands(){return hall==='hd'?HD:hall==='h550'?H550:SO}
+function drawPlan(){
+  var svg=document.getElementById('plan');
+  if(hall==='so'){
+    svg.innerHTML='<rect class="hall-outline" x="1" y="1" width="60" height="30"/><g class="zone"><rect x="6" y="6" width="50" height="20"/><text x="31" y="16" text-anchor="middle" style="font-size:2px">StageOne \u2013 Plan folgt</text></g>';
+    document.getElementById('detail').innerHTML='<h2>StageOne</h2><p class="small" style="margin:0">Der Standplan f\u00fcr StageOne wird hier erg\u00e4nzt, sobald er freigegeben ist.</p>';
+    return;
+  }
+  var nur=document.getElementById('nurFrei').checked;
+  var s='<rect class="hall-outline" x="1" y="1" width="60" height="30"/>';
+  zones[hall].forEach(function(z){
+    s+='<g class="zone"><rect x="'+z.x+'" y="'+z.y+'" width="'+z.w+'" height="'+z.h+'"/><text x="'+(z.x+z.w/2)+'" y="'+(z.y+z.h/2+.5)+'" text-anchor="middle">'+z.t+'</text></g>';
+  });
+  stands().forEach(function(st){
+    var stat=status(st);
+    var dim=(nur&&stat!=='frei'&&stat!=='mine')?' opacity="0.28"':'';
+    s+='<g class="st '+stat+(selected===st.id?' sel':'')+'"'+dim+' tabindex="0" role="button" onclick="pick(\''+st.id+'\')"><rect x="'+st.x+'" y="'+st.y+'" width="'+st.w+'" height="'+st.h+'"/><text x="'+(st.x+st.w/2)+'" y="'+(st.y+st.h/2)+'" text-anchor="middle">'+st.id+'</text><text class="m2" x="'+(st.x+st.w/2)+'" y="'+(st.y+st.h/2+(st.h<=4?1.4:2))+'" text-anchor="middle">'+Math.round(st.w/S*st.h/S*100)/100+' m\u00b2</text></g>';
+  });
+  marker[hall].forEach(function(m){s+='<g class="marker"><text x="'+m.x+'" y="'+m.y+'">'+m.t+'</text></g>'});
+  svg.innerHTML=s;
+}
+function pick(id){
+  selected=id; drawPlan();
+  var list=stands(), st=null, i;
+  for(i=0;i<list.length;i++){if(list[i].id===id){st=list[i];break}}
+  if(!st)return;
+  var stat=status(st);
+  var wm=Math.round(st.w/S), hm=Math.round(st.h/S);
+  var label={mine:'Ihr Stand',frei:'frei',res:'reserviert',verg:'vergeben'}[stat];
+  var cls={mine:'done',frei:'done',res:'offen',verg:'stop'}[stat];
+  var action;
+  if(stat==='frei'){action='<button class="btn" style="margin-top:14px;width:100%" onclick="anfragen(\''+st.id+'\')">Stand anfragen</button><div class="hint">Die Anfrage reserviert die Fl\u00e4che unverbindlich. Offerte und Vertrag folgen von der Messeleitung.</div>';}
+  else if(stat==='mine'){action='<button class="btn ghost" style="margin-top:14px;width:100%" onclick="go(\'anreise\')">Anlieferung f\u00fcr diesen Stand buchen</button>';}
+  else{action='<button class="btn" style="margin-top:14px;width:100%" disabled>Nicht verf\u00fcgbar</button><div class="hint">'+(stat==='res'?'Reserviert. Wir melden uns, wenn die Fl\u00e4che wieder frei wird.':'Diese Fl\u00e4che ist vergeben.')+'</div>';}
+  document.getElementById('detail').innerHTML='<h2>Stand '+st.id+' <span class="state '+cls+'" style="margin-left:6px">'+label+'</span></h2><dl style="margin:0"><div class="kv"><dt>Halle</dt><dd>'+st.hall+'</dd></div><div class="kv"><dt>Lage</dt><dd>'+st.lage+'</dd></div><div class="kv"><dt>Format</dt><dd>'+wm+' \u00d7 '+hm+' m</dd></div><div class="kv"><dt>Fl\u00e4che</dt><dd>'+(wm*hm)+' m\u00b2</dd></div></dl>'+action;
+}
+function anfragen(id){reserviert.push(id);pick(id);toast('Anfrage f\u00fcr Stand '+id+' erfasst. Die Messeleitung meldet sich mit einer Offerte.')}
+document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){
+  document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});
+  t.classList.add('on'); hall=t.dataset.h; selected=null; drawPlan();
+  if(hall!=='so')document.getElementById('detail').innerHTML='<h2>Kein Stand ausgew\u00e4hlt</h2><p class="small" style="margin:0">Tippen Sie im Plan auf eine Fl\u00e4che.</p>';
+}});
+document.getElementById('nurFrei').onchange=drawPlan;
+drawPlan(); pick(MINE);
+
+/* ---------- Anreise ---------- */
+function slots(list){return list.map(function(s){return {t:s[0],frei:s[1]}})}
+var anTage=[
+  {tag:'Aufbau Tag 1 \u00b7 Mittwoch, 17. Februar 2027',s:slots([['08:00\u201309:00',4],['09:00\u201310:00',2],['10:00\u201311:00',0],['11:00\u201312:00',5],['13:00\u201314:00',3],['14:00\u201315:00',5],['15:00\u201316:00',1],['16:00\u201317:00',4]])},
+  {tag:'Aufbau Tag 2 \u00b7 Donnerstag, 18. Februar 2027',s:slots([['07:00\u201308:00',5],['08:00\u201309:00',3],['09:00\u201310:00',0],['10:00\u201311:00',2],['11:00\u201312:00',4],['13:00\u201314:00',6],['14:00\u201315:00',3]])}
+];
+var abTage=[
+  {tag:'Abbau \u00b7 Sonntag, 21. Februar 2027, nach Messeschluss',s:slots([['18:00\u201319:00',3],['19:00\u201320:00',4],['20:00\u201321:00',5],['21:00\u201322:00',2]])},
+  {tag:'Abbau \u00b7 Montag, 22. Februar 2027',s:slots([['07:00\u201308:00',5],['08:00\u201309:00',4],['09:00\u201310:00',3],['10:00\u201311:00',0],['11:00\u201312:00',2]])}
+];
+var anPick=null, abPick=null, anGebucht=false, abGebucht=false;
+function renderSlots(target,data,pick,fn){
+  document.getElementById(target).innerHTML=data.map(function(d,di){
+    return '<div class="daghead">'+d.tag+'</div><div class="slots">'+
+      d.s.map(function(s,si){
+        var sel=pick&&pick.d===di&&pick.i===si;
+        var voll=s.frei===0;
+        return '<button class="slot'+(sel?' sel':'')+(voll?' voll':'')+'" '+(voll?'disabled':'onclick="'+fn+'('+di+','+si+')"')+'><b>'+s.t+'</b><span>'+(voll?'ausgebucht':s.frei+' Pl\u00e4tze frei')+'</span></button>';
+      }).join('')+'</div>';
+  }).join('');
+}
+function renderAn(){renderSlots('anTage',anTage,anPick,'selAn');updateSum()}
+function renderAb(){renderSlots('abTage',abTage,abPick,'selAb');updateSum()}
+function selAn(d,i){anPick={d:d,i:i};anGebucht=false;renderAn()}
+function selAb(d,i){abPick={d:d,i:i};abGebucht=false;renderAb()}
+function updateSum(){
+  document.getElementById('sumAn').innerHTML=anPick?(anTage[anPick.d].tag.replace('Aufbau Tag 1 \u00b7 ','').replace('Aufbau Tag 2 \u00b7 ','')+'<br>'+anTage[anPick.d].s[anPick.i].t+(anGebucht?'':' <span class="state offen">nicht best\u00e4tigt</span>')):'noch offen';
+  document.getElementById('sumAb').innerHTML=abPick?(abTage[abPick.d].tag.replace('Abbau \u00b7 ','')+'<br>'+abTage[abPick.d].s[abPick.i].t+(abGebucht?'':' <span class="state offen">nicht best\u00e4tigt</span>')):'noch offen';
+  document.getElementById('sumAnTor').textContent=anGebucht?document.getElementById('anTor').value:'\u2013';
+  document.getElementById('sumAbTor').textContent=abGebucht?document.getElementById('abTor').value:'\u2013';
+  document.getElementById('ovAn').textContent=anGebucht?anTage[anPick.d].s[anPick.i].t:'offen';
+  document.getElementById('navAn').hidden=(anGebucht&&abGebucht);
+}
+function buchAn(){
+  if(!anPick){toast('W\u00e4hlen Sie zuerst ein Zeitfenster.');return}
+  if(!document.getElementById('anKz').value.trim()){toast('Kennzeichen fehlt.');document.getElementById('anKz').focus();return}
+  anTage[anPick.d].s[anPick.i].frei=Math.max(0,anTage[anPick.d].s[anPick.i].frei-1);
+  anGebucht=true; renderAn();
+  toast('Anlieferung gebucht. Der Zufahrtsschein liegt im Portal bereit.');
+}
+function buchAb(){
+  if(!abPick){toast('W\u00e4hlen Sie zuerst ein Zeitfenster.');return}
+  abTage[abPick.d].s[abPick.i].frei=Math.max(0,abTage[abPick.d].s[abPick.i].frei-1);
+  abGebucht=true; renderAb();
+  toast('Abtransport gebucht.');
+}
+renderAn(); renderAb();
+
+var park=[
+  {n:'Ausstellerparkkarte, alle Messetage',d:'ein Fahrzeug, Parkplatz nach Zuteilung',q:0},
+  {n:'Tagesparkkarte',d:'g\u00fcltig f\u00fcr einen Messetag',q:0},
+  {n:'Stellplatz Lastwagen oder Anh\u00e4nger',d:'nach Verf\u00fcgbarkeit, Anmeldung n\u00f6tig',q:0},
+  {n:'Ladeplatz Elektrofahrzeug',d:'begrenzte Anzahl',q:0},
+  {n:'Motorradstellplatz',d:'f\u00fcr Standpersonal',q:0}
+];
+function renderPark(){
+  document.querySelector('#parkTable tbody').innerHTML=park.map(function(it,i){
+    return '<tr><td><b>'+it.n+'</b><div class="small">'+it.d+'</div></td><td class="num"><span class="stepper"><button onclick="pkqty('+i+',-1)">\u2212</button><span>'+it.q+'</span><button onclick="pkqty('+i+',1)">+</button></span></td></tr>';
+  }).join('');
+  document.getElementById('pkAnz').textContent=park.reduce(function(s,i){return s+i.q},0);
+}
+function pkqty(i,d){park[i].q=Math.max(0,park[i].q+d);renderPark()}
+function bestellPark(){
+  var anz=park.reduce(function(s,i){return s+i.q},0);
+  if(!anz){toast('Keine Karten ausgew\u00e4hlt.');return}
+  toast('Parkbedarf angemeldet \u00b7 '+document.getElementById('pkVersand').value);
+}
+renderPark();
+
+/* ---------- Technik ---------- */
+var items=[
+  {n:'Stromanschluss 3.5 kW, 230 V',d:'Standardanschluss f\u00fcr Beleuchtung und Kleinger\u00e4te',q:0},
+  {n:'Stromanschluss 10 kW, 400 V',d:'f\u00fcr Maschinen, Kompressoren, gr\u00f6ssere Verbraucher',q:0},
+  {n:'Wasser- und Abwasseranschluss',d:'nur an bestimmten Standorten m\u00f6glich',q:0},
+  {n:'Dediziertes WLAN',d:'eigener Zugang unabh\u00e4ngig vom Besuchernetz',q:0},
+  {n:'Standreinigung, alle Messetage',d:'t\u00e4glich vor \u00d6ffnung',q:0},
+  {n:'Theke abschliessbar, 1 m',d:'Mietmobiliar',q:0},
+  {n:'Bartisch',d:'Mietmobiliar',q:0},
+  {n:'Barhocker',d:'Mietmobiliar',q:0},
+  {n:'K\u00fchlschrank',d:'Mietger\u00e4t, Strom separat bestellen',q:0},
+  {n:'Staplereinsatz',d:'pro angefangene halbe Stunde, mit Bediener',q:0},
+  {n:'Rigging-Punkt',d:'Abh\u00e4ngung ab Hallendach, Statik vorab pr\u00fcfen',q:0},
+  {n:'Teppich oder Bodenbelag',d:'pro m\u00b2, Farbe nach Auswahl',q:0}
+];
+function renderOrder(){
+  document.querySelector('#orderTable tbody').innerHTML=items.map(function(it,i){
+    return '<tr><td><b>'+it.n+'</b><div class="small">'+it.d+'</div></td><td class="num"><span class="stepper"><button onclick="qty('+i+',-1)">\u2212</button><span>'+it.q+'</span><button onclick="qty('+i+',1)">+</button></span></td></tr>';
+  }).join('');
+  var pos=items.filter(function(i){return i.q>0}).length;
+  document.getElementById('oPos').textContent=pos;
+  var tag=document.getElementById('navTechnik');
+  tag.hidden=(pos===0); tag.textContent=pos;
+}
+function qty(i,d){items[i].q=Math.max(0,items[i].q+d);renderOrder()}
+function saveOrder(){
+  if(!items.filter(function(i){return i.q>0}).length){toast('Noch keine Position gew\u00e4hlt.');return}
+  toast('Bestellung gesendet. Sie erhalten eine Auftragsbest\u00e4tigung mit den Konditionen.');
+}
+renderOrder();
+
+/* ---------- Event-Guide ---------- */
+var mkt=[
+  {n:'Extra (A5), 148 \u00d7 210 mm',d:'Ganze Seite. Eigenes Design oder Gestaltung durch uns. Headline, Fliesstext, Bild und Call-to-Action.',q:0},
+  {n:'Premium, 140 \u00d7 90 mm',d:'Logo 80 \u00d7 45 mm, 1\u20132 kurze S\u00e4tze (rund 160 Zeichen) plus eine Angebotszeile bis 80 Zeichen.',q:0},
+  {n:'Midi, 90 \u00d7 70 mm',d:'Logo und 1\u20132 Zeilen Beschreibung, bis rund 120 Zeichen.',q:0},
+  {n:'Standard, 70 \u00d7 44.5 mm',d:'Logo und eine kurze Zeile bis 80 Zeichen: Fokusprodukt, Markenliste oder Standnummer.',q:0}
+];
+function renderMkt(){
+  document.querySelector('#mktTable tbody').innerHTML=mkt.map(function(it,i){
+    return '<tr><td><b>'+it.n+'</b><div class="small">'+it.d+'</div></td><td class="num"><span class="stepper"><button onclick="mqty('+i+',-1)">\u2212</button><span>'+it.q+'</span><button onclick="mqty('+i+',1)">+</button></span></td></tr>';
+  }).join('');
+  var pos=mkt.filter(function(i){return i.q>0}).length;
+  var pts=Math.min(100,confirmedPoints());
+  document.getElementById('mPos').textContent=pos;
+  document.getElementById('mRab').textContent=pts+' von 100';
+  document.getElementById('mAfter').innerHTML=pts?'bis <span class="xx">XX</span> % auf diese Buchung':'keine';
+}
+function mqty(i,d){mkt[i].q=Math.max(0,mkt[i].q+d);renderMkt()}
+function saveMkt(){
+  if(!mkt.filter(function(i){return i.q>0}).length){toast('Noch kein Format gew\u00e4hlt.');return}
+  toast('Gebucht. Best\u00e4tigung mit Konditionen folgt per E-Mail.');
+}
+function sendDruck(){
+  if(!document.getElementById('agFile').files.length&&!document.getElementById('agLink').value.trim()){toast('Datei hochladen oder Link angeben.');return}
+  document.getElementById('agLink').value='';toast('Druckdaten erhalten. Wir melden uns bei Unklarheiten.');
+}
+
+var onl=[
+  {n:'Basis',d:'Logo, Beschreibung, Kontakt, Standnummer',fix:true},
+  {n:'Plus',d:'Zus\u00e4tzlich Bildergalerie, Markenliste, Shop-Link und Statistik',sel:false},
+  {n:'Premium',d:'Zus\u00e4tzlich Video, Top-Platzierung in der Kategorie und Banner im Katalog',sel:false}
+];
+function renderOnl(){
+  document.querySelector('#onlTable tbody').innerHTML=onl.map(function(o,i){
+    var btn=o.fix?'<span class="small">aktiv</span>':'<button class="btn small '+(o.sel?'on':'ghost')+'" onclick="togOnl('+i+')">'+(o.sel?'ausgew\u00e4hlt':'ausw\u00e4hlen')+'</button>';
+    return '<tr><td><b>'+o.n+'</b><div class="small">'+o.d+'</div></td><td class="num">'+btn+'</td></tr>';
+  }).join('');
+}
+function togOnl(i){onl.forEach(function(o,j){if(!o.fix&&j!==i)o.sel=false});onl[i].sel=!onl[i].sel;renderOnl();
+  toast(onl[i].sel?'Paket '+onl[i].n+' vorgemerkt.':'Auswahl aufgehoben.');}
+renderOnl();
+
+var posts=[];
+document.getElementById('spText').addEventListener('input',function(){document.getElementById('spCount').textContent=this.value.length});
+function orderPost(){
+  var txt=document.getElementById('spText').value.trim();
+  if(!txt){toast('Beschreiben Sie kurz, was Sie brauchen.');return}
+  if(!document.getElementById('spFiles').files.length&&!document.getElementById('spLink').value.trim()){toast('Dateien hochladen oder Link angeben.');return}
+  posts.push({t:txt});
+  document.getElementById('spText').value='';document.getElementById('spCount').textContent='0';document.getElementById('spLink').value='';
+  document.getElementById('postList').innerHTML=posts.map(function(p){return '<div class="dl"><div>'+p.t.slice(0,60)+'</div><span class="state offen">in Pr\u00fcfung</span></div>'}).join('');
+  toast('Anfrage gesendet.');
+}
+function sendNews(){
+  if(!document.getElementById('nwTitel').value.trim()){toast('Titel fehlt.');return}
+  document.getElementById('nwTitel').value='';document.getElementById('nwText').value='';document.getElementById('nwLink').value='';
+  toast('News eingereicht. Wir entscheiden nach Relevanz und Termin.');
+}
+function meldeAenderung(){
+  if(!document.getElementById('wcText').value.trim()){toast('Beschreibung fehlt.');return}
+  document.getElementById('wcText').value='';toast('\u00c4nderung gemeldet.');
+}
+
+/* ---------- Gemeinsame Aktivit\u00e4ten ---------- */
+var gruppen=[
+  {g:'Inserate',mode:'einfach',m:[
+    {t:'Ganzseitig',d:'Ganzseitiges Inserat \u00fcber MOTO-Z\u00dcRICH in Ihrem Katalog, Kundenmagazin oder Programmheft. Sujet liefern wir.',p:20},
+    {t:'Halbseitig mit Text',d:'Halbseitiges Inserat mit redaktionellem Text.',p:20},
+    {t:'Halbseitig',d:'Halbseitiges Inserat ohne Text.',p:10}
+  ]},
+  {g:'Flyer und Plakate',mode:'mehrfach',m:[
+    {t:'Flyer auflegen',d:'Flyer in Papierform (A6, A5 oder A4) gut sichtbar in Ihrem Gesch\u00e4ft, Stapel ab 200 St\u00fcck.',p:20},
+    {t:'Plakat im Schaufenster',d:'Plakat A1 oder A2 w\u00e4hrend mindestens vier Wochen vor der Messe.',p:20},
+    {t:'Banner oder Beachflag',d:'Material holen Sie bei uns ab und retournieren es nach der Messe. Sie haften f\u00fcr Sch\u00e4den.',p:10}
+  ]},
+  {g:'Redaktionelle Texte',mode:'mehrfach',m:[
+    {t:'Medienberichterstattung',d:'Bericht eines Medienpartners oder externen Mediums mit namentlicher Erw\u00e4hnung von MOTO-Z\u00dcRICH.',p:20},
+    {t:'Beitrag Newsletter an erster Position',d:'Selbstverfasster Abschnitt an erster Position in Ihrem Newsletter, mit Logo und Link.',p:20},
+    {t:'Beitrag Newsletter',d:'Abschnitt \u00fcber MOTO-Z\u00dcRICH nicht an erster Position, mit Logo.',p:10},
+    {t:'Medienmitteilung',d:'Abschnitt \u00fcber MOTO-Z\u00dcRICH in Ihrer Medienmitteilung, mit Logo und Nennung.',p:20}
+  ]},
+  {g:'Social Media',mode:'mehrfach',m:[
+    {t:'Instagram',d:'Foto oder Video auf Ihrem offiziellen Kanal, @motozuerich markiert, Bildmaterial in hoher Qualit\u00e4t.',p:10},
+    {t:'Facebook',d:'Foto oder Video auf Ihrer offiziellen Seite mit Markierung @motozuerich.',p:10},
+    {t:'LinkedIn',d:'Beitrag auf Ihrem Unternehmensprofil mit Markierung.',p:10},
+    {t:'Reel oder Video',d:'Eigenes Reel oder Video zur Messe, mindestens 20 Sekunden, mit Markierung.',p:20}
+  ]},
+  {g:'Website',mode:'einfach',m:[
+    {t:'Logo auf der Startseite',d:'Logo von MOTO-Z\u00dcRICH gut sichtbar auf Ihrer Startseite, verlinkt auf motozuerich.ch.',p:30},
+    {t:'Logo auf einer Unterseite',d:'Logo auf einer Unterseite, verlinkt auf motozuerich.ch.',p:20}
+  ]},
+  {g:'Ihre Kundenbasis',mode:'mehrfach',m:[
+    {t:'Mailing mit Rabattcode',d:'Versand an Ihre Kundenbasis mit unserem Rabattcode. QR-Code und Codeliste stellen wir bereit.',p:30},
+    {t:'QR-Code am Verkaufspunkt',d:'QR-Code zum Ticketshop an der Kasse oder im Schaufenster.',p:10},
+    {t:'Gemeinsames Gewinnspiel',d:'Gewinnspiel in unserem Design, Preis stellen Sie.',p:20}
+  ]},
+  {g:'Gemeinsame Anl\u00e4sse',mode:'mehrfach',m:[
+    {t:'Vorab-Event oder Ausfahrt',d:'Gemeinsamer Anlass vor der Messe mit Nennung von MOTO-Z\u00dcRICH.',p:30},
+    {t:'Preis f\u00fcr unsere Verlosung',d:'Sie stellen einen Preis f\u00fcr die Messe-Verlosung.',p:20}
+  ]}
+];
+var nachweise=[];
+function allMass(){
+  var out=[];
+  gruppen.forEach(function(gr,gi){gr.m.forEach(function(m,mi){out.push({gi:gi,mi:mi,m:m,g:gr.g})})});
+  return out;
+}
+function renderMass(){
+  document.getElementById('massList').innerHTML=gruppen.map(function(gr,gi){
+    return '<div class="mgroup"><div class="ghead">'+gr.g+' <span>('+(gr.mode==='einfach'?'nur 1 Auswahl m\u00f6glich':'Mehrfachauswahl m\u00f6glich')+')</span></div>'+
+      gr.m.map(function(m,mi){
+        return '<div class="mass'+(m.sel?' sel':'')+'" onclick="togMass('+gi+','+mi+')"><div class="box">\u2713</div><div class="txt"><b>'+m.t+'</b><div class="small">'+m.d+'</div></div><div class="pts">'+m.p+'</div></div>';
+      }).join('')+'</div>';
+  }).join('');
+  var sel=allMass().filter(function(x){return x.m.sel});
+  document.getElementById('kAkt').innerHTML=sel.length
+    ? sel.map(function(x){return '<option>'+x.g+': '+x.m.t+'</option>'}).join('')
+    : '<option>Zuerst oben Massnahmen ausw\u00e4hlen</option>';
+  updatePoints();
+}
+function togMass(gi,mi){
+  var gr=gruppen[gi];
+  if(gr.mode==='einfach'){gr.m.forEach(function(m,i){if(i!==mi)m.sel=false})}
+  gr.m[mi].sel=!gr.m[mi].sel;
+  renderMass();
+}
+function selectedPoints(){return allMass().filter(function(x){return x.m.sel}).reduce(function(s,x){return s+x.m.p},0)}
+function confirmedPoints(){return nachweise.filter(function(n){return n.s==='best\u00e4tigt'}).reduce(function(s,n){return s+n.p},0)}
+function updatePoints(){
+  var sel=Math.min(100,selectedPoints()), ok=Math.min(100,confirmedPoints());
+  document.getElementById('pSel').textContent=sel;
+  document.getElementById('pSum').textContent=ok;
+  document.getElementById('pPct').textContent=ok+' / 100';
+  document.getElementById('pBar').style.width=ok+'%';
+  document.getElementById('kList').innerHTML=nachweise.map(function(n){
+    return '<tr><td>'+n.t+'</td><td class="num">'+n.p+'</td><td><span class="state '+(n.s==='best\u00e4tigt'?'done':'offen')+'">'+n.s+'</span></td></tr>';
+  }).join('')||'<tr><td class="small">Noch kein Nachweis eingereicht.</td></tr>';
+  var tag=document.getElementById('navKoop');
+  tag.hidden=(selectedPoints()===0); tag.textContent=selectedPoints();
+  renderMkt();
+}
+function sendNachweis(){
+  var sel=allMass().filter(function(x){return x.m.sel});
+  if(!sel.length){toast('W\u00e4hlen Sie zuerst oben eine Massnahme aus.');return}
+  if(!document.getElementById('kFile').files.length&&!document.getElementById('kLink').value.trim()){toast('Nachweis hochladen oder Link angeben.');return}
+  var x=sel[document.getElementById('kAkt').selectedIndex]||sel[0];
+  nachweise.push({t:x.g+': '+x.m.t,p:x.m.p,s:'in Pr\u00fcfung'});
+  document.getElementById('kLink').value='';document.getElementById('kText').value='';
+  updatePoints();
+  toast('Nachweis eingereicht. Nach der Pr\u00fcfung werden die Punkte gutgeschrieben und von der Rechnung abgezogen.');
+}
+renderMass();
+
+/* ---------- Aktivit\u00e4ten ---------- */
+var ideen=[
+  {t:'Probefahrten mit Voranmeldung',f:'Probefahrt oder Test',d:'Zeitfenster im Portal buchbar, Ausweis und F\u00fchrerschein an der Anmeldung.'},
+  {t:'Fahrsimulator am Stand',f:'Demo oder Vorf\u00fchrung',d:'Zieht Warteschlangen und h\u00e4lt Besucher lange am Platz.'},
+  {t:'Wettbewerb mit Tagespreis',f:'Wettbewerb oder Verlosung',d:'Teilnahme per QR-Code, Ziehung t\u00e4glich.'},
+  {t:'Werkstatt-Demo',f:'Demo oder Vorf\u00fchrung',d:'Kettenpflege, Reifenmontage oder Federung einstellen, 15 Minuten.'},
+  {t:'Signierstunde mit Gast',f:'Gast oder Signierstunde',d:'Termin vorher ank\u00fcndigen, wir nehmen ihn ins Programm.'},
+  {t:'Custom-Bike-Premiere',f:'Premiere oder Neuheit',d:'Enth\u00fcllung zu fixer Zeit, wir bewerben sie in den Kan\u00e4len.'},
+  {t:'Kurzworkshop, 20 Minuten',f:'Workshop',d:'Reifenwahl, Gep\u00e4cksysteme, Reiseplanung \u2013 mit Anmeldeliste.'},
+  {t:'Anprobe mit Beratung',f:'Workshop',d:'Helm- und Bekleidungsanprobe mit Passform-Check.'},
+  {t:'Messeaktion nur an diesen drei Tagen',f:'Messeaktion',d:'Klar begrenzt, das erzeugt Abschl\u00fcsse direkt am Stand.'},
+  {t:'Fotobox mit Messe-Hashtag',f:'Anderes',d:'Bild geht an die Besucher und in unsere Story.'},
+  {t:'Live-Talk am Stand',f:'Gast oder Signierstunde',d:'20 Minuten Gespr\u00e4ch, Aufzeichnung f\u00fcr Ihre Kan\u00e4le m\u00f6glich.'},
+  {t:'Charity-Aktion',f:'Anderes',d:'Ein Franken pro Aktion an einen Verein \u2013 gute Pressegeschichte.'}
+];
+document.getElementById('ideas').innerHTML=ideen.map(function(x,i){
+  return '<div class="idea"><b>'+x.t+'</b><div class="small">'+x.d+'</div><button class="btn ghost small" onclick="useIdee('+i+')">Idee \u00fcbernehmen</button></div>';
+}).join('');
+function useIdee(i){
+  document.getElementById('aTitel').value=ideen[i].t;
+  document.getElementById('aFormat').value=ideen[i].f;
+  document.getElementById('aText').value=ideen[i].d;
+  document.getElementById('aCount').textContent=ideen[i].d.length;
+  document.getElementById('aTitel').scrollIntoView({block:'center'});
+  toast('Idee \u00fcbernommen \u2013 passen Sie Text und Zeiten an.');
+}
+document.getElementById('aText').addEventListener('input',function(){document.getElementById('aCount').textContent=this.value.length});
+var akts=[];
+function renderAkts(){
+  document.getElementById('aList').innerHTML=akts.map(function(a){
+    return '<tr><td><b>'+a.t+'</b></td><td>'+a.tage+'</td><td><span class="state offen">'+a.s+'</span></td></tr>';
+  }).join('')||'<tr><td class="small">Noch keine Aktivit\u00e4t eingereicht.</td></tr>';
+}
+function einreichen(){
+  var t=document.getElementById('aTitel').value.trim();
+  var b=document.getElementById('aText').value.trim();
+  var tage=[].slice.call(document.querySelectorAll('.atag:checked')).map(function(c){return c.value});
+  if(!t){toast('Titel fehlt.');return}
+  if(!b){toast('Kurzbeschreibung fehlt \u2013 sie erscheint im Event-Guide.');return}
+  if(!tage.length){toast('W\u00e4hlen Sie mindestens einen Tag.');return}
+  akts.push({t:t,tage:tage.join(', '),s:'eingereicht'});
+  document.getElementById('aTitel').value='';document.getElementById('aText').value='';document.getElementById('aCount').textContent='0';
+  renderAkts(); toast('Aktivit\u00e4t eingereicht.');
+}
+renderAkts();
+
+/* ---------- Ausweise ---------- */
+var badges=[];
+function renderBadges(){
+  document.getElementById('badgeList').innerHTML=badges.map(function(b,i){
+    return '<tr><td><b>'+b.n+'</b><div class="small">'+b.r+'</div></td><td class="num"><button class="btn ghost small" onclick="delBadge('+i+')">Entfernen</button></td></tr>';
+  }).join('')||'<tr><td class="small" style="padding:14px 0">Noch keine Person erfasst.</td></tr>';
+  document.getElementById('badgeCount').textContent=badges.length?'\u00b7 '+badges.length+' erfasst':'';
+  document.getElementById('badgeHint').innerHTML='Das Kontingent richtet sich nach der Standfl\u00e4che. Zus\u00e4tzliche Ausweise sind kostenpflichtig \u2013 Konditionen auf der Auftragsbest\u00e4tigung. Erfassung bis <span class="xx">XX.XX.2027</span>.';
+}
+function addBadge(){
+  var n=document.getElementById('bName').value.trim();
+  if(!n){toast('Name fehlt.');document.getElementById('bName').focus();return}
+  badges.push({n:n,r:document.getElementById('bRole').value.trim()||'Standpersonal'});
+  document.getElementById('bName').value='';document.getElementById('bRole').value='';
+  renderBadges(); toast('Person erfasst.');
+}
+function delBadge(i){badges.splice(i,1);renderBadges()}
+function uploadListe(){
+  if(!document.getElementById('mlFile').files.length&&!document.getElementById('mlLink').value.trim()){toast('Datei hochladen oder Link angeben.');return}
+  document.getElementById('mlLink').value='';
+  toast('Personalliste erhalten. Wir erfassen die Ausweise und melden uns bei Unklarheiten.');
+}
+function copyVoucher(){
+  var t=document.getElementById('voucher').textContent;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){toast('Code kopiert.')},function(){toast('Code: '+t)})}else{toast('Code: '+t)}
+}
+renderBadges();
+
+/* ---------- Profil ---------- */
+function f(id){return document.getElementById(id)}
+function renderPreview(){
+  f('pCount').textContent=f('pText').value.length;
+  f('vName').textContent=f('pName').value||'Firmenname';
+  f('vLogo').textContent=(f('pName').value.trim()[0]||'?').toUpperCase();
+  f('vMeta').textContent=f('pCat').value+' \u00b7 Stand D09, Halle D';
+  f('vText').textContent=f('pText').value||'Beschreibung fehlt \u2013 Besucher sehen dann nur Name und Kategorie.';
+  var b=f('pBrands').value.trim();
+  f('vBrands').textContent=b?'Marken: '+b:'Keine Marken erfasst';
+}
+['pName','pCat','pBrands','pText','pWeb','pMail'].forEach(function(id){f(id).addEventListener('input',renderPreview);f(id).addEventListener('change',renderPreview)});
+function saveProfile(){
+  renderPreview();
+  f('savedAt').textContent='Zuletzt gespeichert um '+new Date().toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit'});
+  toast('Datenblatt gespeichert. Der Eintrag geht zur Freigabe an die Messeleitung.');
+}
+renderPreview();
+
+/* ---------- Nachrichten ---------- */
+var msgs=[
+  {f:'Messeleitung',t:'\u2013',x:'Willkommen im Ausstellerportal. Stellen Sie Ihre Fragen zu Stand, Technik, Anlieferung oder Marketing direkt hier \u2013 so bleibt alles an einem Ort dokumentiert.'}
+];
+function renderThread(){
+  document.getElementById('thread').innerHTML=msgs.map(function(m){
+    return '<div class="msg '+(m.own?'own':'')+'"><div class="from">'+m.f+'<span class="time">'+m.t+'</span></div><div>'+m.x+'</div></div>';
+  }).join('');
+}
+function sendMsg(){
+  var el=document.getElementById('msgText'), v=el.value.trim();
+  if(!v){toast('Die Nachricht ist leer.');return}
+  var d=new Date();
+  msgs.push({f:'Ihr Unternehmen',own:true,t:d.toLocaleDateString('de-CH')+', '+d.toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit'}),x:v});
+  el.value=''; renderThread(); toast('Nachricht gesendet.');
+}
+renderThread();
+</script>
+</body>
+</html>
