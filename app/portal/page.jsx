@@ -80,7 +80,9 @@ export default async function PortalHome() {
       </div>
 
       <p style={S.next}>
-        <a href="/portal/profil">Firmenprofil ausfüllen →</a>
+        <a href="/portal/profil" className="tap">Firmenprofil ausfüllen →</a>
+        {' · '}
+        <a href="/portal/technik" className="tap">Technik &amp; Service bestellen →</a>
       </p>
 
       <p style={S.hint}>
