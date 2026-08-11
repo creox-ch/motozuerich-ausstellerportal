@@ -1,0 +1,48 @@
+/* Палитра и типографика взяты из прототипа (index.html), чтобы новый
+   кабинет не выглядел чужим рядом с ним. */
+:root {
+  --ink: #0e1e37;
+  --blue: #3165a1;
+  --blue-lt: #539eef;
+  --signal: #fbf142;
+  --paper: #f4f7fc;
+  --line: #dce4f0;
+  --text: #12253f;
+  --muted: #63768f;
+  --warn: #b4530e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+a {
+  color: var(--blue);
+}
+
+:focus-visible {
+  outline: 2px solid var(--blue-lt);
+  outline-offset: 2px;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
