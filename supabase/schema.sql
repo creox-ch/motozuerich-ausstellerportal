@@ -17,9 +17,14 @@
 
 -- Проставляет updated_at при каждом UPDATE. Иначе поле врёт: его забывают
 -- обновить при ручной правке в дашборде, а именно ручная правка тут основная.
+-- search_path зафиксирован пустым: иначе функция резолвит имена по search_path
+-- вызывающей роли, и подсунутая раньше схема может подменить вызов. Пустой
+-- путь безопасен — now(), lower() и btrim() живут в pg_catalog, который
+-- просматривается всегда, а к таблицам эти функции не обращаются.
 create or replace function public.mz_touch_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = now();
@@ -34,6 +39,7 @@ $$;
 create or replace function public.mz_normalize_email()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.email = lower(btrim(new.email));

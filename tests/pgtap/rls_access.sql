@@ -24,7 +24,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(9);
+select plan(10);
 
 -- 0: защита от пустой проверки.
 -- Без этого теста все структурные проверки ниже прошли бы «успешно» на пустом
@@ -52,8 +52,14 @@ select is(
   0,
   'нет ни одной RLS-policy на mz_* (deny-all)');
 
--- 3-6: поведенчески от лица anon
+-- 3-7: поведенчески от лица anon
 set local role anon;
+
+-- Контроль: убеждаемся, что смена роли действительно произошла.
+-- Без него проверки «anon не читает» проходят и от лица владельца базы —
+-- таблицы пустые, читать нечего, и тест зелёный при полностью открытом доступе.
+select is(current_user::text, 'anon',
+  'проверка идёт действительно от лица anon');
 
 select is_empty('select 1 from public.mz_companies',
   'anon НЕ читает mz_companies');
