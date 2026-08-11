@@ -1,9 +1,16 @@
+import { redirect } from 'next/navigation';
+import LoginForm from './login-form';
+import { currentCompany } from '../lib/auth';
+
+export const dynamic = 'force-dynamic';
+
 /**
- * Экран входа. Этап 0 — только оболочка: разметка на месте, отправка ещё не
- * подключена, поэтому поле и кнопка отключены и об этом честно написано.
- * На этапе 1 сюда придёт запрос кода на почту (Supabase Auth) и форма оживёт.
+ * Экран входа. Уже вошедшего сюда пускать незачем — сразу в кабинет.
  */
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await currentCompany();
+  if (session) redirect('/portal');
+
   return (
     <main style={styles.wrap}>
       <div style={styles.card}>
@@ -20,27 +27,7 @@ export default function LoginPage() {
           Sie erhalten einen Code an Ihre hinterlegte E-Mail-Adresse.
         </p>
 
-        <form style={styles.form}>
-          <label htmlFor="email" style={styles.label}>
-            E-Mail-Adresse
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder="name@firma.ch"
-            disabled
-            style={styles.input}
-          />
-          <button type="submit" disabled style={styles.button}>
-            Code anfordern
-          </button>
-        </form>
-
-        <p style={styles.notice} role="status">
-          Der Login wird gerade eingerichtet und ist noch nicht aktiv.
-        </p>
+        <LoginForm />
 
         <p style={styles.foot}>
           <a href="/prototyp">Prototyp des Portals ansehen</a>
@@ -86,33 +73,6 @@ const styles = {
   },
   h1: { fontSize: 24, letterSpacing: '-0.5px', margin: '0 0 6px', fontWeight: 700 },
   lead: { color: 'var(--muted)', margin: '0 0 22px' },
-  form: { display: 'flex', flexDirection: 'column', gap: 8 },
-  label: { fontSize: 13, color: 'var(--muted)' },
-  input: {
-    padding: '10px 12px',
-    border: '1px solid var(--line)',
-    borderRadius: 3,
-    background: '#fff',
-  },
-  button: {
-    marginTop: 6,
-    padding: '11px 14px',
-    border: 0,
-    borderRadius: 3,
-    background: 'var(--blue)',
-    color: '#fff',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-  notice: {
-    marginTop: 18,
-    marginBottom: 0,
-    fontSize: 13,
-    color: 'var(--warn)',
-    border: '1px solid var(--warn)',
-    borderRadius: 2,
-    padding: '8px 10px',
-  },
   foot: { marginTop: 16, marginBottom: 0, fontSize: 13 },
   event: { fontSize: 12, color: 'var(--muted)' },
 };

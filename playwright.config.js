@@ -26,11 +26,20 @@ module.exports = defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     // Заглушки, чтобы приложение считало себя сконфигурированным и тесты
-    // доходили до проверяемых веток. К настоящему Supabase не ходим.
+    // доходили до проверяемых веток.
+    //
+    // Заглушены ВСЕ внешние сервисы, а не только Supabase. Причина: next dev
+    // читает .env.local, где лежат боевые ключи, и без этих заглушек тест мог
+    // бы отправить настоящее письмо или сходить в живую базу. Переменные,
+    // заданные здесь, до .env.local не пускают: Next не перезаписывает то,
+    // что уже есть в окружении процесса.
     env: {
       ...process.env,
       SUPABASE_URL: process.env.SUPABASE_URL || 'http://127.0.0.1:54321',
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || 'test-service-role-key',
+      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || 'test-anon-key',
+      RESEND_API_KEY: process.env.RESEND_API_KEY || 're_test_key',
+      PORTAL_MAIL_OVERRIDE: process.env.PORTAL_MAIL_OVERRIDE || 'tests@example.invalid',
     },
   },
 });

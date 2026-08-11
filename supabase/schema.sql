@@ -103,9 +103,10 @@ create table if not exists public.mz_allowlist (
   rolle         text not null default 'mitarbeiter'
                 constraint mz_allowlist_rolle_check
                 check (rolle in ('inhaber', 'mitarbeiter')),
-  aktiv         boolean not null default true,
-  eingeladen_am timestamptz not null default now(),
-  notiz         text
+  aktiv           boolean not null default true,
+  eingeladen_am   timestamptz not null default now(),
+  letzter_code_am timestamptz,
+  notiz           text
 );
 
 comment on table public.mz_allowlist is
@@ -114,6 +115,8 @@ comment on column public.mz_allowlist.aktiv is
   'false = доступ закрыт, но история сохранена. Для ушедшего сотрудника лучше снять флаг, чем удалять строку.';
 comment on column public.mz_allowlist.email is
   'Приводится к нижнему регистру автоматически — вводить можно как удобно.';
+comment on column public.mz_allowlist.letzter_code_am is
+  'Время последней отправки кода. Ставит приложение; между кодами на один адрес выдерживается минута.';
 
 create index if not exists mz_allowlist_company_idx on public.mz_allowlist (company_id);
 
