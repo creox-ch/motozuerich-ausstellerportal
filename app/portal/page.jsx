@@ -83,6 +83,8 @@ export default async function PortalHome() {
         <a href="/portal/profil" className="tap">Firmenprofil ausfüllen →</a>
         {' · '}
         <a href="/portal/technik" className="tap">Technik &amp; Service bestellen →</a>
+        {' · '}
+        <a href="/portal/marketing" className="tap">Event-Guide buchen →</a>
       </p>
 
       <p style={S.hint}>

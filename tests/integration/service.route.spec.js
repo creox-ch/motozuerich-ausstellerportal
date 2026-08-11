@@ -19,7 +19,9 @@ test('PUT с кривым телом без сессии → 401, а не 400', 
   expect(res.status()).toBe(401);
 });
 
-test('страница заказа без входа не открывается', async ({ request }) => {
-  const res = await request.get('/portal/technik', { maxRedirects: 0 });
-  expect([307, 302, 303]).toContain(res.status());
+test('страницы заказа без входа не открываются', async ({ request }) => {
+  for (const pfad of ['/portal/technik', '/portal/marketing']) {
+    const res = await request.get(pfad, { maxRedirects: 0 });
+    expect([307, 302, 303], pfad).toContain(res.status());
+  }
 });

@@ -9,7 +9,13 @@ import { useState } from 'react';
  * в несколько заходов, и «сохранить» не должно означать «отправить».
  * Прототип этого различия не делал — там кнопка была одна.
  */
-export default function OrderForm({ katalog, bemerkung: initialBemerkung, eingereichtAm }) {
+export default function OrderForm({
+  katalog,
+  bemerkung: initialBemerkung,
+  eingereichtAm,
+  bereich = 'technik',
+  submitLabel = 'Bestellung übermitteln',
+}) {
   const [mengen, setMengen] = useState(
     Object.fromEntries(katalog.map((k) => [k.id, k.menge || 0]))
   );
@@ -32,7 +38,7 @@ export default function OrderForm({ katalog, bemerkung: initialBemerkung, einger
       const res = await fetch('/api/service', {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ mengen, bemerkung, einreichen }),
+        body: JSON.stringify({ mengen, bemerkung, einreichen, bereich }),
       });
       const data = await res.json().catch(() => ({}));
 
@@ -139,7 +145,7 @@ export default function OrderForm({ katalog, bemerkung: initialBemerkung, einger
             Speichern
           </button>
           <button type="button" onClick={() => submit(true)} disabled={busy || positionen === 0} style={S.primary}>
-            {busy ? 'Einen Moment…' : 'Bestellung übermitteln'}
+            {busy ? 'Einen Moment…' : submitLabel}
           </button>
         </div>
 

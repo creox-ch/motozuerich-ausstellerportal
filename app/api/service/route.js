@@ -1,6 +1,6 @@
 import { requireCompany } from '../../../lib/auth';
 import { supabaseAdmin } from '../../../lib/supabase';
-import { normalizeOrder } from '../../../lib/service';
+import { BEREICHE, normalizeOrder } from '../../../lib/service';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -23,10 +23,15 @@ export async function PUT(request) {
     return Response.json({ ok: false, error: 'ungültige Anfrage' }, { status: 400 });
   }
 
+  // Раздел приходит от клиента, поэтому сверяем со списком: иначе можно было
+  // бы записать заказ в несуществующий раздел и потерять его из виду.
+  const bereich = BEREICHE.includes(body.bereich) ? body.bereich : 'technik';
+
   const { data: katalog, error: katalogError } = await supabaseAdmin
     .from('mz_service_katalog')
     .select('id')
-    .eq('aktiv', true);
+    .eq('aktiv', true)
+    .eq('bereich', bereich);
 
   if (katalogError) {
     console.error('service PUT: каталог не прочитался', katalogError);
@@ -54,13 +59,14 @@ export async function PUT(request) {
   const einreichen = body.einreichen === true;
   const auftrag = {
     company_id: auth.companyId,
+    bereich,
     bemerkung: typeof body.bemerkung === 'string' ? body.bemerkung.trim().slice(0, 2000) : '',
   };
   if (einreichen) auftrag.eingereicht_am = new Date().toISOString();
 
   const { error: auftragError } = await supabaseAdmin
     .from('mz_service_auftraege')
-    .upsert(auftrag, { onConflict: 'company_id' });
+    .upsert(auftrag, { onConflict: 'company_id,bereich' });
 
   if (auftragError) {
     console.error('service PUT: конверт заказа не сохранился', auftragError);
@@ -71,7 +77,7 @@ export async function PUT(request) {
     company_id: auth.companyId,
     user_id: auth.user.id,
     aktion: einreichen ? 'service_eingereicht' : 'service_gespeichert',
-    details: { positionen: result.positionen.filter((p) => p.menge > 0).length },
+    details: { bereich, positionen: result.positionen.filter((p) => p.menge > 0).length },
   });
 
   return Response.json({ ok: true, eingereicht: einreichen });
