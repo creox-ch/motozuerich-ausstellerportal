@@ -66,7 +66,7 @@ export default function ProfileForm({ initial, logoUrl }) {
   const brands = parseBrands(form.brands);
 
   return (
-    <form onSubmit={save} style={S.grid}>
+    <form onSubmit={save} className="split">
       <div>
         <section style={S.card}>
           <h2 style={S.h2}>Stammdaten</h2>
@@ -171,7 +171,6 @@ function Field({ id, label, value, onChange, error, type = 'text', placeholder, 
 }
 
 const S = {
-  grid: { display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,320px)', gap: 16, alignItems: 'start' },
   card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 3, padding: '18px 20px' },
   h2: { fontSize: 15, margin: '0 0 6px', fontWeight: 700 },
   hint: { fontSize: 12, color: 'var(--muted)', margin: '0 0 14px' },

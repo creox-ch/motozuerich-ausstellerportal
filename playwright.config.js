@@ -11,9 +11,15 @@ const { defineConfig } = require('@playwright/test');
  *                   потому что ленивый supabaseAdmin не инстанцируется, пока
  *                   тест не дойдёт до запроса, а эти ветки туда не доходят.
  * - pgtap/        — инварианты RLS в SQL, запускаются вручную (см. tests/pgtap).
+ * - live/         — требуют НАСТОЯЩУЮ базу, в общий прогон не входят.
+ *                   Страницы, читающие данные на сервере, замокать из браузера
+ *                   нельзя: это не сетевой запрос страницы, а запрос сервера.
+ *                   Запуск: npx playwright test tests/live --config=... с
+ *                   боевыми переменными (см. tests/live/README.md).
  */
 module.exports = defineConfig({
   testDir: 'tests',
+  testIgnore: '**/live/**',
   timeout: 30_000,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',

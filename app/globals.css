@@ -42,7 +42,64 @@ a {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
   color: inherit;
+}
+
+/* Двухколоночные экраны — план залов и профиль.
+   На узком экране колонка с планом схлопывалась в ноль: minmax(0,1fr)
+   рядом с боковой панелью в 320px не оставляет места. Проверено на 375px —
+   плана не было видно вообще. Поэтому ниже 900px раскладка одноколоночная. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Список площадок. На телефоне это основной способ выбрать стенд:
+   прямоугольники в плане на 375px получаются от 5×4 пикселей, попасть
+   в них пальцем невозможно. Заодно это настоящие кнопки — в отличие от
+   групп внутри SVG, которые вспомогательные технологии видят плохо. */
+.stand-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 8px;
+}
+
+.stand-list button {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+}
+
+.stand-list button[aria-pressed='true'] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.stand-list button[disabled] {
+  cursor: default;
+  color: var(--muted);
 }
