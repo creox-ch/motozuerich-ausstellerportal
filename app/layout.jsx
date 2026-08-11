@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 
 export const metadata = {
@@ -15,7 +16,23 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="de">
-      <body>{children}</body>
+      <body>
+        {children}
+        {/*
+          Vercel Web Analytics — соглашение платформы для всех сайтов.
+          Кук не ставит и отдельных людей не отслеживает, поэтому не требует
+          баннера согласия.
+
+          Нужен по прямому уроку сезона 2026: продажи тогда не измерялись
+          вообще, ни одного события конверсии, и посчитать отдачу было
+          невозможно. Если план залов включат осенью без счётчика, мы снова
+          не узнаем, сработал он или нет.
+
+          Данные появятся только после включения Web Analytics в дашборде
+          проекта — до этого скрипт отдаёт 404, и это нормально.
+        */}
+        <Analytics />
+      </body>
     </html>
   );
 }

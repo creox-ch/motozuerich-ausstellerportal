@@ -1,30 +1,19 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Integration: что видно поисковикам.
+ * Integration: портал закрыт от поисковиков.
  *
- * Регрессия, найденная на проде: витрина унаследовала noindex от общего
- * каркаса и была невидима в поиске — при том что её единственная задача
- * в том, чтобы её находили. Ошибка молчаливая: страница открывается,
- * выглядит правильно, и заметить это можно только заглянув в метатеги.
+ * Решение 2026-08-11: наружу портал не выставляем. Это рабочий инструмент,
+ * поисковая витрина проекта — motozuerich.ch. Ссылки на план залов и на вход
+ * рассылаются адресно.
  *
- * Принцип закреплён обратный: по умолчанию закрыто, открываем осознанно.
+ * Тесты закрепляют именно закрытость: открыть индексацию можно только
+ * осознанной правкой, которая уронит этот файл.
  */
 
-test('витрина открыта для индексации', async ({ request }) => {
+test('план залов закрыт от индексации', async ({ request }) => {
   const html = await (await request.get('/hallenplan')).text();
-  expect(html).toMatch(/<meta name="robots" content="index, follow"/);
-});
-
-test('витрина называет канонический адрес', async ({ request }) => {
-  const html = await (await request.get('/hallenplan')).text();
-  expect(html).toMatch(/<link rel="canonical" href="https?:\/\/[^"]+\/hallenplan"/);
-});
-
-test('витрина имеет Open Graph для ссылок в мессенджерах', async ({ request }) => {
-  const html = await (await request.get('/hallenplan')).text();
-  expect(html).toMatch(/property="og:title"/);
-  expect(html).toMatch(/property="og:description"/);
+  expect(html).toMatch(/<meta name="robots" content="noindex/);
 });
 
 test('вход закрыт от индексации', async ({ request }) => {
@@ -37,18 +26,19 @@ test('юридическая страница закрыта от индекса
   expect(html).toMatch(/<meta name="robots" content="noindex/);
 });
 
-test('robots.txt пускает только витрину', async ({ request }) => {
+test('robots.txt запрещает обход целиком', async ({ request }) => {
   const txt = await (await request.get('/robots.txt')).text();
-  expect(txt).toContain('Allow: /hallenplan');
-  expect(txt).toContain('Disallow: /portal');
-  // Прототип полон демонстрационных цифр — в поиске ему делать нечего.
-  expect(txt).toContain('Disallow: /prototyp');
-  expect(txt).toMatch(/Sitemap: https?:\/\/[^\s]+\/sitemap\.xml/);
+  expect(txt).toMatch(/Disallow: \//);
 });
 
-test('в карте сайта только витрина', async ({ request }) => {
-  const xml = await (await request.get('/sitemap.xml')).text();
-  expect(xml).toContain('/hallenplan');
-  expect(xml).not.toContain('/portal');
-  expect(xml).not.toContain('/prototyp');
+test('карты сайта нет — индексировать нечего', async ({ request }) => {
+  const res = await request.get('/sitemap.xml');
+  expect(res.status()).toBe(404);
+});
+
+test('Open Graph остаётся: ссылку рассылают в письмах и мессенджерах', async ({ request }) => {
+  // Это не про поиск, а про то, как выглядит карточка ссылки у получателя.
+  const html = await (await request.get('/hallenplan')).text();
+  expect(html).toMatch(/property="og:title"/);
+  expect(html).toMatch(/property="og:description"/);
 });
