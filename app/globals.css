@@ -103,3 +103,11 @@ textarea {
   cursor: default;
   color: var(--muted);
 }
+
+/* Минимальная цель для пальца. Проверено на проде: вкладки залов были 37px,
+   ссылка на прототип — 15px. На телефоне это промахи, а не нажатия. */
+.tap {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}

@@ -34,6 +34,7 @@ export default function HallPlan({ stands, hallen }) {
             <button
               key={h}
               type="button"
+              className="tap"
               onClick={() => {
                 setHalle(h);
                 setSelectedId(null);

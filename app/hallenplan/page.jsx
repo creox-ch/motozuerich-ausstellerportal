@@ -4,10 +4,26 @@ import HallPlan from './hall-plan';
 
 export const dynamic = 'force-dynamic';
 
+const BASE = process.env.PUBLIC_BASE_URL || 'https://motozuerich-ausstellerportal.vercel.app';
+const TITLE = 'Hallenplan und freie Standflächen · MOTO-ZÜRICH 2027';
+const DESCRIPTION =
+  'Freie Standflächen an der MOTO-ZÜRICH 2027, 19.–21. Februar 2027, StageOne und Halle 550, Zürich-Oerlikon. Fläche im Hallenplan wählen und unverbindlich anfragen.';
+
 export const metadata = {
-  title: 'Hallenplan · MOTO-ZÜRICH 2027',
-  description:
-    'Freie Standflächen an der MOTO-ZÜRICH 2027, 19.–21. Februar 2027, StageOne und Halle 550, Zürich-Oerlikon.',
+  title: TITLE,
+  description: DESCRIPTION,
+  // Единственная страница, которую поиск ДОЛЖЕН видеть: через неё продаются
+  // площади. Каркас закрывает всё по умолчанию, здесь открываем осознанно.
+  robots: { index: true, follow: true },
+  alternates: { canonical: `${BASE}/hallenplan` },
+  openGraph: {
+    type: 'website',
+    locale: 'de_CH',
+    url: `${BASE}/hallenplan`,
+    siteName: 'MOTO-ZÜRICH 2027',
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 /**

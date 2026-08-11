@@ -30,7 +30,10 @@ export default async function LoginPage() {
         <LoginForm />
 
         <p style={styles.foot}>
-          <a href="/prototyp">Prototyp des Portals ansehen</a>
+          <a href="/hallenplan" className="tap">Freie Standflächen ansehen</a>
+        </p>
+        <p style={styles.foot}>
+          <a href="/prototyp" className="tap">Prototyp des Portals ansehen</a>
         </p>
       </div>
 
