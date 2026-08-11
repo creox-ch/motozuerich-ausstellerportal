@@ -1,3 +1,15 @@
 .DS_Store
 Thumbs.db
+
+node_modules/
+.next/
+out/
+
+.env
+.env.local
+.env*.local
+
+playwright-report/
+test-results/
+
 .vercel
