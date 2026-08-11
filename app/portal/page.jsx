@@ -45,10 +45,14 @@ export default async function PortalHome() {
         </dl>
       </div>
 
+      <p style={S.next}>
+        <a href="/portal/profil">Firmenprofil ausfüllen →</a>
+      </p>
+
       <p style={S.hint}>
-        Die weiteren Bereiche — Firmenprofil, Hallenplan, Anreise, Technik — folgen.
-        Bis dahin können Sie den <a href="/prototyp">Prototyp</a> ansehen: er zeigt den
-        geplanten Umfang, arbeitet aber mit Beispieldaten.
+        Die weiteren Bereiche — Hallenplan, Anreise, Technik — folgen. Bis dahin können Sie
+        den <a href="/prototyp">Prototyp</a> ansehen: er zeigt den geplanten Umfang,
+        arbeitet aber mit Beispieldaten.
       </p>
     </>
   );
@@ -82,5 +86,6 @@ const S = {
   },
   dt: { color: 'var(--muted)', margin: 0 },
   dd: { margin: 0, fontWeight: 600, textAlign: 'right' },
+  next: { marginTop: 18, marginBottom: 0, fontWeight: 600 },
   hint: { fontSize: 13, color: 'var(--muted)', marginTop: 20, maxWidth: '64ch' },
 };
