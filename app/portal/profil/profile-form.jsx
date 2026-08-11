@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { KATEGORIEN, MAX_BESCHREIBUNG, formatBrands, parseBrands } from '../../../lib/profile';
+import LogoUpload from './logo-upload';
 
 /**
  * Форма профиля с живым предпросмотром карточки каталога.
@@ -10,7 +11,7 @@ import { KATEGORIEN, MAX_BESCHREIBUNG, formatBrands, parseBrands } from '../../.
  * на сайте, в приложении и в Event-Guide. Без него человек заполняет поля
  * вслепую и узнаёт результат, когда каталог уже свёрстан.
  */
-export default function ProfileForm({ initial }) {
+export default function ProfileForm({ initial, logoUrl }) {
   const [form, setForm] = useState({
     name: initial.name || '',
     uid_nummer: initial.uid_nummer || '',
@@ -115,6 +116,11 @@ export default function ProfileForm({ initial }) {
 
           <Field id="public_email" label="E-Mail für Besucheranfragen" type="email" value={form.public_email} onChange={set('public_email')} error={errors.public_email} />
           <Field id="instagram" label="Instagram" value={form.instagram} onChange={set('instagram')} error={errors.instagram} placeholder="motozuerich" />
+
+          {/* Логотип сохраняется сразу при выборе файла, отдельно от формы:
+              иначе человек выбирает файл, забывает нажать «Speichern»
+              и уходит с ощущением, что загрузил. */}
+          <LogoUpload initialUrl={logoUrl} />
         </section>
 
         {errors._ && <p style={S.errBox}>{errors._}</p>}

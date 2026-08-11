@@ -1,6 +1,7 @@
 import { requireCompany } from '../../../lib/auth';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { validateProfile, EDITABLE_FIELDS } from '../../../lib/profile';
+import { signedUrl } from '../../../lib/storage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,7 +22,12 @@ export async function GET() {
     return Response.json({ ok: false, error: 'interner Fehler' }, { status: 500 });
   }
 
-  return Response.json({ ok: true, profile: data });
+  // Путь в хранилище наружу не отдаём — только временную подписанную ссылку.
+  return Response.json({
+    ok: true,
+    profile: data,
+    logoUrl: await signedUrl(data?.logo_path),
+  });
 }
 
 /**

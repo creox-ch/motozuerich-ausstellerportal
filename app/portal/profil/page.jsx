@@ -1,6 +1,7 @@
 import { requirePageCompany } from '../../../lib/auth';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { EDITABLE_FIELDS } from '../../../lib/profile';
+import { signedUrl } from '../../../lib/storage';
 import ProfileForm from './profile-form';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +23,7 @@ export default async function ProfilPage() {
         Stammdaten für Vertrag und Rechnung sowie Ihr Eintrag für Website, App und Event-Guide.
         Sie können jederzeit speichern und später weiterarbeiten.
       </p>
-      <ProfileForm initial={profile || {}} />
+      <ProfileForm initial={profile || {}} logoUrl={await signedUrl(profile?.logo_path)} />
     </>
   );
 }
