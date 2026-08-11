@@ -15,6 +15,7 @@ const FULL = {
   SUPABASE_SERVICE_ROLE_KEY: 'secret-service-role-key',
   RESEND_API_KEY: 're_secret',
   PORTAL_FROM_EMAIL: 'MOTO-ZÜRICH <noreply@motozuerich.ch>',
+  PORTAL_REPLY_TO: 'yves@motozuerich.ch',
   PUBLIC_BASE_URL: 'https://ausstellerportal.motozuerich.ch',
 };
 
