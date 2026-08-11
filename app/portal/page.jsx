@@ -1,5 +1,6 @@
 import { requirePageCompany } from '../../lib/auth';
 import { supabaseAdmin } from '../../lib/supabase';
+import { formatSize, standsOfCompany } from '../../lib/stands';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,8 @@ export default async function PortalHome() {
     .select('name, status, kategorie')
     .eq('id', session.companyId)
     .maybeSingle();
+
+  const stands = await standsOfCompany(session.companyId);
 
   return (
     <>
@@ -43,6 +46,37 @@ export default async function PortalHome() {
             <dd style={S.dd}>{company?.kategorie || 'noch nicht erfasst'}</dd>
           </div>
         </dl>
+      </div>
+
+      <div style={{ ...S.card, marginTop: 16 }}>
+        <h2 style={S.h2}>Ihr Stand</h2>
+        {stands.length === 0 ? (
+          <p style={S.empty}>
+            Ihnen ist noch keine Fläche zugeteilt. Sobald die Messeleitung Ihren Stand
+            bestätigt hat, erscheint er hier.
+          </p>
+        ) : (
+          stands.map((stand) => (
+            <dl key={stand.id} style={S.dl}>
+              <div style={S.kv}>
+                <dt style={S.dt}>Stand</dt>
+                <dd style={S.dd}>{stand.id}</dd>
+              </div>
+              <div style={S.kv}>
+                <dt style={S.dt}>Halle</dt>
+                <dd style={S.dd}>{stand.halle}</dd>
+              </div>
+              <div style={S.kv}>
+                <dt style={S.dt}>Lage</dt>
+                <dd style={S.dd}>{stand.lage || '—'}</dd>
+              </div>
+              <div style={S.kv}>
+                <dt style={S.dt}>Format</dt>
+                <dd style={S.dd}>{formatSize(stand)}</dd>
+              </div>
+            </dl>
+          ))
+        )}
       </div>
 
       <p style={S.next}>
@@ -86,6 +120,7 @@ const S = {
   },
   dt: { color: 'var(--muted)', margin: 0 },
   dd: { margin: 0, fontWeight: 600, textAlign: 'right' },
+  empty: { fontSize: 13, color: 'var(--muted)', margin: 0 },
   next: { marginTop: 18, marginBottom: 0, fontWeight: 600 },
   hint: { fontSize: 13, color: 'var(--muted)', marginTop: 20, maxWidth: '64ch' },
 };
