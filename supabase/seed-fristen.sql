@@ -23,10 +23,10 @@ insert into public.mz_fristen (id, sortierung, titel, hinweis, datum, datum_bis,
   ('parking',      40, 'Parkbedarf anmelden',                        'Anmeldeschluss',                                       null, null, '/portal/anreise'),
   ('technik',      50, 'Technik und Mobiliar bestellen',             'Danach nur nach Verfügbarkeit',                        null, null, '/portal/technik'),
   ('aktivitaeten', 60, 'Aktivitäten am Stand einreichen',            'Für Programm und Event-Guide',                         null, null, '/portal/aktivitaeten'),
-  -- Раздела Ausweise ещё нет: он ждёт проверенного Datenschutz, потому что
-  -- собирает имена сотрудников. Ссылку не даём, срок в списке оставляем —
-  -- задача у экспонента всё равно появится.
-  ('ausweise',     70, 'Standpersonal erfassen',                     'Einzeln oder als Liste',                               null, null, null),
+  -- Раздел Ausweise показывает устройство и контингенты, но НЕ принимает
+  -- данные: форма появится после вычитки Datenschutz. Ссылку даём — человеку
+  -- полезно знать заранее, что от него потребуется.
+  ('ausweise',     70, 'Standpersonal erfassen',                     'Einzeln oder als Liste',                               null, null, '/portal/ausweise'),
   ('koop',         80, 'Nachweise gemeinsame Aktivitäten',           'Danach verfallen die Punkte',                          null, null, '/portal/aktionen'),
   ('aufbau_1',     90, 'Aufbau Tag 1',                               'Anlieferung nur mit Zeitfenster',                      '2027-02-17', null, '/portal/anreise'),
   ('aufbau_2',    100, 'Aufbau Tag 2',                               'Standabnahme am Abend',                                '2027-02-18', null, '/portal/anreise'),

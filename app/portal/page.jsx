@@ -124,6 +124,8 @@ export default async function PortalHome() {
         <a href="/portal/anreise" className="tap">Anreise und Parking →</a>
         {' · '}
         <a href="/portal/aktionen" className="tap">Gemeinsame Aktivitäten →</a>
+        {' · '}
+        <a href="/portal/ausweise" className="tap">Ausweise &amp; Tickets →</a>
       </p>
 
       <p style={S.hint}>
