@@ -130,8 +130,16 @@ create table if not exists public.mz_allowlist (
   aktiv           boolean not null default true,
   eingeladen_am   timestamptz not null default now(),
   letzter_code_am timestamptz,
+  einladung_gesendet_am timestamptz,
   notiz           text
 );
+
+-- Файл рассчитан на повторный прогон, а таблицы создаются с if not exists —
+-- значит на уже существующей базе новая колонка из create не появится.
+-- Поэтому колонки, добавленные после первого применения схемы, дублируются
+-- идемпотентным alter. Без него база и этот файл разъезжаются молча.
+alter table public.mz_allowlist
+  add column if not exists einladung_gesendet_am timestamptz;
 
 comment on table public.mz_allowlist is
   'Адреса, которым разрешён вход. Ведут Ив и Ксения. Нет адреса в списке — кода на почту не отправляем вообще.';
@@ -141,6 +149,8 @@ comment on column public.mz_allowlist.email is
   'Приводится к нижнему регистру автоматически — вводить можно как удобно.';
 comment on column public.mz_allowlist.letzter_code_am is
   'Время последней отправки кода. Ставит приложение; между кодами на один адрес выдерживается минута.';
+comment on column public.mz_allowlist.einladung_gesendet_am is
+  'Когда ушло письмо-приглашение. Доступ выдаётся уже оплатившему, поэтому выдача доступа и есть повод для письма.';
 
 create index if not exists mz_allowlist_company_idx on public.mz_allowlist (company_id);
 
