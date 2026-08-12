@@ -120,6 +120,8 @@ export default async function PortalHome() {
         <a href="/portal/nachrichten" className="tap">Nachrichten →</a>
         {' · '}
         <a href="/portal/aktivitaeten" className="tap">Aktivität einreichen →</a>
+        {' · '}
+        <a href="/portal/anreise" className="tap">Anreise und Parking →</a>
       </p>
 
       <p style={S.hint}>

@@ -534,6 +534,58 @@ create index if not exists mz_dokumente_company_idx
 create index if not exists mz_dokumente_art_idx on public.mz_dokumente (art);
 
 -- ---------------------------------------------------------------------------
+-- Логистика: подвоз, вывоз, парковка
+-- ---------------------------------------------------------------------------
+
+-- ЭТО ЗАЯВКА, А НЕ БРОНЬ. Прототип бронирует часовые окна с квотами, но квоты
+-- зависят от ворот и рамп, и площадка их ещё не назвала. Забронировать против
+-- выдуманной квоты хуже, чем не бронировать вовсе: два экспонента приедут
+-- к одним воротам в один час, и разбирать это будет человек на площадке.
+--
+-- Поэтому экспонент оставляет пожелание и данные машины, а окно назначает
+-- Messeleitung и вписывает сюда же. Когда квоты появятся, поверх этой таблицы
+-- ляжет настоящее бронирование — заявка останется её началом.
+create table if not exists public.mz_logistik (
+  company_id        uuid primary key references public.mz_companies(id) on delete cascade,
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now(),
+
+  -- Пожелания экспонента
+  an_wunsch         text,
+  an_tor            text,
+  an_fahrzeug       text,
+  an_kennzeichen    text,
+  an_telefon        text,
+
+  ab_wunsch         text,
+  ab_tor            text,
+  ab_fahrzeug       text,
+
+  parkkarten        int not null default 0
+                    constraint mz_logistik_parkkarten_check
+                    check (parkkarten >= 0 and parkkarten <= 99),
+  park_notiz        text,
+
+  eingereicht_am    timestamptz,
+
+  -- Что назначила Messeleitung. Свободный текст намеренно: пока нет сетки
+  -- окон, «Mi 17.02., 08:00–09:00» — самая точная форма, какая у нас есть.
+  an_fenster        text,
+  ab_fenster        text,
+  zugeteilt_am      timestamptz
+);
+
+comment on table public.mz_logistik is
+  'Заявка на подвоз, вывоз и парковку. НЕ бронь: окно назначает Messeleitung, пока не заданы квоты ворот.';
+comment on column public.mz_logistik.an_fenster is
+  'Окно, назначенное Messeleitung. Пусто — ещё не назначено, экспонент видит «noch offen».';
+
+drop trigger if exists mz_logistik_touch on public.mz_logistik;
+create trigger mz_logistik_touch
+  before update on public.mz_logistik
+  for each row execute function public.mz_touch_updated_at();
+
+-- ---------------------------------------------------------------------------
 -- Активности на стенде
 -- ---------------------------------------------------------------------------
 
@@ -693,6 +745,7 @@ alter table public.mz_dokumente           enable row level security;
 alter table public.mz_nachrichten         enable row level security;
 alter table public.mz_fristen             enable row level security;
 alter table public.mz_aktivitaeten        enable row level security;
+alter table public.mz_logistik            enable row level security;
 alter table public.mz_audit               enable row level security;
 
 -- Ни одной policy создавать НЕ НАДО. Отсутствие политик при включённом RLS
@@ -718,6 +771,7 @@ revoke truncate on
   public.mz_nachrichten,
   public.mz_fristen,
   public.mz_aktivitaeten,
+  public.mz_logistik,
   public.mz_audit
 from anon, authenticated;
 
