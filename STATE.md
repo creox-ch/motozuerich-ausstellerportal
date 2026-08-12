@@ -41,7 +41,7 @@
 | | |
 |---|---|
 | Вход экспонента | почта → код из письма (Supabase Auth + Resend) |
-| Кабинет | Übersicht, Hallenplan, Firmenprofil с логотипом, Technik & Service, Marketing |
+| Кабинет | Übersicht, Hallenplan, Firmenprofil, Technik & Service, Marketing, Dokumente & Rechnungen |
 | Витрина | публичный план залов, 43 площадки, заявка на площадь |
 | Админка Messeleitung | заявки, компании, доступы, статусы площадок |
 | Юридические страницы | Datenschutz и Impressum — **черновики**, в футере |
@@ -70,7 +70,7 @@
 Внутрянка кабинета — то, что строится без единого выдуманного числа:
 
 - ~~план залов внутри кабинета~~ ✅ 12.08 — `/portal/hallenplan`
-- **Dokumente & Rechnungen** — документы от Messeleitung и дополнительные счета
+- ~~Dokumente & Rechnungen~~ ✅ 12.08 — `/portal/dokumente` + `/admin/dokumente`
 - **Nachrichten** — переписка с Messeleitung (админка для ответов уже есть)
 
 Вне кабинета: уведомление заявителю о статусе заявки, ограничение частоты

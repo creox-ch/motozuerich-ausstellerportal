@@ -87,10 +87,12 @@ export default async function PortalHome() {
         <a href="/portal/technik" className="tap">Technik &amp; Service bestellen →</a>
         {' · '}
         <a href="/portal/marketing" className="tap">Event-Guide buchen →</a>
+        {' · '}
+        <a href="/portal/dokumente" className="tap">Dokumente &amp; Rechnungen →</a>
       </p>
 
       <p style={S.hint}>
-        Die weiteren Bereiche — Anreise, Ausweise, Dokumente — folgen. Bis dahin können Sie
+        Die weiteren Bereiche — Anreise, Ausweise, Nachrichten — folgen. Bis dahin können Sie
         den <a href="/prototyp">Prototyp</a> ansehen: er zeigt den geplanten Umfang,
         arbeitet aber mit Beispieldaten.
       </p>

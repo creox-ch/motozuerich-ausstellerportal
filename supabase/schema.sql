@@ -219,6 +219,58 @@ create trigger mz_stands_touch
   for each row execute function public.mz_touch_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- Цены на площадки
+-- ---------------------------------------------------------------------------
+
+-- Цена живёт данными, а не разметкой: появление настоящих сумм должно быть
+-- заполнением этой таблицы, а не задачей на разработку и деплой.
+--
+-- Правило выбирается от частного к общему: конкретная площадка → расположение
+-- → зал → все. Побеждает самое частное из подходящих (см. lib/pricing.js).
+create table if not exists public.mz_preise (
+  id            uuid primary key default gen_random_uuid(),
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+
+  gilt_fuer     text not null
+                constraint mz_preise_gilt_fuer_check
+                check (gilt_fuer in ('stand', 'lage', 'halle', 'alle')),
+  schluessel    text,
+  modell        text
+                constraint mz_preise_modell_check
+                check (modell is null or modell in ('pro_m2', 'pauschal')),
+
+  -- NULL разрешён намеренно: «цена ещё не назначена» — рабочее состояние,
+  -- а не пробел в данных. Ноль означал бы «бесплатно», и это другое.
+  betrag_rappen bigint
+                constraint mz_preise_betrag_check
+                check (betrag_rappen is null or betrag_rappen >= 0),
+  waehrung      text not null default 'CHF',
+  notiz         text
+);
+
+comment on table public.mz_preise is
+  'Правила цен на площади. Пока модель и суммы бизнесом не заданы, таблица держит заглушку с пустой суммой — интерфейс показывает XX.';
+comment on column public.mz_preise.schluessel is
+  'Для gilt_fuer=stand это id площадки (D09), для lage — расположение, для halle — название зала, для alle — пусто.';
+comment on column public.mz_preise.modell is
+  'pro_m2 — за квадратный метр площади · pauschal — за место целиком. NULL, пока не решили.';
+comment on column public.mz_preise.betrag_rappen is
+  'NULL = цена ещё не определена (интерфейс покажет XX). Ноль означал бы «бесплатно».';
+
+-- Одно правило на область действия. coalesce, а не просто (gilt_fuer,
+-- schluessel): NULL в уникальном индексе не равен другому NULL, и без него
+-- строк с gilt_fuer='alle' можно было бы завести сколько угодно — а какая
+-- из них применится, стало бы делом случая.
+create unique index if not exists mz_preise_scope_idx
+  on public.mz_preise (gilt_fuer, coalesce(schluessel, ''));
+
+drop trigger if exists mz_preise_touch on public.mz_preise;
+create trigger mz_preise_touch
+  before update on public.mz_preise
+  for each row execute function public.mz_touch_updated_at();
+
+-- ---------------------------------------------------------------------------
 -- Заявки на площадку
 -- ---------------------------------------------------------------------------
 
@@ -254,6 +306,63 @@ create trigger mz_stand_requests_touch
   for each row execute function public.mz_touch_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- Документы и счета
+-- ---------------------------------------------------------------------------
+
+-- Файлы идут ОТ нас экспоненту: AGB, Merkblatt, план монтажа — и счета.
+--
+-- Счёт за площадь сюда попадает уже оплаченным: доступ в портал выдают после
+-- оплаты. А вот за дополнительные заказы — технику, рекламу, парковку —
+-- счета выставляются уже здесь, поэтому раздел рабочий, а не архивный.
+create table if not exists public.mz_dokumente (
+  id            uuid primary key default gen_random_uuid(),
+  created_at    timestamptz not null default now(),
+
+  company_id    uuid references public.mz_companies(id) on delete cascade,
+  art           text not null default 'dokument'
+                constraint mz_dokumente_art_check
+                check (art in ('dokument', 'rechnung')),
+
+  titel         text not null,
+  pfad          text not null,
+  dateiname     text not null,
+  groesse_bytes bigint,
+
+  -- Только для счетов
+  betrag_rappen bigint,
+  faellig_am    date,
+  bezahlt_am    timestamptz,
+
+  hochgeladen_von text,
+
+  -- Счёт всегда адресный: «счёт всем экспонентам» — бессмыслица, а строка
+  -- без компании раздала бы его каждому, кто откроет раздел.
+  constraint mz_dokumente_rechnung_hat_firma
+    check (art <> 'rechnung' or company_id is not null),
+
+  -- Поля счёта у обычного документа означают, что кто-то выбрал не тот тип.
+  -- Лучше отказ при вставке, чем сумма, которую в разделе никто не покажет.
+  constraint mz_dokumente_nur_rechnung_hat_betrag
+    check (art = 'rechnung'
+           or (betrag_rappen is null and faellig_am is null and bezahlt_am is null))
+);
+
+comment on table public.mz_dokumente is
+  'Файлы от Messeleitung экспоненту. company_id пустой = документ для всех участников.';
+comment on column public.mz_dokumente.company_id is
+  'Пусто — документ общий (AGB, Merkblatt). Заполнено — адресный документ или счёт, виден только этой компании.';
+comment on column public.mz_dokumente.pfad is
+  'Ключ в приватном бакете. Наружу файл уходит только подписанной ссылкой после проверки прав.';
+comment on column public.mz_dokumente.betrag_rappen is
+  'Сумма в раппенах, как на платформе (100 = 1.00 CHF). Целые числа, чтобы не копить ошибку округления.';
+comment on column public.mz_dokumente.bezahlt_am is
+  'Ставит Messeleitung вручную: приёма платежей в портале нет и по текущему сценарию не требуется.';
+
+create index if not exists mz_dokumente_company_idx
+  on public.mz_dokumente (company_id, created_at desc);
+create index if not exists mz_dokumente_art_idx on public.mz_dokumente (art);
+
+-- ---------------------------------------------------------------------------
 -- Журнал действий
 -- ---------------------------------------------------------------------------
 
@@ -283,6 +392,7 @@ alter table public.mz_allowlist       enable row level security;
 alter table public.mz_company_members enable row level security;
 alter table public.mz_stands          enable row level security;
 alter table public.mz_stand_requests  enable row level security;
+alter table public.mz_dokumente       enable row level security;
 alter table public.mz_audit           enable row level security;
 
 -- Ни одной policy создавать НЕ НАДО. Отсутствие политик при включённом RLS
@@ -299,5 +409,6 @@ revoke truncate on
   public.mz_company_members,
   public.mz_stands,
   public.mz_stand_requests,
+  public.mz_dokumente,
   public.mz_audit
 from anon, authenticated;
