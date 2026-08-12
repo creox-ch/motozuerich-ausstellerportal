@@ -46,25 +46,35 @@ export async function POST(request) {
   }
   const email = normalizeEmail(body.email);
 
-  // Допущен ли адрес
-  const { data: allow, error: allowError } = await supabaseAdmin
-    .from('mz_allowlist')
-    .select('company_id, aktiv, letzter_code_am')
-    .eq('email', email)
-    .maybeSingle();
+  // Допущен ли адрес — как экспонент или как сотрудник Messeleitung.
+  // Вход один на всех, различие только в том, куда человек попадёт после.
+  const [{ data: allow, error: allowError }, { data: staff, error: staffError }] =
+    await Promise.all([
+      supabaseAdmin
+        .from('mz_allowlist')
+        .select('company_id, aktiv, letzter_code_am')
+        .eq('email', email)
+        .maybeSingle(),
+      supabaseAdmin.from('mz_staff').select('email, aktiv').eq('email', email).maybeSingle(),
+    ]);
 
-  if (allowError) {
-    console.error('request-code: не удалось прочитать список допущенных', allowError);
+  if (allowError || staffError) {
+    console.error('request-code: не удалось прочитать доступы', allowError || staffError);
     return Response.json({ ok: false, error: 'interner Fehler' }, { status: 500 });
   }
 
-  if (!allow || !allow.aktiv) {
+  const istExponent = Boolean(allow?.aktiv);
+  const istStaff = Boolean(staff?.aktiv);
+
+  if (!istExponent && !istStaff) {
     return Response.json({ ok: true, allowed: false });
   }
 
   // Защита от рассылки кодов на чужой адрес: письма уходят с нашего домена,
   // и спам ими бьёт по репутации отправителя, а не только по человеку.
-  if (allow.letzter_code_am) {
+  // Для персонала отметки времени нет — их несколько человек, и защита
+  // важнее для адресов, которые может назвать посторонний.
+  if (allow?.letzter_code_am) {
     const seit = (Date.now() - new Date(allow.letzter_code_am).getTime()) / 1000;
     if (seit < MIN_INTERVAL_S) {
       return Response.json(
@@ -109,10 +119,12 @@ export async function POST(request) {
     );
   }
 
-  await supabaseAdmin
-    .from('mz_allowlist')
-    .update({ letzter_code_am: new Date().toISOString() })
-    .eq('email', email);
+  if (istExponent) {
+    await supabaseAdmin
+      .from('mz_allowlist')
+      .update({ letzter_code_am: new Date().toISOString() })
+      .eq('email', email);
+  }
 
   return Response.json({ ok: true, allowed: true });
 }

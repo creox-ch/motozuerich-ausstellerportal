@@ -53,6 +53,19 @@ export async function POST(request) {
 
   const user = data.user;
 
+  // Сотрудник Messeleitung: компании у него нет, ведём в админку.
+  // Проверяется раньше списка допущенных — если человек оказался и там, и там,
+  // права персонала главнее.
+  const { data: staff } = await supabaseAdmin
+    .from('mz_staff')
+    .select('email, aktiv')
+    .eq('email', email)
+    .maybeSingle();
+
+  if (staff?.aktiv) {
+    return Response.json({ ok: true, ziel: '/admin' });
+  }
+
   const { data: allow, error: allowError } = await supabaseAdmin
     .from('mz_allowlist')
     .select('company_id, aktiv, rolle')
@@ -95,5 +108,5 @@ export async function POST(request) {
   });
   if (auditError) console.error('verify: журнал не записался', auditError);
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, ziel: '/portal' });
 }

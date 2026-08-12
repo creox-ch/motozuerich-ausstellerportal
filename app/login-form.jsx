@@ -58,9 +58,13 @@ export default function LoginForm() {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.ok) {
-        // Полная перезагрузка, а не router.push: серверный гард кабинета должен
+        // Куда вести, решает сервер: экспонента в кабинет, сотрудника
+        // Messeleitung в админку. Клиент этого знать не должен — иначе
+        // выбор двери оказался бы на стороне браузера.
+        //
+        // Полная перезагрузка, а не router.push: серверный гард должен
         // увидеть свежую cookie сессии.
-        window.location.href = '/portal';
+        window.location.href = data.ziel === '/admin' ? '/admin' : '/portal';
         return;
       }
       setMessage({ type: 'error', text: data.error || 'Code ungültig oder abgelaufen.' });
