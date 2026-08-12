@@ -94,6 +94,30 @@ create trigger mz_companies_touch
   for each row execute function public.mz_touch_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- Сотрудники Messeleitung
+-- ---------------------------------------------------------------------------
+
+-- Отдельная таблица, а не роль в mz_allowlist: сотрудник не привязан
+-- к компании и видит все. Смешать эти два понятия в одной таблице —
+-- значит однажды выдать экспоненту права персонала одной опечаткой в роли.
+create table if not exists public.mz_staff (
+  email      text primary key,
+  name       text,
+  aktiv      boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+comment on table public.mz_staff is
+  'Доступ к админке. Вход тем же кодом на почту, что у экспонентов, но ведёт в другое место.';
+comment on column public.mz_staff.aktiv is
+  'false = доступ закрыт, строка сохранена. Для ушедшего сотрудника снять флаг, а не удалять.';
+
+drop trigger if exists mz_staff_normalize on public.mz_staff;
+create trigger mz_staff_normalize
+  before insert or update on public.mz_staff
+  for each row execute function public.mz_normalize_email();
+
+-- ---------------------------------------------------------------------------
 -- Кто допущен ко входу
 -- ---------------------------------------------------------------------------
 
@@ -244,6 +268,7 @@ create index if not exists mz_audit_company_idx on public.mz_audit (company_id, 
 -- ---------------------------------------------------------------------------
 
 alter table public.mz_companies       enable row level security;
+alter table public.mz_staff           enable row level security;
 alter table public.mz_allowlist       enable row level security;
 alter table public.mz_company_members enable row level security;
 alter table public.mz_stands          enable row level security;
@@ -259,6 +284,7 @@ alter table public.mz_audit           enable row level security;
 -- RLS не фильтрует TRUNCATE — забираем право отдельно.
 revoke truncate on
   public.mz_companies,
+  public.mz_staff,
   public.mz_allowlist,
   public.mz_company_members,
   public.mz_stands,
