@@ -534,6 +534,85 @@ create index if not exists mz_dokumente_company_idx
 create index if not exists mz_dokumente_art_idx on public.mz_dokumente (art);
 
 -- ---------------------------------------------------------------------------
+-- Совместный маркетинг: меры и подтверждения
+-- ---------------------------------------------------------------------------
+
+-- Каталог мер из прототипа: семь групп, баллы за каждую. Баллы — согласованные
+-- числа спецификации, поэтому стоят настоящими. А вот СКОЛЬКО ПРОЦЕНТОВ скидки
+-- дают 100 баллов, бизнес не назвал — в интерфейсе там XX.
+create table if not exists public.mz_koop_massnahmen (
+  id           text primary key,
+  gruppe       text not null,
+  -- einfach = в группе засчитывается только одна мера: нельзя получить баллы
+  -- и за полностраничный, и за половинный макет в одном каталоге.
+  gruppe_modus text not null default 'mehrfach'
+               constraint mz_koop_gruppe_modus_check
+               check (gruppe_modus in ('einfach', 'mehrfach')),
+  titel        text not null,
+  beschreibung text,
+  punkte       int  not null default 0 check (punkte >= 0),
+  sortierung   int  not null default 0,
+  aktiv        boolean not null default true,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+comment on table public.mz_koop_massnahmen is
+  'Меры совместного маркетинга и баллы за них. Каталог из прототипа, ведёт Messeleitung.';
+
+create index if not exists mz_koop_massnahmen_sort_idx
+  on public.mz_koop_massnahmen (sortierung);
+
+drop trigger if exists mz_koop_massnahmen_touch on public.mz_koop_massnahmen;
+create trigger mz_koop_massnahmen_touch
+  before update on public.mz_koop_massnahmen
+  for each row execute function public.mz_touch_updated_at();
+
+create table if not exists public.mz_koop_nachweise (
+  id            uuid primary key default gen_random_uuid(),
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+
+  company_id    uuid not null references public.mz_companies(id) on delete cascade,
+  massnahme_id  text not null references public.mz_koop_massnahmen(id) on delete restrict,
+  user_id       uuid references auth.users(id) on delete set null,
+
+  umgesetzt_am  date,
+  link          text,
+  datei_pfad    text,
+  bemerkung     text,
+
+  status        text not null default 'eingereicht'
+                constraint mz_koop_nachweise_status_check
+                check (status in ('eingereicht', 'bestaetigt', 'abgelehnt')),
+  -- Снимок баллов на момент подтверждения. Правка каталога не должна менять
+  -- уже начисленное: экспонент увидел бы, что скидка усохла задним числом.
+  punkte        int,
+  geprueft_von  text,
+  geprueft_am   timestamptz,
+  notiz_intern  text,
+
+  -- Замечание — не доказательство. Без ссылки или файла подтверждать нечего.
+  constraint mz_koop_nachweise_hat_beleg
+    check (coalesce(link, '') <> '' or coalesce(datei_pfad, '') <> '')
+);
+
+comment on table public.mz_koop_nachweise is
+  'Подтверждения выполненных мер. Баллы начисляются только после проверки Messeleitung.';
+comment on column public.mz_koop_nachweise.punkte is
+  'Снимок баллов при подтверждении. Пусто, пока не подтверждено.';
+
+create index if not exists mz_koop_nachweise_company_idx
+  on public.mz_koop_nachweise (company_id, created_at desc);
+create index if not exists mz_koop_nachweise_status_idx
+  on public.mz_koop_nachweise (status);
+
+drop trigger if exists mz_koop_nachweise_touch on public.mz_koop_nachweise;
+create trigger mz_koop_nachweise_touch
+  before update on public.mz_koop_nachweise
+  for each row execute function public.mz_touch_updated_at();
+
+-- ---------------------------------------------------------------------------
 -- Логистика: подвоз, вывоз, парковка
 -- ---------------------------------------------------------------------------
 
@@ -746,6 +825,8 @@ alter table public.mz_nachrichten         enable row level security;
 alter table public.mz_fristen             enable row level security;
 alter table public.mz_aktivitaeten        enable row level security;
 alter table public.mz_logistik            enable row level security;
+alter table public.mz_koop_massnahmen     enable row level security;
+alter table public.mz_koop_nachweise      enable row level security;
 alter table public.mz_audit               enable row level security;
 
 -- Ни одной policy создавать НЕ НАДО. Отсутствие политик при включённом RLS
@@ -772,6 +853,8 @@ revoke truncate on
   public.mz_fristen,
   public.mz_aktivitaeten,
   public.mz_logistik,
+  public.mz_koop_massnahmen,
+  public.mz_koop_nachweise,
   public.mz_audit
 from anon, authenticated;
 

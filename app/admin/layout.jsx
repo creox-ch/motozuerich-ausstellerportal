@@ -46,6 +46,9 @@ export default async function AdminLayout({ children }) {
           <a href="/admin/logistik" style={S.link} className="tap">
             Anreise
           </a>
+          <a href="/admin/koop" style={S.link} className="tap">
+            Aktionen
+          </a>
         </nav>
         <div style={S.who}>
           <span style={S.email}>{staff.email}</span>
