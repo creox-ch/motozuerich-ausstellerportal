@@ -41,7 +41,7 @@
 | | |
 |---|---|
 | Вход экспонента | почта → код из письма (Supabase Auth + Resend) |
-| Кабинет | Übersicht, Hallenplan, Firmenprofil, Technik & Service, Marketing, Dokumente & Rechnungen, Nachrichten |
+| Кабинет | Übersicht с чек-листом сроков, Hallenplan, Firmenprofil, Technik & Service, Marketing, Anreise, Aktivitäten, Gemeinsame Aktivitäten, Dokumente & Rechnungen, Nachrichten |
 | Витрина | публичный план залов, 43 площадки, заявка на площадь |
 | Админка Messeleitung | заявки, компании, доступы, статусы площадок |
 | Юридические страницы | Datenschutz и Impressum — **черновики**, в футере |
@@ -73,9 +73,14 @@
 - ~~Dokumente & Rechnungen~~ ✅ 12.08 — `/portal/dokumente` + `/admin/dokumente`
 - ~~Nachrichten~~ ✅ 12.08 — `/portal/nachrichten` + `/admin/nachrichten`
 
-Внутрянка, которую можно построить без выдуманных данных, построена. Остальные
-разделы кабинета ждут либо данных от Ксении (сроки, квоты, цены, документы),
-либо вычитки Datenschutz (Ausweise).
+**Решение Иванны 12.08: где можно — строить со заглушками `XX`, как в прототипе,
+и ставить явную плашку там, где раздел ещё не доработан.** По нему построены
+Fristen, Aktivitäten am Stand, Anreise (заявка, не бронь) и Gemeinsame
+Aktivitäten, а также остальные блоки Marketing.
+
+Из разделов прототипа не сделан **только Ausweise & Tickets** — там мешает
+не отсутствующее число, а невычитанный Datenschutz: раздел собирает имена
+чужих сотрудников.
 
 Вне кабинета не заблокировано: уведомление заявителю о статусе заявки,
 ограничение частоты на публичной форме, мониторинг ошибок на проде.

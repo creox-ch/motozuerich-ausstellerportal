@@ -534,6 +534,54 @@ create index if not exists mz_dokumente_company_idx
 create index if not exists mz_dokumente_art_idx on public.mz_dokumente (art);
 
 -- ---------------------------------------------------------------------------
+-- Заявки по маркетингу
+-- ---------------------------------------------------------------------------
+
+-- Четыре блока прототипа — цифровой каталог, LED-Wall, дизайн в нашем стиле
+-- и правка данных на сайте — сведены в одну таблицу. Механика у них общая:
+-- экспонент просит, Messeleitung отвечает вручную. Заводить четыре таблицы
+-- ради одного различающегося поля значило бы копировать одно и то же четырежды.
+--
+-- Цен, сроков и условий здесь нет: бизнес их не назвал, и в интерфейсе стоит XX.
+create table if not exists public.mz_marketing_anfragen (
+  id           uuid primary key default gen_random_uuid(),
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now(),
+
+  company_id   uuid not null references public.mz_companies(id) on delete cascade,
+  user_id      uuid references auth.users(id) on delete set null,
+
+  art          text not null
+               constraint mz_marketing_anfragen_art_check
+               check (art in ('online_katalog', 'led_wall', 'design', 'aenderung')),
+
+  auswahl      text,
+  text         text,
+  link         text,
+  datei_pfad   text,
+
+  status       text not null default 'neu'
+               constraint mz_marketing_anfragen_status_check
+               check (status in ('neu', 'in_bearbeitung', 'erledigt', 'abgelehnt')),
+  notiz_intern text
+);
+
+comment on table public.mz_marketing_anfragen is
+  'Заявки по маркетингу: цифровой каталог, LED-Wall, дизайн, правка данных. Обрабатываются вручную — условий и цен пока нет.';
+comment on column public.mz_marketing_anfragen.auswahl is
+  'Пакет для каталога или тип правки. Значение сверяется со списком в lib/marketing.js.';
+
+create index if not exists mz_marketing_anfragen_company_idx
+  on public.mz_marketing_anfragen (company_id, created_at desc);
+create index if not exists mz_marketing_anfragen_status_idx
+  on public.mz_marketing_anfragen (status);
+
+drop trigger if exists mz_marketing_anfragen_touch on public.mz_marketing_anfragen;
+create trigger mz_marketing_anfragen_touch
+  before update on public.mz_marketing_anfragen
+  for each row execute function public.mz_touch_updated_at();
+
+-- ---------------------------------------------------------------------------
 -- Совместный маркетинг: меры и подтверждения
 -- ---------------------------------------------------------------------------
 
@@ -825,6 +873,7 @@ alter table public.mz_nachrichten         enable row level security;
 alter table public.mz_fristen             enable row level security;
 alter table public.mz_aktivitaeten        enable row level security;
 alter table public.mz_logistik            enable row level security;
+alter table public.mz_marketing_anfragen  enable row level security;
 alter table public.mz_koop_massnahmen     enable row level security;
 alter table public.mz_koop_nachweise      enable row level security;
 alter table public.mz_audit               enable row level security;
@@ -853,6 +902,7 @@ revoke truncate on
   public.mz_fristen,
   public.mz_aktivitaeten,
   public.mz_logistik,
+  public.mz_marketing_anfragen,
   public.mz_koop_massnahmen,
   public.mz_koop_nachweise,
   public.mz_audit

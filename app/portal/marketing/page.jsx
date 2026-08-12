@@ -1,25 +1,28 @@
 import { requirePageCompany } from '../../../lib/auth';
 import { loadServiceOrder } from '../../../lib/service';
+import { marketingAnfragenFuerCompany } from '../../../lib/marketing';
 import OrderForm from '../technik/order-form';
+import MarketingAnfragen from './marketing-anfragen';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * Реклама в печатном Event-Guide.
+ * Реклама в печатном Event-Guide и остальные маркетинговые блоки.
  *
- * Форма та же, что у техники: механика заказа одна на оба раздела, и это
- * намеренно — иначе они разошлись бы на первой же правке.
+ * Форма бронирования та же, что у техники: механика заказа одна на оба
+ * раздела, и это намеренно — иначе они разошлись бы на первой же правке.
  *
- * Остальные блоки прототипа (онлайн-каталог, LED-Wall, запрос на дизайн,
- * заявка на изменение) здесь пока не реализованы: у них другая механика,
- * не «набор позиций с количествами».
+ * Блоки ниже (цифровой каталог, LED-Wall, дизайн, правка данных) устроены
+ * иначе: там не «позиции с количествами», а разговор — экспонент просит,
+ * Messeleitung отвечает вручную. Условий и цен для них нет, поэтому над ними
+ * стоит честная плашка.
  */
 export default async function MarketingPage() {
   const session = await requirePageCompany();
-  const { katalog, bemerkung, eingereichtAm } = await loadServiceOrder(
-    session.companyId,
-    'marketing'
-  );
+  const [{ katalog, bemerkung, eingereichtAm }, anfragen] = await Promise.all([
+    loadServiceOrder(session.companyId, 'marketing'),
+    marketingAnfragenFuerCompany(session.companyId),
+  ]);
 
   return (
     <>
@@ -46,11 +49,8 @@ export default async function MarketingPage() {
         />
       )}
 
-      <p style={S.hint}>
-        Druckdaten, Gestaltung im MOTO-ZÜRICH-Look und die Online-Präsenz im digitalen
-        Katalog folgen. Bis dahin zeigt der <a href="/prototyp">Prototyp</a> den geplanten
-        Umfang.
-      </p>
+      <h2 style={S.h2}>Weitere Möglichkeiten</h2>
+      <MarketingAnfragen anfragen={anfragen} />
     </>
   );
 }
@@ -59,5 +59,5 @@ const S = {
   h1: { fontSize: 26, letterSpacing: '-0.6px', margin: '0 0 4px', fontWeight: 700 },
   lead: { color: 'var(--muted)', margin: '0 0 14px', maxWidth: '68ch' },
   xx: { color: '#A32A25', fontWeight: 700 },
-  hint: { fontSize: 13, color: 'var(--muted)', marginTop: 22, maxWidth: '64ch' },
+  h2: { fontSize: 19, margin: '34px 0 14px', fontWeight: 700, letterSpacing: '-0.3px' },
 };
