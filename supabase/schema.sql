@@ -534,6 +534,96 @@ create index if not exists mz_dokumente_company_idx
 create index if not exists mz_dokumente_art_idx on public.mz_dokumente (art);
 
 -- ---------------------------------------------------------------------------
+-- Активности на стенде
+-- ---------------------------------------------------------------------------
+
+-- Заявка в программу выставки, Event-Guide и на сайт. Формат, площадки и дни
+-- взяты из прототипа: это согласованный список, а не выдумка приложения.
+create table if not exists public.mz_aktivitaeten (
+  id           uuid primary key default gen_random_uuid(),
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now(),
+
+  company_id   uuid not null references public.mz_companies(id) on delete cascade,
+  user_id      uuid references auth.users(id) on delete set null,
+
+  titel        text not null,
+  format       text not null,
+  beschreibung text,
+  -- Дни хранятся как есть ('fr','sa','so'): выставка идёт три дня, и таблица
+  -- ради трёх значений здесь была бы дороже пользы.
+  tage         text[] not null default '{}',
+  zeiten       text,
+  ort          text,
+  bedarf       text,
+  bild_pfad    text,
+
+  status       text not null default 'eingereicht'
+               constraint mz_aktivitaeten_status_check
+               check (status in ('eingereicht', 'angenommen', 'abgelehnt')),
+  notiz_intern text,
+
+  -- Заявка без единого дня попадёт в программу неизвестно когда.
+  constraint mz_aktivitaeten_hat_tage check (array_length(tage, 1) >= 1)
+);
+
+comment on table public.mz_aktivitaeten is
+  'Активности на стенде для программы и Event-Guide. Статус ведёт Messeleitung.';
+comment on column public.mz_aktivitaeten.notiz_intern is
+  'Внутренняя пометка. Экспоненту не показывается ни при каких условиях.';
+
+create index if not exists mz_aktivitaeten_company_idx
+  on public.mz_aktivitaeten (company_id, created_at desc);
+create index if not exists mz_aktivitaeten_status_idx on public.mz_aktivitaeten (status);
+
+drop trigger if exists mz_aktivitaeten_touch on public.mz_aktivitaeten;
+create trigger mz_aktivitaeten_touch
+  before update on public.mz_aktivitaeten
+  for each row execute function public.mz_touch_updated_at();
+
+-- ---------------------------------------------------------------------------
+-- Сроки и задачи экспонента
+-- ---------------------------------------------------------------------------
+
+-- Список из прототипа: восемь сроков, которые Messeleitung ещё не назвала,
+-- и три известные даты монтажа и самой выставки.
+--
+-- Даты живут данными, а не разметкой, по той же причине, что цены: когда
+-- Ксения назовёт числа, это будет заполнение таблицы, а не задача
+-- на разработку. Пустой `datum` показывается как красное XX — так же,
+-- как в прототипе.
+create table if not exists public.mz_fristen (
+  id          text primary key,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+
+  sortierung  int  not null default 0,
+  titel       text not null,
+  hinweis     text,
+
+  datum       date,
+  -- Для диапазона: сама выставка идёт три дня, и «19.02.2027» было бы враньём.
+  datum_bis   date,
+
+  ziel        text,
+  aktiv       boolean not null default true,
+
+  constraint mz_fristen_reihenfolge check (datum_bis is null or datum is not null)
+);
+
+comment on table public.mz_fristen is
+  'Сроки экспонента для чек-листа в Übersicht. Пустой datum = срок не назначен, показывается как XX.';
+comment on column public.mz_fristen.ziel is
+  'Путь в кабинете, куда ведёт «jetzt erledigen». Пусто — раздела ещё нет, ссылку не рисуем.';
+
+create index if not exists mz_fristen_sortierung_idx on public.mz_fristen (sortierung);
+
+drop trigger if exists mz_fristen_touch on public.mz_fristen;
+create trigger mz_fristen_touch
+  before update on public.mz_fristen
+  for each row execute function public.mz_touch_updated_at();
+
+-- ---------------------------------------------------------------------------
 -- Переписка с Messeleitung
 -- ---------------------------------------------------------------------------
 
@@ -601,6 +691,8 @@ alter table public.mz_service_auftraege   enable row level security;
 alter table public.mz_service_positionen  enable row level security;
 alter table public.mz_dokumente           enable row level security;
 alter table public.mz_nachrichten         enable row level security;
+alter table public.mz_fristen             enable row level security;
+alter table public.mz_aktivitaeten        enable row level security;
 alter table public.mz_audit               enable row level security;
 
 -- Ни одной policy создавать НЕ НАДО. Отсутствие политик при включённом RLS
@@ -624,6 +716,8 @@ revoke truncate on
   public.mz_service_positionen,
   public.mz_dokumente,
   public.mz_nachrichten,
+  public.mz_fristen,
+  public.mz_aktivitaeten,
   public.mz_audit
 from anon, authenticated;
 

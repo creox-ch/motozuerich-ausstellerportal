@@ -1,6 +1,7 @@
 import { requirePageCompany } from '../../lib/auth';
 import { supabaseAdmin } from '../../lib/supabase';
 import { formatSize, standsOfCompany } from '../../lib/stands';
+import { fristenFuerCompany } from '../../lib/fristen';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +22,7 @@ export default async function PortalHome() {
     .maybeSingle();
 
   const stands = await standsOfCompany(session.companyId);
+  const fristen = await fristenFuerCompany(session.companyId);
 
   return (
     <>
@@ -79,6 +81,31 @@ export default async function PortalHome() {
         )}
       </div>
 
+      <div style={{ ...S.card, marginTop: 16, maxWidth: 720 }}>
+        <h2 style={S.h2}>Fristen und offene Aufgaben</h2>
+        <ul style={S.fristen}>
+          {fristen.map((f) => (
+            <li key={f.id} style={S.frist}>
+              <span style={f.offen ? S.datumOffen : S.datum}>{f.anzeige}</span>
+              <span style={S.fristText}>
+                <span style={f.erledigt ? S.titelErledigt : undefined}>{f.titel}</span>
+                {f.erledigt === true && <span style={S.erledigt}> · erledigt</span>}
+                {f.hinweis && <em style={S.fristHint}>{f.hinweis}</em>}
+              </span>
+              {f.ziel && (
+                <a href={f.ziel} style={S.fristLink} className="tap">
+                  öffnen
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+        <p style={S.hint}>
+          Rot markierte Daten sind noch nicht festgelegt — wir tragen sie nach, sobald sie
+          feststehen. Erledigt wird nur angezeigt, wo wir es an Ihren Angaben sehen.
+        </p>
+      </div>
+
       <p style={S.next}>
         <a href="/portal/hallenplan" className="tap">Hallenplan ansehen →</a>
         {' · '}
@@ -91,6 +118,8 @@ export default async function PortalHome() {
         <a href="/portal/dokumente" className="tap">Dokumente &amp; Rechnungen →</a>
         {' · '}
         <a href="/portal/nachrichten" className="tap">Nachrichten →</a>
+        {' · '}
+        <a href="/portal/aktivitaeten" className="tap">Aktivität einreichen →</a>
       </p>
 
       <p style={S.hint}>
@@ -133,4 +162,28 @@ const S = {
   empty: { fontSize: 13, color: 'var(--muted)', margin: 0 },
   next: { marginTop: 18, marginBottom: 0, fontWeight: 600 },
   hint: { fontSize: 13, color: 'var(--muted)', marginTop: 20, maxWidth: '64ch' },
+
+  fristen: { listStyle: 'none', margin: 0, padding: 0 },
+  frist: {
+    display: 'flex',
+    gap: 12,
+    alignItems: 'baseline',
+    padding: '9px 0',
+    borderBottom: '1px solid var(--line)',
+    flexWrap: 'wrap',
+  },
+  datum: { flex: '0 0 108px', fontVariantNumeric: 'tabular-nums', fontWeight: 600, fontSize: 13 },
+  // Красным помечено то, что внутри ещё не решено, — как в прототипе.
+  datumOffen: {
+    flex: '0 0 108px',
+    fontVariantNumeric: 'tabular-nums',
+    fontWeight: 700,
+    fontSize: 13,
+    color: '#A32A25',
+  },
+  fristText: { flex: '1 1 220px', minWidth: 0, fontSize: 14 },
+  titelErledigt: { color: 'var(--muted)', textDecoration: 'line-through' },
+  erledigt: { color: '#1B7A5A', fontSize: 12, fontWeight: 600 },
+  fristHint: { display: 'block', fontSize: 12, color: 'var(--muted)', fontStyle: 'normal', marginTop: 2 },
+  fristLink: { fontSize: 13, fontWeight: 600, textDecoration: 'none', color: 'var(--blue)' },
 };
