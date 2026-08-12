@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import LoginForm from './login-form';
+import SiteFooter from './site-footer';
 import { currentCompany } from '../lib/auth';
 
 export const dynamic = 'force-dynamic';
@@ -38,6 +39,7 @@ export default async function LoginPage() {
       </div>
 
       <div style={styles.event}>19.–21. Februar 2027 · StageOne und Halle 550, Zürich-Oerlikon</div>
+      <SiteFooter />
     </main>
   );
 }

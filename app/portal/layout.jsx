@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { currentCompany } from '../../lib/auth';
 import LogoutButton from './logout-button';
+import SiteFooter from '../site-footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +32,7 @@ export default async function PortalLayout({ children }) {
         </div>
       </header>
       <main style={S.wrap}>{children}</main>
+      <SiteFooter />
     </div>
   );
 }

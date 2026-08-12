@@ -1,6 +1,7 @@
+import SiteFooter from '../site-footer';
+
 export const metadata = {
   title: 'Datenschutzerklärung · Ausstellerportal MOTO-ZÜRICH 2027',
-  robots: { index: false, follow: false },
 };
 
 /**
@@ -13,7 +14,8 @@ export const metadata = {
  */
 export default function DatenschutzPage() {
   return (
-    <main style={S.wrap}>
+    <>
+      <main style={S.wrap}>
       <div style={S.entwurf}>
         <strong>Entwurf.</strong> Diese Fassung beschreibt die tatsächliche Verarbeitung,
         ist aber rechtlich noch nicht geprüft.
@@ -75,7 +77,9 @@ export default function DatenschutzPage() {
       <p style={S.foot}>
         <a href="/hallenplan">Zurück zum Hallenplan</a>
       </p>
-    </main>
+      </main>
+      <SiteFooter />
+    </>
   );
 }
 

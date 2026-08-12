@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '../../lib/supabase';
 import { formatPrice, loadPriceRules, priceFor } from '../../lib/pricing';
 import HallPlan from './hall-plan';
+import SiteFooter from '../site-footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,6 +85,7 @@ export default async function HallenplanPage() {
           <a href="/">Zum Ausstellerportal</a>
         </p>
       </div>
+      <SiteFooter />
     </main>
   );
 }
