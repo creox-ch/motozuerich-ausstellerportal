@@ -80,6 +80,8 @@ export default async function PortalHome() {
       </div>
 
       <p style={S.next}>
+        <a href="/portal/hallenplan" className="tap">Hallenplan ansehen →</a>
+        {' · '}
         <a href="/portal/profil" className="tap">Firmenprofil ausfüllen →</a>
         {' · '}
         <a href="/portal/technik" className="tap">Technik &amp; Service bestellen →</a>
@@ -88,7 +90,7 @@ export default async function PortalHome() {
       </p>
 
       <p style={S.hint}>
-        Die weiteren Bereiche — Hallenplan, Anreise, Technik — folgen. Bis dahin können Sie
+        Die weiteren Bereiche — Anreise, Ausweise, Dokumente — folgen. Bis dahin können Sie
         den <a href="/prototyp">Prototyp</a> ansehen: er zeigt den geplanten Umfang,
         arbeitet aber mit Beispieldaten.
       </p>
