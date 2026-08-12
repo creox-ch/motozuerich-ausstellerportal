@@ -27,6 +27,26 @@
 6. **Формулировки** — юристом. Текст описывает фактическую обработку честно,
    но написан разработчиком, а не юристом.
 
+## Сверено с Datenschutz билетника Bookinea (2026-08-12)
+
+Взят как чек-лист разделов: `https://bookinea.app/datenschutz`.
+
+**Добавлено по итогам сверки:** Cookies, Server-Logfiles, Links auf andere
+Websites, Änderungen dieser Erklärung. Самым существенным пробелом были
+cookies — портал ставит cookie сессии при входе, а в тексте об этом не было
+ни слова.
+
+**Сознательно НЕ взято:** у Bookinea описан Google Analytics. У нас его нет
+и не планируется — стоит Vercel Web Analytics именно потому, что она не ставит
+cookies и не требует баннера согласия. Описывать обработку, которой
+не происходит, хуже, чем не описывать вовсе.
+
+**Что там не лучше нашего:** срок хранения у них такой же обтекаемый
+(«сколько нужно для цели») — то есть наш пробел не особенность, а общая
+практика, но от вопроса юриста это не спасёт. Обработчики у них названы
+общо («хостинг-провайдер»), у нас поимённо и с местом хранения. Раздела
+о правах человека в их структуре нет.
+
 ## Что портал фактически собирает — сверено с кодом
 
 **Публичная заявка на площадь** (`mz_anfragen`): Firma, Ansprechperson, E-Mail,
@@ -75,6 +95,22 @@ Für Werbung ohne Bezug zu Ihrer Teilnahme verwenden wir diese Daten nicht.
 - **Resend** — Versand der E-Mails, Serverstandort Irland.
 - **Vercel** — Betrieb des Portals, Serverstandort USA.
 
+## Cookies
+
+Nach der Anmeldung setzen wir ein Cookie, das Ihre Sitzung offen hält. Ohne
+dieses Cookie funktioniert der Login nicht — es ist technisch notwendig und
+dient keiner Auswertung. Beim Abmelden wird es gelöscht.
+
+Für die Reichweitenmessung nutzen wir Vercel Web Analytics. Der Dienst zählt
+Seitenaufrufe, setzt dafür **keine Cookies** und erstellt keine Profile
+einzelner Personen.
+
+## Server-Logfiles
+
+Beim Aufruf des Portals fallen technische Protokolldaten an: IP-Adresse,
+Zeitpunkt, aufgerufene Adresse und Browserangaben. Sie dienen dem sicheren
+Betrieb und der Fehlersuche und werden nicht mit anderen Daten zusammengeführt.
+
 ## Aufbewahrung
 
 Anfragen und Ausstellerdaten bewahren wir so lange auf, wie es für die
@@ -84,3 +120,14 @@ Durchführung der Messe und die gesetzlichen Aufbewahrungsfristen nötig ist.
 
 Sie können jederzeit Auskunft über Ihre Daten verlangen sowie deren Berichtigung
 oder Löschung. Eine Nachricht an die oben genannte Adresse genügt.
+
+## Links auf andere Websites
+
+Das Portal verweist auf externe Angebote, etwa auf Ablagen mit Marken- und
+Bildmaterial. Für deren Inhalte und deren Umgang mit Daten sind die jeweiligen
+Anbieter verantwortlich. Auf diese Seiten haben wir keinen Einfluss.
+
+## Änderungen dieser Erklärung
+
+Wir passen diese Erklärung an, wenn sich das Portal oder die eingesetzten
+Dienste ändern. Massgebend ist die jeweils hier veröffentlichte Fassung.

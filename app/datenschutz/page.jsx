@@ -62,6 +62,25 @@ export default function DatenschutzPage() {
         <li><b>Vercel</b> — Betrieb des Portals, Serverstandort USA.</li>
       </ul>
 
+      <h2 style={S.h2}>Cookies</h2>
+      <p style={S.p}>
+        Nach der Anmeldung setzen wir ein Cookie, das Ihre Sitzung offen hält. Ohne
+        dieses Cookie funktioniert der Login nicht — es ist technisch notwendig und
+        dient keiner Auswertung. Beim Abmelden wird es gelöscht.
+      </p>
+      <p style={S.p}>
+        Für die Reichweitenmessung nutzen wir Vercel Web Analytics. Der Dienst zählt
+        Seitenaufrufe, setzt dafür <b>keine Cookies</b> und erstellt keine Profile
+        einzelner Personen.
+      </p>
+
+      <h2 style={S.h2}>Server-Logfiles</h2>
+      <p style={S.p}>
+        Beim Aufruf des Portals fallen technische Protokolldaten an: IP-Adresse,
+        Zeitpunkt, aufgerufene Adresse und Browserangaben. Sie dienen dem sicheren
+        Betrieb und der Fehlersuche und werden nicht mit anderen Daten zusammengeführt.
+      </p>
+
       <h2 style={S.h2}>Aufbewahrung</h2>
       <p style={S.p}>
         Anfragen und Ausstellerdaten bewahren wir so lange auf, wie es für die Durchführung
@@ -72,6 +91,19 @@ export default function DatenschutzPage() {
       <p style={S.p}>
         Sie können jederzeit Auskunft über Ihre Daten verlangen sowie deren Berichtigung
         oder Löschung. Eine Nachricht an die oben genannte Adresse genügt.
+      </p>
+
+      <h2 style={S.h2}>Links auf andere Websites</h2>
+      <p style={S.p}>
+        Das Portal verweist auf externe Angebote, etwa auf Ablagen mit Marken- und
+        Bildmaterial. Für deren Inhalte und deren Umgang mit Daten sind die jeweiligen
+        Anbieter verantwortlich. Auf diese Seiten haben wir keinen Einfluss.
+      </p>
+
+      <h2 style={S.h2}>Änderungen dieser Erklärung</h2>
+      <p style={S.p}>
+        Wir passen diese Erklärung an, wenn sich das Portal oder die eingesetzten
+        Dienste ändern. Massgebend ist die jeweils hier veröffentlichte Fassung.
       </p>
 
       <p style={S.foot}>
