@@ -306,6 +306,177 @@ create trigger mz_stand_requests_touch
   for each row execute function public.mz_touch_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- Заявки с публичного плана залов
+-- ---------------------------------------------------------------------------
+
+-- Не дубликат mz_stand_requests, хотя выглядит похоже. Разница в том, кто
+-- пишет: сюда — посторонний человек с витрины, у которого нет ни учётной
+-- записи, ни компании в базе; в mz_stand_requests — уже вошедший экспонент
+-- из кабинета. Отсюда и company_id, который заполняется задним числом, когда
+-- по заявке завели компанию.
+--
+-- Свести их в одну таблицу значило бы либо разрешить строки без компании
+-- в кабинете, либо требовать компанию от того, кто её ещё не имеет.
+create table if not exists public.mz_anfragen (
+  id           uuid primary key default gen_random_uuid(),
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now(),
+
+  stand_id     text references public.mz_stands(id) on delete set null,
+
+  firma        text,
+  name         text,
+  email        text not null,
+  telefon      text,
+  nachricht    text,
+
+  consent      boolean not null default false
+               constraint mz_anfragen_consent_check check (consent = true),
+
+  status       text not null default 'neu'
+               constraint mz_anfragen_status_check
+               check (status in ('neu', 'in_bearbeitung', 'offeriert',
+                                 'gewonnen', 'verloren', 'spam')),
+
+  company_id   uuid references public.mz_companies(id) on delete set null,
+  notiz_intern text,
+  quelle       jsonb
+);
+
+comment on table public.mz_anfragen is
+  'Заявки на площадь с публичной страницы плана залов. Автор ещё не экспонент: ни учётной записи, ни компании в базе у него нет.';
+comment on column public.mz_anfragen.consent is
+  'Ограничение допускает только true: заявка без согласия не сохраняется в принципе.';
+comment on column public.mz_anfragen.company_id is
+  'Заполняется, когда по заявке завели компанию — связь лида с результатом.';
+comment on column public.mz_anfragen.notiz_intern is
+  'Внутренняя пометка. Заявителю не показывается ни при каких условиях.';
+comment on column public.mz_anfragen.quelle is
+  'UTM и адрес страницы. Разбирает сервер, клиенту не доверяем.';
+
+-- По lower(email), а не по email: адрес нормализует триггер, но искать
+-- «все заявки от этого человека» приходится и по тому, что ввели руками.
+create index if not exists mz_anfragen_email_idx on public.mz_anfragen (lower(email));
+create index if not exists mz_anfragen_stand_idx on public.mz_anfragen (stand_id);
+create index if not exists mz_anfragen_status_idx
+  on public.mz_anfragen (status, created_at desc);
+
+drop trigger if exists mz_anfragen_normalize on public.mz_anfragen;
+create trigger mz_anfragen_normalize
+  before insert or update on public.mz_anfragen
+  for each row execute function public.mz_normalize_email();
+
+drop trigger if exists mz_anfragen_touch on public.mz_anfragen;
+create trigger mz_anfragen_touch
+  before update on public.mz_anfragen
+  for each row execute function public.mz_touch_updated_at();
+
+-- ---------------------------------------------------------------------------
+-- Техника и услуги к стенду
+-- ---------------------------------------------------------------------------
+
+-- Три таблицы на один сценарий: что можно заказать (каталог), сколько чего
+-- заказали (позиции) и сам заказ целиком (примечание и факт отправки).
+--
+-- Разделы Technik и Marketing устроены одинаково — набор позиций, черновик,
+-- отправка, условия с подтверждением, — поэтому механика одна, а раздел
+-- различается колонкой bereich. Две параллельные механики разошлись бы
+-- на первой же правке.
+
+create table if not exists public.mz_service_katalog (
+  id           text primary key,
+  bezeichnung  text not null,
+  beschreibung text,
+  einheit      text not null default 'Stück',
+
+  preis_rappen bigint
+               constraint mz_service_preis_check
+               check (preis_rappen is null or preis_rappen >= 0),
+
+  sortierung   integer not null default 100,
+  aktiv        boolean not null default true,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now(),
+
+  bereich      text not null default 'technik'
+               constraint mz_service_bereich_check
+               check (bereich in ('technik', 'marketing'))
+);
+
+-- Раздел Marketing появился позже техники, а таблица создаётся с if not
+-- exists — на уже применённой базе колонка из create не появилась бы.
+-- Тот же приём, что у mz_allowlist.einladung_gesendet_am.
+alter table public.mz_service_katalog
+  add column if not exists bereich text not null default 'technik';
+
+comment on table public.mz_service_katalog is
+  'Что экспонент может заказать: техника и рекламные форматы. Ведёт Messeleitung.';
+comment on column public.mz_service_katalog.preis_rappen is
+  'NULL = цена не определена, интерфейс покажет XX. Условия приходят с подтверждением заказа.';
+comment on column public.mz_service_katalog.aktiv is
+  'false — позиция больше не предлагается, но остаётся в уже собранных заказах.';
+comment on column public.mz_service_katalog.bereich is
+  'Раздел портала, в котором показывается позиция.';
+
+drop trigger if exists mz_service_katalog_touch on public.mz_service_katalog;
+create trigger mz_service_katalog_touch
+  before update on public.mz_service_katalog
+  for each row execute function public.mz_touch_updated_at();
+
+-- Заказ компании по разделу. Ключ составной: у одной компании свой заказ
+-- в технике и свой в рекламе, и отправляются они независимо.
+create table if not exists public.mz_service_auftraege (
+  company_id     uuid not null references public.mz_companies(id) on delete cascade,
+  bemerkung      text,
+  eingereicht_am timestamptz,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+
+  bereich        text not null default 'technik'
+                 constraint mz_service_auftraege_bereich_check
+                 check (bereich in ('technik', 'marketing')),
+
+  primary key (company_id, bereich)
+);
+
+alter table public.mz_service_auftraege
+  add column if not exists bereich text not null default 'technik';
+
+comment on table public.mz_service_auftraege is
+  'Заказ компании по разделу: примечание и факт отправки. Сами позиции — в mz_service_positionen.';
+comment on column public.mz_service_auftraege.eingereicht_am is
+  'NULL — черновик, экспонент ещё правит. Заполнено — заказ отправлен Messeleitung.';
+
+drop trigger if exists mz_service_auftraege_touch on public.mz_service_auftraege;
+create trigger mz_service_auftraege_touch
+  before update on public.mz_service_auftraege
+  for each row execute function public.mz_touch_updated_at();
+
+-- Количества по позициям каталога.
+create table if not exists public.mz_service_positionen (
+  company_id  uuid not null references public.mz_companies(id) on delete cascade,
+
+  -- Без on delete: позицию, которую уже кто-то заказал, удалять нельзя.
+  -- Чтобы убрать её из предложения, есть mz_service_katalog.aktiv = false —
+  -- тогда собранные заказы остаются читаемыми.
+  position_id text not null references public.mz_service_katalog(id),
+
+  menge       integer not null default 0
+              constraint mz_service_menge_check check (menge >= 0),
+  updated_at  timestamptz not null default now(),
+
+  primary key (company_id, position_id)
+);
+
+comment on table public.mz_service_positionen is
+  'Сколько чего заказано. Строка с menge = 0 означает «позицию видели и не взяли» — это не то же самое, что её отсутствие.';
+
+drop trigger if exists mz_service_positionen_touch on public.mz_service_positionen;
+create trigger mz_service_positionen_touch
+  before update on public.mz_service_positionen
+  for each row execute function public.mz_touch_updated_at();
+
+-- ---------------------------------------------------------------------------
 -- Документы и счета
 -- ---------------------------------------------------------------------------
 
@@ -363,6 +534,34 @@ create index if not exists mz_dokumente_company_idx
 create index if not exists mz_dokumente_art_idx on public.mz_dokumente (art);
 
 -- ---------------------------------------------------------------------------
+-- Переписка с Messeleitung
+-- ---------------------------------------------------------------------------
+
+-- Одна лента на компанию, без тем и веток. У выставки десятки экспонентов
+-- и один адресат с нашей стороны — ветки здесь были бы формой без содержания.
+create table if not exists public.mz_nachrichten (
+  id          uuid primary key default gen_random_uuid(),
+  created_at  timestamptz not null default now(),
+
+  company_id  uuid not null references public.mz_companies(id) on delete cascade,
+  von         text not null
+              constraint mz_nachrichten_von_check
+              check (von in ('aussteller', 'messeleitung')),
+
+  autor_email text,
+  user_id     uuid references auth.users(id) on delete set null,
+  text        text not null
+);
+
+comment on table public.mz_nachrichten is
+  'Переписка компании с Messeleitung. Отметки «прочитано» намеренно нет: непрочитанным считается то, на что мы ещё не ответили, и это видно по последнему сообщению.';
+comment on column public.mz_nachrichten.autor_email is
+  'Кто написал. За компанию работают несколько человек, и «кто-то из фирмы» — недостаточный ответ.';
+
+create index if not exists mz_nachrichten_company_idx
+  on public.mz_nachrichten (company_id, created_at desc);
+
+-- ---------------------------------------------------------------------------
 -- Журнал действий
 -- ---------------------------------------------------------------------------
 
@@ -386,14 +585,23 @@ create index if not exists mz_audit_company_idx on public.mz_audit (company_id, 
 -- Доступ: RLS без политик
 -- ---------------------------------------------------------------------------
 
-alter table public.mz_companies       enable row level security;
-alter table public.mz_staff           enable row level security;
-alter table public.mz_allowlist       enable row level security;
-alter table public.mz_company_members enable row level security;
-alter table public.mz_stands          enable row level security;
-alter table public.mz_stand_requests  enable row level security;
-alter table public.mz_dokumente       enable row level security;
-alter table public.mz_audit           enable row level security;
+-- Список обязан покрывать ВСЕ таблицы mz_*. Забытая строка означает таблицу,
+-- открытую наружу с anon-ключом; тест tests/pgtap/rls_access.sql идёт по всем
+-- mz_* и краснеет на любой пропущенной.
+alter table public.mz_companies           enable row level security;
+alter table public.mz_staff               enable row level security;
+alter table public.mz_allowlist           enable row level security;
+alter table public.mz_company_members     enable row level security;
+alter table public.mz_stands              enable row level security;
+alter table public.mz_preise              enable row level security;
+alter table public.mz_stand_requests      enable row level security;
+alter table public.mz_anfragen            enable row level security;
+alter table public.mz_service_katalog     enable row level security;
+alter table public.mz_service_auftraege   enable row level security;
+alter table public.mz_service_positionen  enable row level security;
+alter table public.mz_dokumente           enable row level security;
+alter table public.mz_nachrichten         enable row level security;
+alter table public.mz_audit               enable row level security;
 
 -- Ни одной policy создавать НЕ НАДО. Отсутствие политик при включённом RLS
 -- означает «никому ничего», и это здесь целевое состояние: читает и пишет
@@ -408,7 +616,13 @@ revoke truncate on
   public.mz_allowlist,
   public.mz_company_members,
   public.mz_stands,
+  public.mz_preise,
   public.mz_stand_requests,
+  public.mz_anfragen,
+  public.mz_service_katalog,
+  public.mz_service_auftraege,
+  public.mz_service_positionen,
   public.mz_dokumente,
+  public.mz_nachrichten,
   public.mz_audit
 from anon, authenticated;
