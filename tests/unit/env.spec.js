@@ -57,3 +57,39 @@ test('в результат не попадают значения переме�
   expect(serialized).not.toContain('re_secret');
   expect(serialized).not.toContain('example.supabase.co');
 });
+
+test('без переопределений почты список пуст', () => {
+  expect(describeEnv(FULL).aktiveUmleitungen).toEqual([]);
+});
+
+test('включённое переопределение почты названо', () => {
+  // Забытый в Production PORTAL_MAIL_OVERRIDE уводит письма всех экспонентов
+  // в тестовый ящик, и узнаём мы об этом последними: жаловаться некому,
+  // человек просто не получает код входа.
+  const r = describeEnv({ ...FULL, PORTAL_MAIL_OVERRIDE: 'tests@example.invalid' });
+  expect(r.aktiveUmleitungen).toEqual(['PORTAL_MAIL_OVERRIDE']);
+  // Это не поломка конфигурации: ok остаётся true, решает человек.
+  expect(r.ok).toBe(true);
+});
+
+test('оба переопределения видны одновременно', () => {
+  const r = describeEnv({
+    ...FULL,
+    PORTAL_MAIL_OVERRIDE: 'tests@example.invalid',
+    PORTAL_NOTIFY_EMAIL: 'assistant@creox.ch',
+  });
+  expect(r.aktiveUmleitungen).toEqual(['PORTAL_MAIL_OVERRIDE', 'PORTAL_NOTIFY_EMAIL']);
+});
+
+test('адрес переопределения наружу не отдаётся', () => {
+  // Адрес получателя — тоже чужие данные, а health открыт без сессии.
+  const serialized = JSON.stringify(
+    describeEnv({ ...FULL, PORTAL_NOTIFY_EMAIL: 'assistant@creox.ch' })
+  );
+  expect(serialized).toContain('PORTAL_NOTIFY_EMAIL');
+  expect(serialized).not.toContain('assistant@creox.ch');
+});
+
+test('пустое переопределение не считается включённым', () => {
+  expect(describeEnv({ ...FULL, PORTAL_MAIL_OVERRIDE: '  ' }).aktiveUmleitungen).toEqual([]);
+});

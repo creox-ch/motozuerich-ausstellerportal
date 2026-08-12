@@ -22,6 +22,8 @@ export async function GET() {
       service: 'ausstellerportal',
       missingRequired: env.missingRequired,
       missingOptional: env.missingOptional,
+      // Какие почтовые переопределения включены прямо сейчас. Имена, не адреса.
+      aktiveUmleitungen: env.aktiveUmleitungen,
     },
     { status: env.ok ? 200 : 503 }
   );
