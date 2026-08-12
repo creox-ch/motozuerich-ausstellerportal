@@ -41,7 +41,7 @@
 | | |
 |---|---|
 | Вход экспонента | почта → код из письма (Supabase Auth + Resend) |
-| Кабинет | Übersicht, Hallenplan, Firmenprofil, Technik & Service, Marketing, Dokumente & Rechnungen |
+| Кабинет | Übersicht, Hallenplan, Firmenprofil, Technik & Service, Marketing, Dokumente & Rechnungen, Nachrichten |
 | Витрина | публичный план залов, 43 площадки, заявка на площадь |
 | Админка Messeleitung | заявки, компании, доступы, статусы площадок |
 | Юридические страницы | Datenschutz и Impressum — **черновики**, в футере |
@@ -71,10 +71,14 @@
 
 - ~~план залов внутри кабинета~~ ✅ 12.08 — `/portal/hallenplan`
 - ~~Dokumente & Rechnungen~~ ✅ 12.08 — `/portal/dokumente` + `/admin/dokumente`
-- **Nachrichten** — переписка с Messeleitung (админка для ответов уже есть)
+- ~~Nachrichten~~ ✅ 12.08 — `/portal/nachrichten` + `/admin/nachrichten`
 
-Вне кабинета: уведомление заявителю о статусе заявки, ограничение частоты
-на публичной форме, мониторинг ошибок на проде.
+Внутрянка, которую можно построить без выдуманных данных, построена. Остальные
+разделы кабинета ждут либо данных от Ксении (сроки, квоты, цены, документы),
+либо вычитки Datenschutz (Ausweise).
+
+Вне кабинета не заблокировано: уведомление заявителю о статусе заявки,
+ограничение частоты на публичной форме, мониторинг ошибок на проде.
 
 ## Что нельзя делать до вычитки Datenschutz
 

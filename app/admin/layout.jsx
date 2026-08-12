@@ -37,6 +37,9 @@ export default async function AdminLayout({ children }) {
           <a href="/admin/dokumente" style={S.link} className="tap">
             Dokumente
           </a>
+          <a href="/admin/nachrichten" style={S.link} className="tap">
+            Nachrichten
+          </a>
         </nav>
         <div style={S.who}>
           <span style={S.email}>{staff.email}</span>
