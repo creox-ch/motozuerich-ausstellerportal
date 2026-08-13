@@ -1,6 +1,9 @@
 -- Цены на площади. Запускать ПОСЛЕ supabase/schema.sql.
 --
--- Источник: `Preise_Leistungen.xlsx` от Messeleitung, 13.08.2026.
+-- Источник: `Preise_Leistungen.xlsx` от Messeleitung, файл от 13.08.2026.
+-- **Цены за сезон 2027** — подтверждено Ксенией 13.08. В файле встречается
+-- подпись «2026», она относится к прошлогодней справке, а не к этим суммам.
+--
 -- Суммы НЕТТО, без НДС — так они и стоят в прайсе («Preis exkl. MwSt.»).
 -- Хранятся в раппенах, как везде на платформе: 100 = 1.00 CHF.
 --
@@ -42,29 +45,29 @@ values ('alle', null, 'pauschal', null, 'CHF', 'Запасное правило:
 on conflict (gilt_fuer, coalesce(schluessel, '')) do nothing;
 
 insert into public.mz_preise (gilt_fuer, schluessel, modell, betrag_rappen, waehrung, notiz) values
-  ('stand', 'D01', 'pauschal', 1340000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D02', 'pauschal',  845000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D03', 'pauschal', 1340000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D04', 'pauschal',  428000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D05', 'pauschal',  428000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D06', 'pauschal',  845000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D07', 'pauschal',  845000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D08', 'pauschal',  400000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D09', 'pauschal',  400000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D10', 'pauschal',  680000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D11', 'pauschal',  680000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D12', 'pauschal',  564000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D13', 'pauschal',  564000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D14', 'pauschal',  845000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D15', 'pauschal',  400000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D16', 'pauschal',  400000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D17', 'pauschal',  496000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D18', 'pauschal', 1340000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D19', 'pauschal', 1257500, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D20', 'pauschal',  680000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D21', 'pauschal', 1092500, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D22', 'pauschal',  680000, 'CHF', 'Preisliste 13.08.2026, netto'),
-  ('stand', 'D23', 'pauschal',  680000, 'CHF', 'Preisliste 13.08.2026, netto')
+  ('stand', 'D01', 'pauschal', 1340000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D02', 'pauschal',  845000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D03', 'pauschal', 1340000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D04', 'pauschal',  428000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D05', 'pauschal',  428000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D06', 'pauschal',  845000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D07', 'pauschal',  845000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D08', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D09', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D10', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D11', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D12', 'pauschal',  564000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D13', 'pauschal',  564000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D14', 'pauschal',  845000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D15', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D16', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D17', 'pauschal',  496000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D18', 'pauschal', 1340000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D19', 'pauschal', 1257500, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D20', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D21', 'pauschal', 1092500, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D22', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'D23', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)')
 on conflict (gilt_fuer, coalesce(schluessel, '')) do update set
   modell        = excluded.modell,
   betrag_rappen = excluded.betrag_rappen,
