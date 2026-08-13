@@ -1,5 +1,11 @@
 import { supabaseAdmin } from '../../lib/supabase';
-import { formatPrice, loadPriceRules, priceFor } from '../../lib/pricing';
+import {
+  formatPrice,
+  leistungenInklusive,
+  loadPriceRules,
+  priceFor,
+  PREIS_NETTO_HINWEIS,
+} from '../../lib/pricing';
 import HallPlan from './hall-plan';
 import SiteFooter from '../site-footer';
 
@@ -40,11 +46,15 @@ export default async function HallenplanPage() {
   const [{ data: stands }, rules] = await Promise.all([
     supabaseAdmin
       .from('mz_stands')
-      .select('id, halle, lage, breite_m, tiefe_m, flaeche_m2, pos_x, pos_y, status')
+      .select(
+        'id, halle, lage, breite_m, tiefe_m, flaeche_m2, pos_x, pos_y, status, gaeste_karten, aussteller_karten'
+      )
       .order('id'),
     loadPriceRules(),
   ]);
 
+  // Цену и состав услуг считаем на сервере: правила ценообразования наружу
+  // не выносим, клиенту незачем знать, что почём считается.
   const withPrice = (stands || []).map((s) => ({
     ...s,
     breite_m: Number(s.breite_m),
@@ -52,6 +62,8 @@ export default async function HallenplanPage() {
     pos_x: Number(s.pos_x),
     pos_y: Number(s.pos_y),
     preis: formatPrice(priceFor(s, rules)),
+    preisHinweis: PREIS_NETTO_HINWEIS,
+    inklusive: leistungenInklusive(s.halle),
   }));
 
   const hallen = [...new Set(withPrice.map((s) => s.halle))];

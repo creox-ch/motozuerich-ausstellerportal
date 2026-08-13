@@ -166,7 +166,13 @@ function StandDetail({ stand }) {
           label="Preis"
           value={
             stand.preis ? (
-              stand.preis
+              <>
+                {stand.preis}
+                {/* Пометка про НДС стоит вплотную к сумме, а не сноской внизу:
+                    цена без неё читается как итоговая, и счёт потом
+                    оказывается больше. */}
+                <span style={S.netto}> {stand.preisHinweis}</span>
+              </>
             ) : (
               // Та же пометка, что в прототипе: красным помечено то, что
               // внутри ещё не определено. Правдоподобное число здесь было бы
@@ -175,7 +181,24 @@ function StandDetail({ stand }) {
             )
           }
         />
+        {stand.aussteller_karten != null && (
+          <Row label="Ausstellerausweise" value={stand.aussteller_karten} />
+        )}
+        {stand.gaeste_karten != null && (
+          <Row label="Gästekarten" value={stand.gaeste_karten} />
+        )}
       </dl>
+
+      {stand.preis && stand.inklusive?.length > 0 && (
+        <>
+          <p style={S.inklusiveTitel}>Im Preis enthalten</p>
+          <ul style={S.inklusive}>
+            {stand.inklusive.map((leistung) => (
+              <li key={leistung}>{leistung}</li>
+            ))}
+          </ul>
+        </>
+      )}
 
       {!stand.preis && (
         <p style={S.hint}>Die Preise für die Ausgabe 2027 werden noch festgelegt.</p>
@@ -239,6 +262,9 @@ const S = {
   dt: { color: 'var(--muted)', margin: 0, fontSize: 13 },
   dd: { margin: 0, fontWeight: 600, textAlign: 'right', fontSize: 13 },
   xx: { color: '#A32A25', fontWeight: 700 },
+  netto: { color: 'var(--muted)', fontWeight: 400, fontSize: 11 },
+  inklusiveTitel: { fontSize: 12, color: 'var(--muted)', margin: '14px 0 4px', fontWeight: 600 },
+  inklusive: { margin: 0, paddingLeft: 16, fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 },
   muted: { color: 'var(--muted)', fontSize: 13, margin: 0 },
   hint: { fontSize: 12, color: 'var(--muted)', marginTop: 12 },
   button: { marginTop: 16, width: '100%', padding: '11px 14px', border: 0, borderRadius: 3, background: 'var(--blue)', color: '#fff', fontWeight: 600, cursor: 'pointer' },

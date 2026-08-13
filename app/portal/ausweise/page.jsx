@@ -25,6 +25,19 @@ export default async function AusweisePage() {
   const session = await requirePageCompany();
   const stands = await standsOfCompany(session.companyId);
 
+  // Контингенты входят в цену площадки и заданы поштучно. Считаем по всем
+  // площадкам компании: у неё может быть вторая площадь или стенд в другом зале.
+  // Пустое значение хотя бы у одной площадки означает «сумма неизвестна» —
+  // тогда честнее показать XX, чем занизить.
+  const summe = (feld) => {
+    if (stands.length === 0) return null;
+    if (stands.some((s) => s[feld] === null || s[feld] === undefined)) return null;
+    return stands.reduce((n, s) => n + Number(s[feld]), 0);
+  };
+
+  const ausweise = summe('aussteller_karten');
+  const gaeste = summe('gaeste_karten');
+
   return (
     <>
       <h1 style={S.h1}>Ausweise &amp; Tickets</h1>
@@ -56,13 +69,14 @@ export default async function AusweisePage() {
             <Kv label="Ihre Fläche" wert={stands.length > 0 ? formatSize(stands[0]) : '—'} />
             <Kv
               label="Kontingent Ausweise"
-              wert={<span style={S.xx}>XX</span>}
-              hinweis="abhängig von der Standfläche"
+              wert={ausweise === null ? <span style={S.xx}>XX</span> : ausweise}
+              hinweis="im Standpreis enthalten"
             />
           </dl>
           <p style={S.hint}>
-            Die Formel für das Kontingent steht noch nicht fest. Sobald sie da ist, sehen
-            Sie hier Ihre konkrete Zahl.
+            {ausweise === null
+              ? 'Das Kontingent für Ihre Fläche ist noch nicht hinterlegt. Sobald es da ist, sehen Sie hier Ihre konkrete Zahl.'
+              : 'Zusätzliche Ausweise sind auf Anfrage möglich — schreiben Sie uns über Nachrichten.'}
           </p>
         </section>
 
@@ -73,7 +87,11 @@ export default async function AusweisePage() {
             Ticketshop.
           </p>
           <dl style={S.dl}>
-            <Kv label="Kontingent" wert={<span style={S.xx}>XX</span>} />
+            <Kv
+              label="Kontingent"
+              wert={gaeste === null ? <span style={S.xx}>XX</span> : gaeste}
+              hinweis={gaeste === null ? undefined : 'im Standpreis enthalten'}
+            />
             <Kv label="Gültig" wert="19.–21.02.2027" />
           </dl>
           <p style={S.hint}>

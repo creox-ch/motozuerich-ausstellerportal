@@ -197,9 +197,21 @@ create table if not exists public.mz_stands (
              constraint mz_stands_status_check
              check (status in ('frei', 'reserviert', 'vergeben', 'gesperrt')),
   company_id uuid references public.mz_companies(id) on delete set null,
+
+  -- Контингенты входят в цену площадки и задаются поштучно: формулы от площади
+  -- у Messeleitung нет, две площадки одного размера могут иметь разные квоты.
+  gaeste_karten     int,
+  aussteller_karten int,
+
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Колонки добавлены после первого применения схемы: на существующей базе
+-- create table if not exists их не создаст.
+alter table public.mz_stands
+  add column if not exists gaeste_karten     int,
+  add column if not exists aussteller_karten int;
 
 comment on table public.mz_stands is
   'Каталог площадок с геометрией для плана залов. Идентификаторы как на плане: D09, H14.';
