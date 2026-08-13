@@ -1,4 +1,6 @@
+import { cookies } from 'next/headers';
 import { supabaseAdmin } from '../../lib/supabase';
+import { PREIS_COOKIE } from '../../lib/preisgate';
 import {
   formatPrice,
   leistungenInklusive,
@@ -7,6 +9,7 @@ import {
   PREIS_NETTO_HINWEIS,
 } from '../../lib/pricing';
 import HallPlan from './hall-plan';
+import OffeneAnfrage from './offene-anfrage';
 import SiteFooter from '../site-footer';
 
 export const dynamic = 'force-dynamic';
@@ -43,6 +46,11 @@ export const metadata = {
  * а что за место.
  */
 export default async function HallenplanPage() {
+  // Открыты ли цены этому посетителю. Решает сервер: цена не должна попасть
+  // в разметку до того, как оставлен контакт. Гейт, прячущий цену стилями,
+  // обходится за две секунды и злит ровно того покупателя, который нам нужен.
+  const preiseFrei = Boolean(cookies().get(PREIS_COOKIE)?.value);
+
   const [{ data: stands }, rules] = await Promise.all([
     supabaseAdmin
       .from('mz_stands')
@@ -55,15 +63,22 @@ export default async function HallenplanPage() {
 
   // Цену и состав услуг считаем на сервере: правила ценообразования наружу
   // не выносим, клиенту незачем знать, что почём считается.
+  //
+  // Пока контакт не оставлен, поля цены не заполняются ВОВСЕ — не скрываются,
+  // а отсутствуют. Иначе сумма уедет в HTML и гейт станет декорацией.
   const withPrice = (stands || []).map((s) => ({
     ...s,
     breite_m: Number(s.breite_m),
     tiefe_m: Number(s.tiefe_m),
     pos_x: Number(s.pos_x),
     pos_y: Number(s.pos_y),
-    preis: formatPrice(priceFor(s, rules)),
-    preisHinweis: PREIS_NETTO_HINWEIS,
-    inklusive: leistungenInklusive(s.halle),
+    ...(preiseFrei
+      ? {
+          preis: formatPrice(priceFor(s, rules)),
+          preisHinweis: PREIS_NETTO_HINWEIS,
+          inklusive: leistungenInklusive(s.halle),
+        }
+      : {}),
   }));
 
   const hallen = [...new Set(withPrice.map((s) => s.halle))];
@@ -89,12 +104,21 @@ export default async function HallenplanPage() {
         {withPrice.length === 0 ? (
           <p style={S.lead}>Der Hallenplan wird gerade vorbereitet.</p>
         ) : (
-          <HallPlan stands={withPrice} hallen={hallen} />
+          <HallPlan stands={withPrice} hallen={hallen} preiseFrei={preiseFrei} />
         )}
 
+        <section style={S.weitere}>
+          <h2 style={S.h2}>Halle 550 und StageOne</h2>
+          <p style={S.weitereText}>
+            Die Pläne dieser Hallen werden derzeit finalisiert. Flächen sind vorhanden —
+            sagen Sie uns, was Sie brauchen, und wir melden uns mit passenden Vorschlägen,
+            sobald die Aufteilung steht.
+          </p>
+          <OffeneAnfrage />
+        </section>
+
         <p style={S.foot}>
-          StageOne wird ergänzt, sobald der Plan freigegeben ist. Bereits angemeldet?{' '}
-          <a href="/">Zum Ausstellerportal</a>
+          Bereits angemeldet? <a href="/">Zum Ausstellerportal</a>
         </p>
       </div>
       <SiteFooter />
@@ -111,4 +135,14 @@ const S = {
   h1: { fontSize: 26, letterSpacing: '-0.6px', margin: '0 0 6px', fontWeight: 700 },
   lead: { color: 'var(--muted)', margin: '0 0 22px', maxWidth: '68ch' },
   foot: { marginTop: 26, fontSize: 13, color: 'var(--muted)' },
+  weitere: {
+    marginTop: 30,
+    background: '#fff',
+    border: '1px solid var(--line)',
+    borderRadius: 3,
+    padding: '18px 20px',
+    maxWidth: 680,
+  },
+  h2: { fontSize: 16, margin: '0 0 8px', fontWeight: 700 },
+  weitereText: { color: 'var(--muted)', fontSize: 14, margin: '0 0 14px', maxWidth: '62ch' },
 };

@@ -11,7 +11,7 @@ import { ANFRAGE_STATUS, COMPANY_STATUS } from '../../lib/admin';
  * идентификатором, скопированным глазами, — опечатка в нём пускала человека
  * в кабинет чужой компании, и ничто этого не ловило.
  */
-export default function AdminClient({ anfragen, companies, zugaenge }) {
+export default function AdminClient({ anfragen, companies, zugaenge, kontakte = [] }) {
   const [message, setMessage] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -65,9 +65,18 @@ export default function AdminClient({ anfragen, companies, zugaenge }) {
                       {a.telefon ? ` · ${a.telefon}` : ''}
                     </div>
                     {a.nachricht && <div style={S.small}>{a.nachricht}</div>}
+                    {/* Квалификация: с этими строками первый звонок начинается
+                        предметно, а не с «расскажите, чем вы занимаетесь». */}
+                    {(a.kategorie || a.marken?.length > 0) && (
+                      <div style={S.small}>
+                        {a.kategorie || '—'}
+                        {a.marken?.length > 0 ? ` · ${a.marken.join(', ')}` : ''}
+                      </div>
+                    )}
                     <div style={S.small}>
-                      {a.stand_id ? `Fläche ${a.stand_id}` : 'ohne Fläche'} ·{' '}
+                      {a.stand_id ? `Fläche ${a.stand_id}` : `Zone: ${a.zone || 'ohne Angabe'}`} ·{' '}
                       {new Date(a.created_at).toLocaleDateString('de-CH')}
+                      {a.marketing_consent ? ' · Newsletter' : ''}
                     </div>
                   </td>
                   <td style={{ ...S.td, width: 190 }}>
@@ -104,6 +113,44 @@ export default function AdminClient({ anfragen, companies, zugaenge }) {
                       >
                         Firma anlegen
                       </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      <section style={S.card}>
+        <h2 style={S.h2}>
+          Preisanfragen <span style={S.count}>{kontakte.length}</span>
+        </h2>
+        {kontakte.length === 0 ? (
+          <p style={S.muted}>Noch niemand hat die Preise angefordert.</p>
+        ) : (
+          <table style={S.table}>
+            <tbody>
+              {kontakte.map((k) => (
+                <tr key={k.id}>
+                  <td style={S.td}>
+                    <b>{k.firma || '—'}</b>
+                    <div style={S.small}>{k.email}</div>
+                    <div style={S.small}>
+                      {k.stand_id ? `Fläche ${k.stand_id}` : 'ohne Fläche'} ·{' '}
+                      {new Date(k.created_at).toLocaleDateString('de-CH')}
+                      {k.marketing_consent ? ' · Newsletter' : ''}
+                    </div>
+                  </td>
+                  <td style={{ ...S.td, width: 150, textAlign: 'right' }}>
+                    {/* Кто оставил почту и не дошёл до заявки — самый тёплый
+                        список для звонка: интерес уже есть. */}
+                    {k.anfrage_id ? (
+                      <span style={S.small}>Anfrage gestellt</span>
+                    ) : (
+                      <a href={`mailto:${k.email}`} style={S.mail}>
+                        nachfassen
+                      </a>
                     )}
                   </td>
                 </tr>
@@ -277,6 +324,7 @@ const S = {
   td: { padding: '10px 0', borderBottom: '1px solid var(--line)', verticalAlign: 'top', fontSize: 14 },
   small: { fontSize: 12, color: 'var(--muted)', marginTop: 2 },
   muted: { fontSize: 13, color: 'var(--muted)', margin: 0 },
+  mail: { fontSize: 13, fontWeight: 600, color: 'var(--blue)' },
   row: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' },
   input: { padding: '9px 11px', border: '1px solid var(--line)', borderRadius: 3, minHeight: 44 },
   btn: {

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import AnfrageForm from './anfrage-form';
+import PreisGate from './preis-gate';
 
 /**
  * План залов. Рисуется из каталога площадок в базе — тех же данных, что
@@ -10,7 +11,7 @@ import AnfrageForm from './anfrage-form';
  * Координаты и размеры в метрах по обеим осям, поэтому масштаб один и план
  * не сплющен. В прототипе ширина масштабировалась, а глубина нет.
  */
-export default function HallPlan({ stands, hallen }) {
+export default function HallPlan({ stands, hallen, preiseFrei = false }) {
   const [halle, setHalle] = useState(hallen[0] || 'Halle D');
   const [selectedId, setSelectedId] = useState(null);
   const [nurFrei, setNurFrei] = useState(false);
@@ -130,7 +131,7 @@ export default function HallPlan({ stands, hallen }) {
 
       <aside style={S.panel}>
         {selected ? (
-          <StandDetail stand={selected} />
+          <StandDetail stand={selected} preiseFrei={preiseFrei} />
         ) : (
           <>
             <h2 style={S.h2}>Fläche wählen</h2>
@@ -144,7 +145,7 @@ export default function HallPlan({ stands, hallen }) {
   );
 }
 
-function StandDetail({ stand }) {
+function StandDetail({ stand, preiseFrei }) {
   const [open, setOpen] = useState(false);
   const frei = stand.status === 'frei';
 
@@ -162,25 +163,29 @@ function StandDetail({ stand }) {
         <Row label="Lage" value={stand.lage || '—'} />
         <Row label="Format" value={`${stand.breite_m} × ${stand.tiefe_m} m`} />
         <Row label="Fläche" value={`${Math.round(Number(stand.flaeche_m2))} m²`} />
-        <Row
-          label="Preis"
-          value={
-            stand.preis ? (
-              <>
-                {stand.preis}
-                {/* Пометка про НДС стоит вплотную к сумме, а не сноской внизу:
-                    цена без неё читается как итоговая, и счёт потом
-                    оказывается больше. */}
-                <span style={S.netto}> {stand.preisHinweis}</span>
-              </>
-            ) : (
-              // Та же пометка, что в прототипе: красным помечено то, что
-              // внутри ещё не определено. Правдоподобное число здесь было бы
-              // хуже честного пропуска — его читают как предложение.
-              <span style={S.xx}>XX</span>
-            )
-          }
-        />
+        {/* Пока контакт не оставлен, строки цены нет вовсе — ни суммы,
+            ни заглушки. Место для неё занимает форма ниже. */}
+        {preiseFrei && (
+          <Row
+            label="Preis"
+            value={
+              stand.preis ? (
+                <>
+                  {stand.preis}
+                  {/* Пометка про НДС стоит вплотную к сумме, а не сноской внизу:
+                      цена без неё читается как итоговая, и счёт потом
+                      оказывается больше. */}
+                  <span style={S.netto}> {stand.preisHinweis}</span>
+                </>
+              ) : (
+                // Та же пометка, что в прототипе: красным помечено то, что
+                // внутри ещё не определено. Правдоподобное число здесь было бы
+                // хуже честного пропуска — его читают как предложение.
+                <span style={S.xx}>XX</span>
+              )
+            }
+          />
+        )}
         {stand.aussteller_karten != null && (
           <Row label="Ausstellerausweise" value={stand.aussteller_karten} />
         )}
@@ -188,6 +193,8 @@ function StandDetail({ stand }) {
           <Row label="Gästekarten" value={stand.gaeste_karten} />
         )}
       </dl>
+
+      {!preiseFrei && <PreisGate stand={stand} />}
 
       {stand.preis && stand.inklusive?.length > 0 && (
         <>
@@ -200,7 +207,7 @@ function StandDetail({ stand }) {
         </>
       )}
 
-      {!stand.preis && (
+      {preiseFrei && !stand.preis && (
         <p style={S.hint}>Die Preise für die Ausgabe 2027 werden noch festgelegt.</p>
       )}
 

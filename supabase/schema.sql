@@ -345,6 +345,17 @@ create table if not exists public.mz_anfragen (
   consent      boolean not null default false
                constraint mz_anfragen_consent_check check (consent = true),
 
+  -- Согласие на рассылку — ОТДЕЛЬНОЕ от согласия на обработку заявки.
+  -- Швейцарский UWG Art. 3 Abs. 1 lit. o: «обработайте мою заявку» не даёт
+  -- права слать маркетинг. Одна галочка на оба смысла означала бы либо
+  -- нарушение, либо невозможность написать этим людям позже.
+  marketing_consent boolean not null default false,
+
+  -- Квалификация лида: с этими полями первый звонок начинается предметно.
+  kategorie    text,
+  zone         text,
+  marken       text[] not null default '{}',
+
   status       text not null default 'neu'
                constraint mz_anfragen_status_check
                check (status in ('neu', 'in_bearbeitung', 'offeriert',
@@ -355,8 +366,60 @@ create table if not exists public.mz_anfragen (
   quelle       jsonb
 );
 
+-- Колонки добавлены после первого применения схемы.
+alter table public.mz_anfragen
+  add column if not exists marketing_consent boolean not null default false,
+  add column if not exists kategorie text,
+  add column if not exists zone text,
+  add column if not exists marken text[] not null default '{}';
+
 comment on table public.mz_anfragen is
   'Заявки на площадь с публичной страницы плана залов. Автор ещё не экспонент: ни учётной записи, ни компании в базе у него нет.';
+comment on column public.mz_anfragen.kategorie is
+  'Категория каталога. Тот же список, что в кабинете — lib/profile.js KATEGORIEN.';
+comment on column public.mz_anfragen.zone is
+  'Желаемая зона. Главное поле, когда площадка не выбрана: без него непонятно, что предлагать.';
+comment on column public.mz_anfragen.marken is
+  'Бренды, которые экспонент привезёт. Вводятся через запятую, разбирает сервер.';
+
+-- ---------------------------------------------------------------------------
+-- Почта в обмен на показ цен
+-- ---------------------------------------------------------------------------
+
+-- Отдельно от mz_anfragen намеренно: человек ещё ничего не просил, он только
+-- смотрел. Свалив это в заявки, мы утопим настоящие обращения в тех, кто
+-- полюбопытствовал, и Messeleitung перестанет читать список.
+create table if not exists public.mz_preis_interesse (
+  id         uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+
+  email      text not null,
+  -- В B2B название компании квалифицирует лид сильнее адреса: info@ не говорит
+  -- ни о чём, а «Hostettler Moto AG» говорит всё.
+  firma      text,
+  stand_id   text references public.mz_stands(id) on delete set null,
+
+  consent    boolean not null default false
+             constraint mz_preis_interesse_consent_check check (consent = true),
+  marketing_consent boolean not null default false,
+
+  quelle     jsonb,
+
+  -- Дошёл ли этот человек до заявки. Вся воронка, какая нам нужна.
+  anfrage_id uuid references public.mz_anfragen(id) on delete set null
+);
+
+comment on table public.mz_preis_interesse is
+  'Почта в обмен на показ цен. Не заявка: человек только смотрел. Источник аудитории для Messeleitung.';
+comment on column public.mz_preis_interesse.marketing_consent is
+  'Отдельное согласие на новости. false = писать можно только по его обращению.';
+
+create index if not exists mz_preis_interesse_email_idx on public.mz_preis_interesse (email);
+create index if not exists mz_preis_interesse_zeit_idx on public.mz_preis_interesse (created_at desc);
+
+alter table public.mz_preis_interesse
+  add column if not exists firma text,
+  add column if not exists marketing_consent boolean not null default false;
 comment on column public.mz_anfragen.consent is
   'Ограничение допускает только true: заявка без согласия не сохраняется в принципе.';
 comment on column public.mz_anfragen.company_id is
@@ -877,6 +940,7 @@ alter table public.mz_stands              enable row level security;
 alter table public.mz_preise              enable row level security;
 alter table public.mz_stand_requests      enable row level security;
 alter table public.mz_anfragen            enable row level security;
+alter table public.mz_preis_interesse     enable row level security;
 alter table public.mz_service_katalog     enable row level security;
 alter table public.mz_service_auftraege   enable row level security;
 alter table public.mz_service_positionen  enable row level security;
@@ -906,6 +970,7 @@ revoke truncate on
   public.mz_preise,
   public.mz_stand_requests,
   public.mz_anfragen,
+  public.mz_preis_interesse,
   public.mz_service_katalog,
   public.mz_service_auftraege,
   public.mz_service_positionen,
