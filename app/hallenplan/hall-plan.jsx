@@ -19,13 +19,22 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
   const visible = useMemo(() => stands.filter((s) => s.halle === halle), [stands, halle]);
   const selected = visible.find((s) => s.id === selectedId) || null;
 
+  // Зал может продаваться без чертежа: площадки, цены и размеры известны,
+  // а разметка ещё не готова. Тогда показываем список — он и на телефоне
+  // основной способ выбора, так что теряется только картинка.
+  const gezeichnet = useMemo(
+    () => visible.filter((s) => s.pos_x !== null && s.pos_y !== null),
+    [visible]
+  );
+  const hatPlan = gezeichnet.length > 0;
+
   const box = useMemo(() => {
-    if (visible.length === 0) return { w: 70, h: 30 };
+    if (gezeichnet.length === 0) return { w: 70, h: 30 };
     return {
-      w: Math.max(...visible.map((s) => s.pos_x + s.breite_m)) + 2,
-      h: Math.max(...visible.map((s) => s.pos_y + s.tiefe_m)) + 2,
+      w: Math.max(...gezeichnet.map((s) => s.pos_x + s.breite_m)) + 2,
+      h: Math.max(...gezeichnet.map((s) => s.pos_y + s.tiefe_m)) + 2,
     };
-  }, [visible]);
+  }, [gezeichnet]);
 
   return (
     <div className="split">
@@ -51,17 +60,25 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
           </label>
         </div>
 
+        {!hatPlan && (
+          <p style={S.ohnePlan}>
+            Der Hallenplan wird derzeit finalisiert. Flächen, Grössen und Preise stehen
+            fest — wählen Sie unten eine Fläche aus.
+          </p>
+        )}
+
         {/* План — визуальный слой, поэтому он скрыт от вспомогательных
             технологий целиком. Доступное управление — список площадок ниже:
             иначе каждая площадка объявлялась бы дважды, а из плана ещё и
             без размера. Мышью план по-прежнему кликается. */}
+        {hatPlan && (
         <svg
           viewBox={`-1 -1 ${box.w} ${box.h}`}
           style={S.svg}
           aria-hidden="true"
           focusable="false"
         >
-          {visible.map((s) => {
+          {gezeichnet.map((s) => {
             const frei = s.status === 'frei';
             const dim = nurFrei && !frei ? 0.25 : 1;
             return (
@@ -92,6 +109,7 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
             );
           })}
         </svg>
+        )}
 
         <div style={S.legend}>
           {Object.entries(STATUS_TEXT).map(([key, label]) => (
@@ -160,8 +178,13 @@ function StandDetail({ stand, preiseFrei }) {
 
       <dl style={{ margin: 0 }}>
         <Row label="Halle" value={stand.halle} />
-        <Row label="Lage" value={stand.lage || '—'} />
-        <Row label="Format" value={`${stand.breite_m} × ${stand.tiefe_m} m`} />
+        {stand.lage && <Row label="Lage" value={stand.lage} />}
+        {/* Размеров может не быть: в прайсе у части площадок указана только
+            площадь. Строку тогда не рисуем вовсе — «null × null m» хуже
+            отсутствия. */}
+        {stand.breite_m != null && stand.tiefe_m != null && (
+          <Row label="Format" value={`${stand.breite_m} × ${stand.tiefe_m} m`} />
+        )}
         <Row label="Fläche" value={`${Math.round(Number(stand.flaeche_m2))} m²`} />
         {/* Пока контакт не оставлен, строки цены нет вовсе — ни суммы,
             ни заглушки. Место для неё занимает форма ниже. */}
@@ -259,6 +282,15 @@ const S = {
   tabOn: { background: 'var(--ink)', color: '#fff', borderColor: 'var(--ink)', fontWeight: 600 },
   filter: { marginLeft: 'auto', fontSize: 13, color: 'var(--muted)', display: 'flex', gap: 6, alignItems: 'center' },
   svg: { width: '100%', background: '#fff', border: '1px solid var(--line)', borderRadius: 3 },
+  ohnePlan: {
+    background: '#fff',
+    border: '1px solid var(--line)',
+    borderRadius: 3,
+    padding: '13px 15px',
+    fontSize: 13,
+    color: 'var(--muted)',
+    margin: 0,
+  },
   legend: { display: 'flex', gap: 16, marginTop: 10, fontSize: 12, color: 'var(--muted)', flexWrap: 'wrap' },
   legendItem: { display: 'flex', alignItems: 'center', gap: 6 },
   dot: { width: 12, height: 12, borderRadius: 2, border: '1px solid #B9C7DB', display: 'inline-block' },

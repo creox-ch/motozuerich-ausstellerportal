@@ -38,7 +38,27 @@
 -- значит его нет и у нас.
 --
 -- ---------------------------------------------------------------------------
--- Halle 550 и StageOne — площадок нет, и это намеренно
+-- Halle 550 — продаётся списком, без чертежа
+-- ---------------------------------------------------------------------------
+--
+-- 24 площадки из прайса 2027. Координат нет намеренно: план зала не размечен,
+-- а рисовать его по спорной нумерации нельзя. Витрина показывает такой зал
+-- списком — на телефоне это и так основной способ выбора, теряется только
+-- картинка.
+--
+-- Взята **нумерация прайса**: к ней привязаны цены, а цена — это то, что
+-- экспонент видит и по чему принимает решение. Нумерация плана расходится
+-- с ней на H20–H27 (см. ниже) и должна быть подтверждена до договоров.
+--
+-- H24 и H26 идут без размеров: в прайсе у них указана только площадь
+-- (20 и 120 м²). Стороны не выдумываем.
+--
+-- H04 закрыт (`gesperrt`): в прайсе это свободная площадка 7×5, а на плане
+-- он подписан «Grill / BBQ». Пока Messeleitung не скажет, продаётся ли он,
+-- бронировать нельзя — но и прятать не за что.
+
+-- ---------------------------------------------------------------------------
+-- StageOne — площадок нет, и это намеренно
 -- ---------------------------------------------------------------------------
 --
 -- Двадцать выдуманных площадок Halle 550, оставшихся от прототипа, удалены
@@ -98,7 +118,30 @@ values
   ('D20', 'Halle D', null,  5, 8, 14.9, 14.0, 20, 6),
   ('D21', 'Halle D', null, 13, 5, 10.4,  6.0, 35, 8),
   ('D22', 'Halle D', null,  5, 8, 10.0, 14.0, 20, 6),
-  ('D23', 'Halle D', null,  5, 8,  2.0, 13.6, 20, 6)
+  ('D23', 'Halle D', null,  5, 8,  2.0, 13.6, 20, 6),
+
+  -- Halle 550 — без координат: зал продаётся списком.
+  ('H01', 'Halle 550', null,  8, 3, null, null, 20, 4),
+  ('H02', 'Halle 550', null,  7, 4, null, null, 20, 4),
+  ('H03', 'Halle 550', null,  5, 4, null, null, 20, 3),
+  ('H05', 'Halle 550', null,  7, 5, null, null, 20, 4),
+  ('H06', 'Halle 550', null,  5, 4, null, null, 20, 3),
+  ('H07', 'Halle 550', null,  7, 3, null, null, 20, 4),
+  ('H10', 'Halle 550', null,  4, 5, null, null, 20, 3),
+  ('H11', 'Halle 550', null,  5, 5, null, null, 20, 4),
+  ('H12', 'Halle 550', null,  6, 8, null, null, 20, 6),
+  ('H13', 'Halle 550', null,  5, 5, null, null, 20, 4),
+  ('H14', 'Halle 550', null,  5, 5, null, null, 20, 4),
+  ('H15', 'Halle 550', null,  5, 8, null, null, 20, 6),
+  ('H16', 'Halle 550', null,  5, 8, null, null, 20, 6),
+  ('H17', 'Halle 550', null, 13, 5, null, null, 35, 8),
+  ('H18', 'Halle 550', null, 10, 7, null, null, 35, 8),
+  ('H19', 'Halle 550', null,  5, 4, null, null, 20, 3),
+  ('H20', 'Halle 550', null,  5, 3, null, null, 10, 3),
+  ('H21', 'Halle 550', null,  7, 7, null, null, 20, 6),
+  ('H22', 'Halle 550', null, 10, 7, null, null, 35, 8),
+  ('H23', 'Halle 550', null, 10, 6, null, null, 35, 8),
+  ('H25', 'Halle 550', null,  5, 8, null, null, 20, 6)
 on conflict (id) do update set
   halle             = excluded.halle,
   lage              = excluded.lage,
@@ -106,5 +149,29 @@ on conflict (id) do update set
   tiefe_m           = excluded.tiefe_m,
   pos_x             = excluded.pos_x,
   pos_y             = excluded.pos_y,
+  gaeste_karten     = excluded.gaeste_karten,
+  aussteller_karten = excluded.aussteller_karten;
+
+-- Три особые площадки Halle 550.
+--
+-- H24 и H26 — без размеров: в прайсе указана только площадь. Триггер
+-- mz_stands_flaeche считает площадь из сторон, когда они есть; здесь их нет,
+-- поэтому значение задаётся напрямую.
+--
+-- H04 заводится закрытым: в прайсе это свободная площадка 7×5, на плане —
+-- «Grill / BBQ». `status` намеренно НЕ входит в do update: начальное значение
+-- ставим мы, дальше им распоряжается Messeleitung, и повторный прогон файла
+-- не должен закрывать площадку заново.
+insert into public.mz_stands
+  (id, halle, breite_m, tiefe_m, flaeche_m2, gaeste_karten, aussteller_karten, status)
+values
+  ('H04', 'Halle 550',    7,    5, null,  20,  4, 'gesperrt'),
+  ('H24', 'Halle 550', null, null,   20,  20,  3, 'frei'),
+  ('H26', 'Halle 550', null, null,  120,  50, 10, 'frei')
+on conflict (id) do update set
+  halle             = excluded.halle,
+  breite_m          = excluded.breite_m,
+  tiefe_m           = excluded.tiefe_m,
+  flaeche_m2        = excluded.flaeche_m2,
   gaeste_karten     = excluded.gaeste_karten,
   aussteller_karten = excluded.aussteller_karten;

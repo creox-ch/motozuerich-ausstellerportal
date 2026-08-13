@@ -188,11 +188,15 @@ create table if not exists public.mz_stands (
              constraint mz_stands_halle_check
              check (halle in ('Halle D', 'Halle 550', 'StageOne')),
   lage       text,
-  breite_m   numeric(5,2) not null,
-  tiefe_m    numeric(5,2) not null,
-  flaeche_m2 numeric(7,2) generated always as (breite_m * tiefe_m) stored,
-  pos_x      numeric(6,2) not null,
-  pos_y      numeric(6,2) not null,
+
+  -- Всё это может быть пустым, и каждый случай реален:
+  --   размеров нет — в прайсе у части площадок указана только площадь;
+  --   координат нет — зал продаётся списком, пока план не размечен.
+  breite_m   numeric(5,2),
+  tiefe_m    numeric(5,2),
+  flaeche_m2 numeric(7,2),
+  pos_x      numeric(6,2),
+  pos_y      numeric(6,2),
   status     text not null default 'frei'
              constraint mz_stands_status_check
              check (status in ('frei', 'reserviert', 'vergeben', 'gesperrt')),
@@ -224,6 +228,35 @@ comment on column public.mz_stands.pos_x is
 
 create index if not exists mz_stands_status_idx on public.mz_stands (status);
 create index if not exists mz_stands_company_idx on public.mz_stands (company_id);
+
+-- Колонки стали необязательными после первого применения схемы, а flaeche_m2
+-- перестала быть генерируемой: у площадки без размеров площадь всё равно
+-- известна, и генерируемая колонка обнуляла бы её.
+alter table public.mz_stands
+  alter column pos_x    drop not null,
+  alter column pos_y    drop not null,
+  alter column breite_m drop not null,
+  alter column tiefe_m  drop not null;
+
+-- Площадь при этом не может разойтись с размерами: когда они известны,
+-- она считается из них, а не вводится руками.
+create or replace function public.mz_stands_flaeche()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if new.breite_m is not null and new.tiefe_m is not null then
+    new.flaeche_m2 = new.breite_m * new.tiefe_m;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists mz_stands_flaeche on public.mz_stands;
+create trigger mz_stands_flaeche
+  before insert or update on public.mz_stands
+  for each row execute function public.mz_stands_flaeche();
 
 drop trigger if exists mz_stands_touch on public.mz_stands;
 create trigger mz_stands_touch

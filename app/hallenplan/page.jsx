@@ -66,12 +66,17 @@ export default async function HallenplanPage() {
   //
   // Пока контакт не оставлен, поля цены не заполняются ВОВСЕ — не скрываются,
   // а отсутствуют. Иначе сумма уедет в HTML и гейт станет декорацией.
+  // Number(null) равен нулю, а не NaN. Без этой отсечки площадка без размеров
+  // превратилась бы в «0 × 0 m», а зал без плана — в кучу прямоугольников
+  // в левом верхнем углу. Та же ловушка, что уже ловил тест на соседей.
+  const zahl = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+
   const withPrice = (stands || []).map((s) => ({
     ...s,
-    breite_m: Number(s.breite_m),
-    tiefe_m: Number(s.tiefe_m),
-    pos_x: Number(s.pos_x),
-    pos_y: Number(s.pos_y),
+    breite_m: zahl(s.breite_m),
+    tiefe_m: zahl(s.tiefe_m),
+    pos_x: zahl(s.pos_x),
+    pos_y: zahl(s.pos_y),
     ...(preiseFrei
       ? {
           preis: formatPrice(priceFor(s, rules)),
@@ -108,11 +113,10 @@ export default async function HallenplanPage() {
         )}
 
         <section style={S.weitere}>
-          <h2 style={S.h2}>Halle 550 und StageOne</h2>
+          <h2 style={S.h2}>StageOne</h2>
           <p style={S.weitereText}>
-            Die Pläne dieser Hallen werden derzeit finalisiert. Flächen sind vorhanden —
-            sagen Sie uns, was Sie brauchen, und wir melden uns mit passenden Vorschlägen,
-            sobald die Aufteilung steht.
+            Der Plan für StageOne wird derzeit finalisiert. Flächen sind vorhanden —
+            sagen Sie uns, was Sie brauchen, und wir melden uns mit passenden Vorschlägen.
           </p>
           <OffeneAnfrage />
         </section>

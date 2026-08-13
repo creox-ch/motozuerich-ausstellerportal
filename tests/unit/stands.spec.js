@@ -28,6 +28,17 @@ test('пустая площадка не роняет страницу', () => {
   expect(formatSize(undefined)).toBe('');
 });
 
+test('без размеров показываем одну площадь, а не «null × null»', () => {
+  // В прайсе у части площадок Halle 550 указана только площадь: H24 — 20 м²,
+  // H26 — 120 м². Стороны неизвестны, и выдумывать их нельзя.
+  expect(formatSize({ breite_m: null, tiefe_m: null, flaeche_m2: 20 })).toBe('20 m²');
+  expect(formatSize({ flaeche_m2: '120.00' })).toBe('120 m²');
+});
+
+test('без размеров и без площади — пустая строка, а не мусор', () => {
+  expect(formatSize({ breite_m: null, tiefe_m: null, flaeche_m2: null })).toBe('');
+});
+
 /**
  * Unit: соседи на плане кабинета.
  *

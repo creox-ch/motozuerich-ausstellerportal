@@ -29,10 +29,9 @@
 -- Чего здесь пока нет
 -- ---------------------------------------------------------------------------
 --
--- Halle 550 и StageOne. Цены на них в прайсе есть, но каталог площадок для них
--- ещё не настоящий (см. supabase/seed-stands.sql), а привязывать цену к
--- выдуманной площадке бессмысленно. Правило `alle` с пустой суммой оставлено
--- запасным: для площадок без своей цены интерфейс покажет красное XX.
+-- StageOne. Цены в прайсе есть, но каталога площадок нет: не размечен зал.
+-- Правило `alle` с пустой суммой оставлено запасным — для площадок без своей
+-- цены интерфейс покажет красное XX.
 --
 -- Идемпотентно: повторный запуск переписывает суммы. Здесь это правильно —
 -- в отличие от статуса площадки, цену никто не правит мимо этого файла,
@@ -67,7 +66,33 @@ insert into public.mz_preise (gilt_fuer, schluessel, modell, betrag_rappen, waeh
   ('stand', 'D20', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
   ('stand', 'D21', 'pauschal', 1092500, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
   ('stand', 'D22', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
-  ('stand', 'D23', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)')
+  ('stand', 'D23', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+
+  -- Halle 550. Ключ — номер из прайса: к нему привязана цена.
+  ('stand', 'H01', 'pauschal',  428000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H02', 'pauschal',  496000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H03', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H04', 'pauschal',  615000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H05', 'pauschal',  615000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H06', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H07', 'pauschal',  377000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H10', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H11', 'pauschal',  445000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H12', 'pauschal',  812000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H13', 'pauschal',  445000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H14', 'pauschal',  445000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H15', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H16', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H17', 'pauschal', 1092500, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H18', 'pauschal', 1175000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H19', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H20', 'pauschal',  305000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H21', 'pauschal',  828500, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H22', 'pauschal', 1175000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H23', 'pauschal', 1010000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H24', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H25', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'H26', 'pauschal', 2000000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)')
 on conflict (gilt_fuer, coalesce(schluessel, '')) do update set
   modell        = excluded.modell,
   betrag_rappen = excluded.betrag_rappen,
