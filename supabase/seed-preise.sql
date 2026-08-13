@@ -26,12 +26,12 @@
 -- и никакая формула не будет с ней спорить.
 --
 -- ---------------------------------------------------------------------------
--- Чего здесь пока нет
+-- Полнота
 -- ---------------------------------------------------------------------------
 --
--- StageOne. Цены в прайсе есть, но каталога площадок нет: не размечен зал.
--- Правило `alle` с пустой суммой оставлено запасным — для площадок без своей
--- цены интерфейс покажет красное XX.
+-- Здесь цены на ВСЕ 108 площадок трёх залов. Правило `alle` с пустой суммой
+-- оставлено запасным: если завтра появится площадка без своей цены,
+-- интерфейс покажет красное XX, а не чужую сумму.
 --
 -- Идемпотентно: повторный запуск переписывает суммы. Здесь это правильно —
 -- в отличие от статуса площадки, цену никто не правит мимо этого файла,
@@ -92,7 +92,70 @@ insert into public.mz_preise (gilt_fuer, schluessel, modell, betrag_rappen, waeh
   ('stand', 'H23', 'pauschal', 1010000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
   ('stand', 'H24', 'pauschal',  400000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
   ('stand', 'H25', 'pauschal',  680000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
-  ('stand', 'H26', 'pauschal', 2000000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)')
+  ('stand', 'H26', 'pauschal', 2000000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+
+  -- StageOne. Kubus по 225 CHF/м², Showroom по 192 — наценка за место.
+  ('stand', 'Kubus 1', 'pauschal', 1215000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Kubus 2', 'pauschal', 1215000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Kubus 3', 'pauschal', 1215000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Kubus 4', 'pauschal', 1215000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 1A', 'pauschal',  828000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 1B', 'pauschal',  362000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 2',  'pauschal', 1406000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 3',  'pauschal',  293000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 4',  'pauschal',  157000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 5',  'pauschal',  371000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 6',  'pauschal',  224000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 7',  'pauschal',  156500, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 8A', 'pauschal',  157000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 8B', 'pauschal',  389000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 9',  'pauschal',  225000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 10', 'pauschal',  157000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 11', 'pauschal',  572000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 12', 'pauschal',  225000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Galerie 13', 'pauschal',  157000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 1',   'pauschal',  572000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 2',   'pauschal',  176000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 2B',  'pauschal',  195000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 2C',  'pauschal',  897000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 3',   'pauschal',  545000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 4',   'pauschal',  410000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 5',   'pauschal',  197000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche E5A', 'pauschal',  254000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 6',   'pauschal',  458000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 7',   'pauschal',  457000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 8',   'pauschal',  264000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 9',   'pauschal',  361000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 10',  'pauschal',  225000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 11',  'pauschal',  490000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 12',  'pauschal',  545000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 13',  'pauschal',  632000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 14A', 'pauschal',  825000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 14B', 'pauschal',  920000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 15A', 'pauschal', 1640000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 15B', 'pauschal', 1690000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 16A', 'pauschal',  198000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 16B', 'pauschal',  137000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 17',  'pauschal',  570000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 18',  'pauschal',  835000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche E19', 'pauschal',  492000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 20',  'pauschal', 1690000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 21',  'pauschal',  835000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 22',  'pauschal', 2120000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 23',  'pauschal',  835000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 23 Erweiterung', 'pauschal', 371000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 24',  'pauschal',  633000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Fläche 25',  'pauschal', 1620000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 1',  'pauschal', 1109000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 2',  'pauschal',  960000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 3',  'pauschal', 1267000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 4',  'pauschal', 1584000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 5',  'pauschal', 1267000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 6',  'pauschal', 1267000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 7',  'pauschal', 1267000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 8',  'pauschal', 1267000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 9',  'pauschal', 1267000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)'),
+  ('stand', 'Showroom 10', 'pauschal', 1267000, 'CHF', 'Preisliste 2027, netto (Datei vom 13.08.2026)')
 on conflict (gilt_fuer, coalesce(schluessel, '')) do update set
   modell        = excluded.modell,
   betrag_rappen = excluded.betrag_rappen,

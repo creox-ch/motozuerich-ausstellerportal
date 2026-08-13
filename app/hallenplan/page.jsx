@@ -113,10 +113,10 @@ export default async function HallenplanPage() {
         )}
 
         <section style={S.weitere}>
-          <h2 style={S.h2}>StageOne</h2>
+          <h2 style={S.h2}>Nichts Passendes gefunden?</h2>
           <p style={S.weitereText}>
-            Der Plan für StageOne wird derzeit finalisiert. Flächen sind vorhanden —
-            sagen Sie uns, was Sie brauchen, und wir melden uns mit passenden Vorschlägen.
+            Sagen Sie uns, was Sie brauchen — Fläche, Zone, Budget. Wir melden uns mit
+            passenden Vorschlägen, auch wenn die gewünschte Fläche gerade belegt ist.
           </p>
           <OffeneAnfrage />
         </section>

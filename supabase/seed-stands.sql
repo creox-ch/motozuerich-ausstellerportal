@@ -58,16 +58,34 @@
 -- бронировать нельзя — но и прятать не за что.
 
 -- ---------------------------------------------------------------------------
--- StageOne — площадок нет, и это намеренно
+-- StageOne — 61 площадка списком, без чертежа
+-- ---------------------------------------------------------------------------
+--
+-- Ни у одной нет ни координат, ни сторон: в прайсе указана только площадь,
+-- а плана зала не существует. Идентификаторы взяты как в прайсе — «Kubus 1»,
+-- «Galerie 8A», «Fläche E19», «Showroom 3»: именно так их называют между собой
+-- Messeleitung и экспонент, и переименовывать в K1/G8A значит заводить второй
+-- язык для одного и того же.
+--
+-- **Занятость перенесена из прайса как есть**: 55 площадок из 61 заняты,
+-- свободны только Galerie 1B, 9, 10, 12, 13 и Fläche 1. Названий компаний
+-- в базе нет — mz_stands их не хранит, а на витрине они не показываются
+-- ни при каких условиях. Кто где стоит, остаётся в прайсе; связать площадку
+-- с компанией — отдельная задача (D3 в бэклоге).
+--
+-- Статус здесь начальный: дальше им распоряжается Messeleitung, поэтому
+-- в do update он не входит.
+
+-- ---------------------------------------------------------------------------
+-- Про нумерацию Halle 550
 -- ---------------------------------------------------------------------------
 --
 -- Двадцать выдуманных площадок Halle 550, оставшихся от прототипа, удалены
--- 13.08.2026. Причина: витрина открывается для настоящих продаж, а человек,
--- выбравший несуществующую площадку, создаёт работу Messeleitung и портит
--- первое впечатление о выставке.
+-- 13.08.2026 и заменены настоящими. Причина замены: витрина открывается для
+-- продаж, а человек, выбравший несуществующую площадку, создаёт работу
+-- Messeleitung и портит первое впечатление о выставке.
 --
--- Реальные данные пока брать нельзя, но расхождение уже, чем казалось.
--- Сверка плана с прайсом построчно (13.08):
+-- Взята нумерация прайса. Сверка плана с прайсом построчно (13.08):
 --
 --   H01–H19 совпадают полностью.
 --   H20–H27 расходятся НУМЕРАЦИЕЙ, а не размерами: набор размеров одинаковый
@@ -77,8 +95,8 @@
 --   H08 и H09 в прайсе отсутствуют правильно: на плане это Food Zone и BAR.
 --
 -- То есть геометрия зала, похоже, в порядке — нужно подтверждение нумерации,
--- той самой, что пойдёт в договоры. Как только она придёт, зал заводится
--- за полчаса: размеры, цены и контингенты уже есть.
+-- той самой, что пойдёт в договоры. Если она окажется планной, поменяются
+-- только идентификаторы восьми площадок.
 --
 -- StageOne: список площадок есть (Kubus, Galerie, Fläche, Showroom с ценами
 -- и контингентами), но нет ни одной координаты — зал не нарисовать.
@@ -167,7 +185,70 @@ insert into public.mz_stands
 values
   ('H04', 'Halle 550',    7,    5, null,  20,  4, 'gesperrt'),
   ('H24', 'Halle 550', null, null,   20,  20,  3, 'frei'),
-  ('H26', 'Halle 550', null, null,  120,  50, 10, 'frei')
+  ('H26', 'Halle 550', null, null,  120,  50, 10, 'frei'),
+
+  -- StageOne: ни координат, ни сторон — только площадь. Занятость из прайса.
+  ('Kubus 1',               'StageOne', null, null,  54, 50, 15, 'vergeben'),
+  ('Kubus 2',               'StageOne', null, null,  54, 50, 15, 'vergeben'),
+  ('Kubus 3',               'StageOne', null, null,  54, 50, 15, 'vergeben'),
+  ('Kubus 4',               'StageOne', null, null,  54, 50,  6, 'vergeben'),
+  ('Galerie 1A',            'StageOne', null, null,  49, 20,  6, 'vergeben'),
+  ('Galerie 1B',            'StageOne', null, null, 17.5, 10, 3, 'frei'),
+  ('Galerie 2',             'StageOne', null, null,  84, 50,  0, 'vergeben'),
+  ('Galerie 3',             'StageOne', null, null,  14, 10,  0, 'vergeben'),
+  ('Galerie 4',             'StageOne', null, null,   7, 10,  2, 'vergeben'),
+  ('Galerie 5',             'StageOne', null, null,  18, 20,  3, 'vergeben'),
+  ('Galerie 6',             'StageOne', null, null, 10.5, 10, 0, 'vergeben'),
+  ('Galerie 7',             'StageOne', null, null,   7, 10,  0, 'vergeben'),
+  ('Galerie 8A',            'StageOne', null, null,   7, 10,  2, 'vergeben'),
+  ('Galerie 8B',            'StageOne', null, null,  21, 20,  4, 'vergeben'),
+  ('Galerie 9',             'StageOne', null, null, 10.5, 10, 3, 'frei'),
+  ('Galerie 10',            'StageOne', null, null,   7, 20,  2, 'frei'),
+  ('Galerie 11',            'StageOne', null, null, 31.5, 20, 4, 'vergeben'),
+  ('Galerie 12',            'StageOne', null, null, 10.5, 10, 3, 'frei'),
+  ('Galerie 13',            'StageOne', null, null,   7, 10,  2, 'frei'),
+  ('Fläche 1',              'StageOne', null, null, 31.5, 20, 4, 'frei'),
+  ('Fläche 2',              'StageOne', null, null,   8, 10,  2, 'vergeben'),
+  ('Fläche 2B',             'StageOne', null, null,   9, 10,  2, 'vergeben'),
+  ('Fläche 2C',             'StageOne', null, null,  45, 20,  6, 'vergeben'),
+  ('Fläche 3',              'StageOne', null, null,  30, 20,  4, 'vergeben'),
+  ('Fläche 4',              'StageOne', null, null,  20, 20,  3, 'vergeben'),
+  ('Fläche 5',              'StageOne', null, null,   9, 10,  2, 'vergeben'),
+  ('Fläche E5A',            'StageOne', null, null,  12, 10,  3, 'vergeben'),
+  ('Fläche 6',              'StageOne', null, null,  25, 20,  4, 'vergeben'),
+  ('Fläche 7',              'StageOne', null, null,  25, 20,  4, 'vergeben'),
+  ('Fläche 8',              'StageOne', null, null, 12.5, 10, 3, 'vergeben'),
+  ('Fläche 9',              'StageOne', null, null, 17.5, 10, 3, 'vergeben'),
+  ('Fläche 10',             'StageOne', null, null, 10.5, 10, 3, 'vergeben'),
+  ('Fläche 11',             'StageOne', null, null,  27, 20,  4, 'vergeben'),
+  ('Fläche 12',             'StageOne', null, null,  30, 20,  4, 'vergeben'),
+  ('Fläche 13',             'StageOne', null, null,  35, 20,  6, 'vergeben'),
+  ('Fläche 14A',            'StageOne', null, null,  50, 20,  6, 'vergeben'),
+  ('Fläche 14B',            'StageOne', null, null,  55, 35,  6, 'vergeben'),
+  ('Fläche 15A',            'StageOne', null, null, 100, 50, 10, 'vergeben'),
+  ('Fläche 15B',            'StageOne', null, null, 100, 50, 10, 'vergeben'),
+  ('Fläche 16A',            'StageOne', null, null,   9, 10,  2, 'vergeben'),
+  ('Fläche 16B',            'StageOne', null, null,   6, 10,  2, 'vergeben'),
+  ('Fläche 17',             'StageOne', null, null,  32, 20,  0, 'vergeben'),
+  ('Fläche 18',             'StageOne', null, null,  50, 20,  0, 'vergeben'),
+  ('Fläche E19',            'StageOne', null, null,  27, 20,  4, 'vergeben'),
+  ('Fläche 20',             'StageOne', null, null, 103.5, 50, 10, 'vergeben'),
+  ('Fläche 21',             'StageOne', null, null,  50, 20,  6, 'vergeben'),
+  ('Fläche 22',             'StageOne', null, null, 130, 50, 12, 'vergeben'),
+  ('Fläche 23',             'StageOne', null, null,  50, 20,  0, 'vergeben'),
+  ('Fläche 23 Erweiterung', 'StageOne', null, null,  18, 20,  0, 'vergeben'),
+  ('Fläche 24',             'StageOne', null, null,  35, 50,  4, 'vergeben'),
+  ('Fläche 25',             'StageOne', null, null,  98, 50, 10, 'vergeben'),
+  ('Showroom 1',            'StageOne', null, null, 57.75, 35, 10, 'vergeben'),
+  ('Showroom 2',            'StageOne', null, null, 49.5, 20, 0, 'vergeben'),
+  ('Showroom 3',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
+  ('Showroom 4',            'StageOne', null, null, 82.5, 50, 0, 'vergeben'),
+  ('Showroom 5',            'StageOne', null, null,  66, 35, 12, 'vergeben'),
+  ('Showroom 6',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
+  ('Showroom 7',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
+  ('Showroom 8',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
+  ('Showroom 9',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
+  ('Showroom 10',           'StageOne', null, null,  66, 35,  8, 'vergeben')
 on conflict (id) do update set
   halle             = excluded.halle,
   breite_m          = excluded.breite_m,
