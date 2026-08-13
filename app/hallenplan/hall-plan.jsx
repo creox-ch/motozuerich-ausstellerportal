@@ -3,6 +3,13 @@
 import { useMemo, useState } from 'react';
 import AnfrageForm from './anfrage-form';
 import PreisGate from './preis-gate';
+import {
+  STAND_RAHMEN,
+  STATUS_FARBE,
+  STATUS_TEXT,
+  statusFarbe,
+  statusText,
+} from '../../lib/stand-status';
 
 /**
  * План залов. Рисуется из каталога площадок в базе — тех же данных, что
@@ -93,8 +100,8 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
                   y={s.pos_y}
                   width={s.breite_m}
                   height={s.tiefe_m}
-                  fill={FILL[s.status] || '#E7EDF6'}
-                  stroke={s.id === selectedId ? '#0E1E37' : '#B9C7DB'}
+                  fill={statusFarbe(s.status)}
+                  stroke={s.id === selectedId ? '#0E1E37' : STAND_RAHMEN}
                   strokeWidth={s.id === selectedId ? 0.35 : 0.12}
                 />
                 <text
@@ -114,7 +121,7 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
         <div style={S.legend}>
           {Object.entries(STATUS_TEXT).map(([key, label]) => (
             <span key={key} style={S.legendItem}>
-              <span style={{ ...S.dot, background: FILL[key] }} /> {label}
+              <span style={{ ...S.dot, background: STATUS_FARBE[key] }} /> {label}
             </span>
           ))}
         </div>
@@ -133,10 +140,10 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
                   aria-pressed={s.id === selectedId}
                   // Статус в подписи: из содержимого кнопки он не читается,
                   // цвет кружка вспомогательной технологии ничего не говорит.
-                  aria-label={`Stand ${s.id}, ${STATUS_TEXT[s.status] || s.status}, ${Math.round(Number(s.flaeche_m2))} Quadratmeter`}
+                  aria-label={`Stand ${s.id}, ${statusText(s.status)}, ${Math.round(Number(s.flaeche_m2))} Quadratmeter`}
                   onClick={() => setSelectedId(s.id)}
                 >
-                  <span style={{ ...S.dot, background: FILL[s.status], flex: '0 0 auto' }} />
+                  <span style={{ ...S.dot, background: statusFarbe(s.status), flex: '0 0 auto' }} />
                   <b>{s.id}</b>
                   <span style={{ color: 'var(--muted)', marginLeft: 'auto' }}>
                     {Math.round(Number(s.flaeche_m2))} m²
@@ -171,8 +178,8 @@ function StandDetail({ stand, preiseFrei }) {
     <>
       <h2 style={S.h2}>
         Stand {stand.id}{' '}
-        <span style={{ ...S.badge, background: FILL[stand.status] }}>
-          {STATUS_TEXT[stand.status] || stand.status}
+        <span style={{ ...S.badge, background: statusFarbe(stand.status) }}>
+          {statusText(stand.status)}
         </span>
       </h2>
 
@@ -262,19 +269,6 @@ function Row({ label, value }) {
   );
 }
 
-const STATUS_TEXT = {
-  frei: 'frei',
-  reserviert: 'reserviert',
-  vergeben: 'vergeben',
-  gesperrt: 'nicht buchbar',
-};
-
-const FILL = {
-  frei: '#DDF0E4',
-  reserviert: '#FBF1D2',
-  vergeben: '#E7EAEF',
-  gesperrt: '#D8DDE5',
-};
 
 const S = {
   tabs: { display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' },
@@ -293,7 +287,7 @@ const S = {
   },
   legend: { display: 'flex', gap: 16, marginTop: 10, fontSize: 12, color: 'var(--muted)', flexWrap: 'wrap' },
   legendItem: { display: 'flex', alignItems: 'center', gap: 6 },
-  dot: { width: 12, height: 12, borderRadius: 2, border: '1px solid #B9C7DB', display: 'inline-block' },
+  dot: { width: 12, height: 12, borderRadius: 2, border: `1px solid ${STAND_RAHMEN}`, display: 'inline-block' },
   panel: { background: '#fff', border: '1px solid var(--line)', borderRadius: 3, padding: '18px 20px' },
   h2: { fontSize: 16, margin: '0 0 12px', fontWeight: 700 },
   badge: { fontSize: 11, padding: '2px 7px', borderRadius: 2, fontWeight: 600, marginLeft: 4 },
