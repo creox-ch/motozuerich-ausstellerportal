@@ -80,13 +80,22 @@ create table if not exists public.mz_companies (
 );
 
 comment on table public.mz_companies is
-  'Компании-экспоненты. Заводятся вручную Ивом и Ксенией по мере продажи стендов.';
+  'Компании-экспоненты. Заводятся вручную Ивом и Ксенией по мере продажи стендов; 44 участника 2027 перенесены с публичного плана — supabase/import-aussteller-2027.sql.';
+comment on column public.mz_companies.name is
+  'Название компании. Уникально: справочник выставки, двух одинаковых быть не может.';
 comment on column public.mz_companies.status is
   'interessent → angemeldet → bestaetigt. abgesagt — отказались или сняты.';
 comment on column public.mz_companies.beschreibung is
   'Описание для каталога, до 300 знаков. Длину проверяет приложение, не база: обрезать текст человеку по дороге нельзя, ему нужно сообщение об ошибке.';
 comment on column public.mz_companies.logo_path is
   'Ключ файла в Supabase Storage, не публичная ссылка. Отдаём подписанной ссылкой на короткий срок.';
+
+-- Две компании с одинаковым названием в справочнике одной выставки — ошибка
+-- данных, а не законный случай. Индекс нужен и практически: без него повторный
+-- запуск импорта экспонентов заводил бы дубликаты, а «on conflict (name)»
+-- требует уникальности.
+create unique index if not exists mz_companies_name_key
+  on public.mz_companies (name);
 
 drop trigger if exists mz_companies_touch on public.mz_companies;
 create trigger mz_companies_touch
