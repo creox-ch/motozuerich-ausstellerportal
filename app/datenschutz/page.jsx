@@ -29,8 +29,10 @@ export default function DatenschutzPage() {
 
       <h2 style={S.h2}>Verantwortlich</h2>
       <p style={S.p}>
-        Vollenweider &amp; Schweizer GmbH, Baden. Kontakt für Datenschutzanliegen:{' '}
-        <a href="mailto:yves@motozuerich.ch">yves@motozuerich.ch</a>
+        Creox GmbH, Grabenstrasse 15b, 6340 Baar (ZG), Schweiz.
+        <br />
+        Kontakt für Datenschutzanliegen:{' '}
+        <a href="mailto:team@motozuerich.ch">team@motozuerich.ch</a>
       </p>
 
       <h2 style={S.h2}>Welche Daten wir bearbeiten</h2>

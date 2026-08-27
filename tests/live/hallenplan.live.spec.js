@@ -4,8 +4,8 @@ import { test, expect } from '@playwright/test';
  * E2E: публичный план залов.
  *
  * Страница читает каталог из базы, поэтому в тестах смотрим на то, что от
- * данных не зависит: раскладку, доступность площадок для выбора и честную
- * пометку вместо неизвестной цены.
+ * данных не зависит: раскладку, доступность площадок для выбора и то, что
+ * цена не утекает в разметку до оставленного контакта.
  *
  * Мобильная проверка здесь не для галочки: у выставки 71% трафика с телефонов
  * (разбор сезона 2026). Первая версия страницы на 375px была нерабочей —
@@ -31,13 +31,43 @@ test('выбор площадки открывает карточку с раз�
   await expect(page.getByText('Format')).toBeVisible();
 });
 
-test('пока цена не задана — показываем XX, а не число', async ({ page }) => {
-  // Правдоподобная сумма читается как предложение и переживает запуск
-  // незамеченной. Пустое место человека тоже не устраивает — поэтому XX.
-  await page.goto('/hallenplan');
+test('без контакта цены нет ни на экране, ни в разметке', async ({ page }) => {
+  // Главный тест витрины. Гейт, прячущий цену стилями, обходится за две
+  // секунды — поэтому проверяем тело ответа, а не видимость. Раньше здесь
+  // ожидалось «XX»: тогда цен в базе не было вовсе. Теперь они есть у всех
+  // 109 площадок, и до контакта строки цены не должно быть вообще.
+  const antwort = await page.goto('/hallenplan');
+  const html = await antwort.text();
+  // Формат сумм в портале — 13'400 с апострофом; ищем любую такую.
+  expect(html, 'сумма не должна попадать в разметку').not.toMatch(/\d['’]\d{3}/);
+  expect(html).not.toContain('exkl. MwSt.');
+
   await page.getByRole('button', { name: /^Stand D01/ }).click();
-  await expect(page.getByText('XX', { exact: true })).toBeVisible();
-  await expect(page.getByText(/Preise für die Ausgabe 2027 werden noch festgelegt/)).toBeVisible();
+  // Вместо цены — форма обмена контакта на цену.
+  await expect(page.getByRole('button', { name: 'Preise anzeigen' })).toBeVisible();
+});
+
+test('все три зала показаны планом, а не списком', async ({ page }) => {
+  // Геометрия перенесена с публичного плана 27.08. До этого 550 и StageOne
+  // продавались списком, и «плана нет» было нормой — теперь это регресс.
+  await page.goto('/hallenplan');
+
+  for (const halle of ['Halle D', 'Halle 550', 'StageOne']) {
+    await page.getByRole('button', { name: halle, exact: true }).click();
+    const rechtecke = page.locator('svg rect');
+    await expect(rechtecke.first()).toBeVisible();
+    expect(await rechtecke.count(), `${halle}: план не нарисован`).toBeGreaterThan(20);
+  }
+});
+
+test('площадка без места на плане остаётся в списке', async ({ page }) => {
+  // «Fläche 18» и «Fläche 23 Erweiterung» на публичном плане отсутствуют.
+  // Молча их не показать значит соврать про размер зала.
+  await page.goto('/hallenplan');
+  await page.getByRole('button', { name: 'StageOne', exact: true }).click();
+
+  await expect(page.getByRole('button', { name: /^Stand Fläche 18/ })).toBeVisible();
+  await expect(page.getByText(/noch nicht eingezeichnet/)).toBeVisible();
 });
 
 test('форма заявки требует согласия и ведёт на Datenschutz', async ({ page }) => {
@@ -48,7 +78,12 @@ test('форма заявки требует согласия и ведёт на
   const consent = page.getByRole('checkbox', { name: /einverstanden/ });
   await expect(consent).not.toBeChecked(); // заранее проставленная галочка согласием не является
   await expect(consent).toHaveAttribute('required', '');
-  await expect(page.getByRole('link', { name: /Datenschutz/ })).toHaveAttribute('href', '/datenschutz');
+  // Именно ссылка ИЗ ФОРМЫ, а не из футера: их на странице три, и общий
+  // поиск по /Datenschutz/ падал на strict mode. Согласие без доступной
+  // отсюда политики согласием не является.
+  await expect(
+    page.getByRole('link', { name: 'Datenschutzerklärung' })
+  ).toHaveAttribute('href', '/datenschutz');
 });
 
 test.describe('мобильный экран', () => {

@@ -1,6 +1,7 @@
 # Datenschutzerklärung — ЧЕРНОВИК на юридическую проверку
 
-**Статус:** написан 2026-08-11, юридической проверки не проходил.
+**Статус:** написан 2026-08-11, реквизиты контролёра исправлены 2026-08-27,
+юридической проверки не проходил.
 **Живёт на:** `/datenschutz` (страница закрыта от индексации, ниоткуда не связана).
 **Кому проверять:** Ксения совместно с юрлицом-контролёром.
 
@@ -11,11 +12,16 @@
 
 ## Что надо подтвердить или исправить перед публикацией
 
-1. **Контролёр данных.** В тексте стоит Vollenweider & Schweizer GmbH, Baden —
-   взято из карты обработчиков платформы (`handbook/reference/data-processors.md`).
-   Подтвердить, что для портала контролёр именно это юрлицо, и указать полный
-   адрес, если он обязателен.
-2. **Контактный адрес для запросов по данным** — сейчас `yves@motozuerich.ch`.
+1. ~~**Контролёр данных.**~~ Исправлено 27.08. Стояла Vollenweider & Schweizer
+   GmbH, Baden — догадка из карты обработчиков платформы, ничем не подтверждённая.
+   В Impressum сайта motozuerich.ch сказано прямо: «Die Website
+   www.motozuerich.ch **sowie die Veranstaltung MOTO-ZÜRICH** werden betrieben
+   von: **Creox GmbH**, Grabenstrasse 15b, 6340 Baar (ZG), UID CHE-169.690.018».
+   Ив Волленвайдер — Geschäftsführer Creox GmbH, отсюда и взялась фамилия
+   в прежнем названии. **Иванне: если для портала контролёр всё-таки другое
+   юрлицо — скажи, вернём.**
+2. **Контактный адрес для запросов по данным** — теперь `team@motozuerich.ch`,
+   как в Impressum сайта. Прежде стоял `yves@motozuerich.ch`.
 3. **Срок хранения.** Сейчас формулировка обтекаемая: «сколько нужно для
    проведения выставки и по закону». Точный срок и порядок удаления
    в платформе не определены ни для одного проекта, механизма удаления
@@ -70,8 +76,8 @@ Hallenplan.
 
 ## Verantwortlich
 
-Vollenweider & Schweizer GmbH, Baden.
-Kontakt für Datenschutzanliegen: yves@motozuerich.ch
+Creox GmbH, Grabenstrasse 15b, 6340 Baar (ZG), Schweiz.
+Kontakt für Datenschutzanliegen: team@motozuerich.ch
 
 ## Welche Daten wir bearbeiten
 
