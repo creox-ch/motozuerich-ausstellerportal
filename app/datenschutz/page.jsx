@@ -27,12 +27,17 @@ export default function DatenschutzPage() {
         Hallenplan.
       </p>
 
+      {/* Verantwortliche Stelle взята из Datenschutz сайта motozuerich.ch,
+          где сказано дословно: «Verantwortlich für die Datenbearbeitung
+          im Rahmen des Online-Geschäfts und der Durchführung der MOTO-ZÜRICH
+          ist: Vollenweider & Schweizer GmbH, Bäderstrasse 28 · 5400 Baden
+          (AG)». Портал — часть проведения выставки, значит контролёр тот же. */}
       <h2 style={S.h2}>Verantwortlich</h2>
       <p style={S.p}>
-        Creox GmbH, Grabenstrasse 15b, 6340 Baar (ZG), Schweiz.
+        Vollenweider &amp; Schweizer GmbH, Bäderstrasse 28, 5400 Baden (AG), Schweiz.
         <br />
         Kontakt für Datenschutzanliegen:{' '}
-        <a href="mailto:team@motozuerich.ch">team@motozuerich.ch</a>
+        <a href="mailto:yves@motozuerich.ch">yves@motozuerich.ch</a>
       </p>
 
       <h2 style={S.h2}>Welche Daten wir bearbeiten</h2>

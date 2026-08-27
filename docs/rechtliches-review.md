@@ -18,32 +18,48 @@
    они разойдутся и никто не поймёт, какая свежее.
 3. После вычитки убрать плашку «Entwurf» с обеих страниц.
 
-## ⚠️ Исправлено 27.08: в портале стояло не то юрлицо
+## ✅ Проверено 27.08: контролёр подтверждён, адрес дополнен
 
-На обеих страницах контролёром была указана **Vollenweider & Schweizer GmbH,
-Baden** — догадка из карты обработчиков платформы, помеченная как
-неподтверждённая ещё 12.08.
+Раньше здесь стояло, что «Vollenweider & Schweizer GmbH, Baden» взята из карты
+обработчиков платформы и не подтверждена. **Теперь подтверждена первоисточником.**
+Datenschutz сайта motozuerich.ch говорит дословно:
 
-Impressum сайта motozuerich.ch говорит другое и прямо про это же событие:
+> Verantwortlich für die Datenbearbeitung im Rahmen des Online-Geschäfts **und
+> der Durchführung der MOTO-ZÜRICH** ist: **Vollenweider & Schweizer GmbH,
+> Bäderstrasse 28 · 5400 Baden (AG) · Schweiz**. Kontakt: help@motozuerich.ch
 
-> Die Website www.motozuerich.ch **sowie die Veranstaltung MOTO-ZÜRICH** werden
-> betrieben von: **Creox GmbH** — Event-Marketing-Agentur, Grabenstrasse 15b,
-> 6340 Baar (ZG). Handelsregister: Sitz Baar, Kanton Zug · UID CHE-169.690.018.
-> Geschäftsführer: Yves Vollenweider (Einzelunterschrift). team@motozuerich.ch
+Портал — часть проведения выставки, значит контролёр тот же. Адрес на обеих
+страницах дополнен до полного; юрлицо и контакт не менялись.
 
-Ив Волленвайдер — Geschäftsführer Creox GmbH; похоже, отсюда фамилия и попала
-в выдуманное название. Обе страницы приведены к реквизитам сайта, контактный
-адрес заменён с `yves@` на `team@`, плашки «Entwurf» оставлены.
+## ⚠️ У выставки ДВА юрлица, и это надо развести
 
-**Иванне: если для портала контролёр всё-таки другое юрлицо — скажи, вернём
-одним коммитом.** Ошибиться тут дороже, чем переспросить.
+Разбираясь с реквизитами, наткнулись на то, что документы самого сайта называют
+разные компании в разных ролях:
+
+| Документ сайта | Юрлицо | Роль |
+|---|---|---|
+| Datenschutz | **Vollenweider & Schweizer GmbH**, Bäderstrasse 28, 5400 Baden (AG) | Verantwortliche Stelle за обработку данных и проведение выставки |
+| AGB | **Vollenweider & Schweizer GmbH** | Vertragspartei, Gerichtsstand Kanton Aargau |
+| Impressum | **Creox GmbH**, Grabenstrasse 15b, 6340 Baar (ZG), UID CHE-169.690.018 | «betreibt» сайт www.motozuerich.ch и мероприятие MOTO-ZÜRICH |
+
+Creox GmbH — агентство событийного маркетинга; Ив Волленвайдер значится
+её Geschäftsführer'ом. Похоже на разделение «кто отвечает за данные и договоры»
+против «кто ведёт сайт», но подтверждения этому у нас нет.
+
+**Вопрос юристу:** кого называть Betreiberin в Impressum **портала**?
+Сейчас там V&S — то же юрлицо, что в Datenschutz, чтобы портал не противоречил
+сам себе. Но Impressum сайта в такой же ситуации называет Creox GmbH.
+
+Это не косметика: Impressum отвечает на вопрос «кому предъявлять претензию»,
+и два разных ответа на двух сайтах одного мероприятия — сами по себе повод.
 
 ## Что именно нужно подтвердить
 
 **Общее для обеих страниц:**
-- Что контролёр для портала — та же Creox GmbH, что и для события (см. выше).
-- Номер MWST — в Impressum сайта его нет, только UID. Нужен ли он на странице.
-- Контактный адрес для запросов — сейчас `team@motozuerich.ch`.
+- Кого называть Betreiberin портала — V&S или Creox GmbH (см. выше).
+- Номер MWST для V&S — в документах сайта его нет.
+- Контактный адрес для запросов — в портале `yves@motozuerich.ch`,
+  в Datenschutz сайта `help@motozuerich.ch`. Который правильный.
 
 **Datenschutz дополнительно:**
 - Срок хранения и порядок удаления. Сейчас формулировка обтекаемая; точного

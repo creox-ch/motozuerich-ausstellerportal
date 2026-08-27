@@ -209,10 +209,11 @@ https://motozuerich-ausstellerportal.vercel.app
 - [ ] `/datenschutz` и `/impressum` открываются из футера
 - [ ] На обеих стоит пометка «Entwurf»
 - [ ] Ссылка на Datenschutz есть в обеих формах витрины
-- [ ] **Оператором на обеих страницах указана Creox GmbH**, Grabenstrasse 15b,
-      6340 Baar (ZG), UID CHE-169.690.018 — как в Impressum сайта. Прежде здесь
-      стояла «Vollenweider & Schweizer GmbH, Baden», это была ошибка.
-      **Если контролёр для портала другой — это надо поймать здесь**
+- [ ] **Контролёром на обеих страницах указана Vollenweider & Schweizer GmbH**,
+      Bäderstrasse 28, 5400 Baden (AG) — как в Datenschutz сайта. У выставки
+      два юрлица: V&S отвечает за данные и договоры, Creox GmbH по Impressum
+      сайта «betreibt» сайт и мероприятие. **Кого называть Betreiberin
+      портала — открытый вопрос к юристу**
 
 ---
 

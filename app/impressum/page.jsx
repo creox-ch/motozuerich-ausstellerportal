@@ -7,15 +7,16 @@ export const metadata = {
 /**
  * ⚠️ ЧЕРНОВИК — юридической вычитки не проходил.
  *
- * Реквизиты 27.08 приведены к Impressum сайта motozuerich.ch, где сказано прямо:
- * «Die Website www.motozuerich.ch sowie die Veranstaltung MOTO-ZÜRICH werden
- * betrieben von: Creox GmbH». До этого здесь стояла «Vollenweider & Schweizer
- * GmbH, Baden» — догадка из карты обработчиков платформы, ничем не
- * подтверждённая. Ив Волленвайдер — Geschäftsführer Creox GmbH, отсюда
- * и взялась фамилия в названии.
+ * У выставки ДВА юрлица, и это не ошибка:
+ *   Vollenweider & Schweizer GmbH, Baden (AG) — Verantwortliche Stelle
+ *     по Datenschutz сайта и Vertragspartei по AGB;
+ *   Creox GmbH, Baar (ZG) — по Impressum сайта «betreibt» сайт и мероприятие,
+ *     это агентство событийного маркетинга.
  *
- * Плашка «Entwurf» остаётся: реквизиты теперь из достоверного источника,
- * но текст страницы юрист всё ещё не читал. См. docs/rechtliches-review.md.
+ * Здесь стоит V&S — то же юрлицо, что в Datenschutz портала, чтобы портал
+ * не противоречил сам себе. Адрес 27.08 дополнен до полного из Datenschutz
+ * сайта. Кого именно называть Betreiberin ПОРТАЛА — вопрос к юристу,
+ * см. docs/rechtliches-review.md.
  */
 export default function ImpressumPage() {
   return (
@@ -29,18 +30,14 @@ export default function ImpressumPage() {
 
         <h2 style={S.h2}>Betreiberin</h2>
         <p style={S.p}>
-          Creox GmbH — Event-Marketing-Agentur
+          Vollenweider &amp; Schweizer GmbH
           <br />
-          Grabenstrasse 15b, 6340 Baar (ZG), Schweiz
-          <br />
-          Handelsregister: Sitz Baar, Kanton Zug · UID CHE-169.690.018
-          <br />
-          Geschäftsführer: Yves Vollenweider (Einzelunterschrift)
+          Bäderstrasse 28, 5400 Baden (AG), Schweiz
         </p>
 
         <h2 style={S.h2}>Kontakt</h2>
         <p style={S.p}>
-          <a href="mailto:team@motozuerich.ch">team@motozuerich.ch</a>
+          <a href="mailto:yves@motozuerich.ch">yves@motozuerich.ch</a>
         </p>
 
         <h2 style={S.h2}>Zweck dieses Portals</h2>

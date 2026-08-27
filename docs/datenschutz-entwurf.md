@@ -1,7 +1,7 @@
 # Datenschutzerklärung — ЧЕРНОВИК на юридическую проверку
 
-**Статус:** написан 2026-08-11, реквизиты контролёра исправлены 2026-08-27,
-юридической проверки не проходил.
+**Статус:** написан 2026-08-11, контролёр подтверждён и адрес дополнен
+2026-08-27, юридической проверки не проходил.
 **Живёт на:** `/datenschutz` (страница закрыта от индексации, ниоткуда не связана).
 **Кому проверять:** Ксения совместно с юрлицом-контролёром.
 
@@ -12,16 +12,18 @@
 
 ## Что надо подтвердить или исправить перед публикацией
 
-1. ~~**Контролёр данных.**~~ Исправлено 27.08. Стояла Vollenweider & Schweizer
-   GmbH, Baden — догадка из карты обработчиков платформы, ничем не подтверждённая.
-   В Impressum сайта motozuerich.ch сказано прямо: «Die Website
-   www.motozuerich.ch **sowie die Veranstaltung MOTO-ZÜRICH** werden betrieben
-   von: **Creox GmbH**, Grabenstrasse 15b, 6340 Baar (ZG), UID CHE-169.690.018».
-   Ив Волленвайдер — Geschäftsführer Creox GmbH, отсюда и взялась фамилия
-   в прежнем названии. **Иванне: если для портала контролёр всё-таки другое
-   юрлицо — скажи, вернём.**
-2. **Контактный адрес для запросов по данным** — теперь `team@motozuerich.ch`,
-   как в Impressum сайта. Прежде стоял `yves@motozuerich.ch`.
+1. ~~**Контролёр данных.**~~ Подтверждён 27.08 первоисточником. Datenschutz
+   сайта motozuerich.ch: «Verantwortlich für die Datenbearbeitung im Rahmen
+   des Online-Geschäfts **und der Durchführung der MOTO-ZÜRICH** ist:
+   **Vollenweider & Schweizer GmbH, Bäderstrasse 28 · 5400 Baden (AG)**».
+   Портал — часть проведения выставки, значит контролёр тот же. Адрес дополнен
+   до полного, юрлицо не менялось.
+2. **Контактный адрес для запросов по данным** — в портале
+   `yves@motozuerich.ch`, в Datenschutz сайта `help@motozuerich.ch`.
+   Уточнить, который правильный.
+2a. ⚠️ **У выставки два юрлица.** Impressum сайта называет Betreiberin сайта
+   и мероприятия **Creox GmbH**, Baar (ZG); Datenschutz и AGB называют
+   **V&S**, Baden. Разбор — в [`rechtliches-review.md`](rechtliches-review.md).
 3. **Срок хранения.** Сейчас формулировка обтекаемая: «сколько нужно для
    проведения выставки и по закону». Точный срок и порядок удаления
    в платформе не определены ни для одного проекта, механизма удаления
@@ -76,8 +78,8 @@ Hallenplan.
 
 ## Verantwortlich
 
-Creox GmbH, Grabenstrasse 15b, 6340 Baar (ZG), Schweiz.
-Kontakt für Datenschutzanliegen: team@motozuerich.ch
+Vollenweider & Schweizer GmbH, Bäderstrasse 28, 5400 Baden (AG), Schweiz.
+Kontakt für Datenschutzanliegen: yves@motozuerich.ch
 
 ## Welche Daten wir bearbeiten
 
