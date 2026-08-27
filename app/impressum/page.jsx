@@ -5,9 +5,17 @@ export const metadata = {
 };
 
 /**
- * ⚠️ ЧЕРНОВИК. Реквизиты взяты из карты обработчиков платформы и требуют
- * подтверждения: полное название, адрес, номер в торговом реестре, номер MWST.
- * Проверку организует Иванна — см. docs/rechtliches-review.md.
+ * ⚠️ ЧЕРНОВИК — юридической вычитки не проходил.
+ *
+ * Реквизиты 27.08 приведены к Impressum сайта motozuerich.ch, где сказано прямо:
+ * «Die Website www.motozuerich.ch sowie die Veranstaltung MOTO-ZÜRICH werden
+ * betrieben von: Creox GmbH». До этого здесь стояла «Vollenweider & Schweizer
+ * GmbH, Baden» — догадка из карты обработчиков платформы, ничем не
+ * подтверждённая. Ив Волленвайдер — Geschäftsführer Creox GmbH, отсюда
+ * и взялась фамилия в названии.
+ *
+ * Плашка «Entwurf» остаётся: реквизиты теперь из достоверного источника,
+ * но текст страницы юрист всё ещё не читал. См. docs/rechtliches-review.md.
  */
 export default function ImpressumPage() {
   return (
@@ -21,14 +29,18 @@ export default function ImpressumPage() {
 
         <h2 style={S.h2}>Betreiberin</h2>
         <p style={S.p}>
-          Vollenweider &amp; Schweizer GmbH
+          Creox GmbH — Event-Marketing-Agentur
           <br />
-          Baden, Schweiz
+          Grabenstrasse 15b, 6340 Baar (ZG), Schweiz
+          <br />
+          Handelsregister: Sitz Baar, Kanton Zug · UID CHE-169.690.018
+          <br />
+          Geschäftsführer: Yves Vollenweider (Einzelunterschrift)
         </p>
 
         <h2 style={S.h2}>Kontakt</h2>
         <p style={S.p}>
-          <a href="mailto:yves@motozuerich.ch">yves@motozuerich.ch</a>
+          <a href="mailto:team@motozuerich.ch">team@motozuerich.ch</a>
         </p>
 
         <h2 style={S.h2}>Zweck dieses Portals</h2>
