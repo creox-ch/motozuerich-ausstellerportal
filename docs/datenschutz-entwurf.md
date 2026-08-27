@@ -17,9 +17,10 @@
    В Impressum сайта motozuerich.ch сказано прямо: «Die Website
    www.motozuerich.ch **sowie die Veranstaltung MOTO-ZÜRICH** werden betrieben
    von: **Creox GmbH**, Grabenstrasse 15b, 6340 Baar (ZG), UID CHE-169.690.018».
-   Ив Волленвайдер — Geschäftsführer Creox GmbH, отсюда и взялась фамилия
-   в прежнем названии. **Иванне: если для портала контролёр всё-таки другое
-   юрлицо — скажи, вернём.**
+   **Подтверждено Иванной 27.08: Creox GmbH — новое юрлицо.** Ив Волленвайдер
+   значится её Geschäftsführer'ом, отсюда фамилия в прежнем названии.
+   ⚠️ Datenschutz и AGB самого сайта (November и Oktober 2025) прежнее юрлицо
+   ещё называют — их не обновили при смене. Impressum (Februar 2026) обновили.
 2. **Контактный адрес для запросов по данным** — теперь `team@motozuerich.ch`,
    как в Impressum сайта. Прежде стоял `yves@motozuerich.ch`.
 3. **Срок хранения.** Сейчас формулировка обтекаемая: «сколько нужно для
