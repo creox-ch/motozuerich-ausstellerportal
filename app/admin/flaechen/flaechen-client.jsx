@@ -61,7 +61,17 @@ export default function FlaechenClient({ stands, companies }) {
               <td style={S.td}>
                 <b>{s.id}</b>
                 <div style={S.small}>
-                  {s.halle} · {s.breite_m} × {s.tiefe_m} m
+                  {/* Сторон у StageOne нет — в прайсе там одна площадь.
+                      Без этой проверки в таблице стояло «null × null m». */}
+                  {s.halle}
+                  {s.breite_m != null && s.tiefe_m != null
+                    ? ` · ${s.breite_m} × ${s.tiefe_m} m`
+                    : s.flaeche_m2 != null
+                      ? ` · ${Math.round(Number(s.flaeche_m2))} m²`
+                      : ''}
+                  {/* Номер на публичном плане: чтобы Messeleitung не сверяла
+                      две нумерации по памяти. */}
+                  {s.plan_id && s.plan_id !== s.id ? ` · Plan ${s.plan_id}` : ''}
                 </div>
               </td>
               <td style={S.td}>

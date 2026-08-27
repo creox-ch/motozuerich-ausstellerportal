@@ -29,8 +29,8 @@ test('пустая площадка не роняет страницу', () => {
 });
 
 test('без размеров показываем одну площадь, а не «null × null»', () => {
-  // В прайсе у части площадок Halle 550 указана только площадь: H24 — 20 м²,
-  // H26 — 120 м². Стороны неизвестны, и выдумывать их нельзя.
+  // Реальный случай: у H27 и у всех 61 площадки StageOne в прайсе указана
+  // только площадь. Стороны неизвестны, и выдумывать их нельзя.
   expect(formatSize({ breite_m: null, tiefe_m: null, flaeche_m2: 20 })).toBe('20 m²');
   expect(formatSize({ flaeche_m2: '120.00' })).toBe('120 m²');
 });
@@ -84,7 +84,8 @@ test('допуск решает, кто сосед: за его пределам
 });
 
 test('площадка без координат не сосед и не исключение', () => {
-  // StageOne в каталоге не размечен вовсе — такие строки реальны.
+  // Такие строки реальны: «Fläche 18» и «Fläche 23 Erweiterung» на публичном
+  // плане отсутствуют, координат для них взять неоткуда.
   const ohneGeometrie = { id: 'S1', halle: 'Halle A', pos_x: null, pos_y: null, breite_m: null, tiefe_m: null };
   expect(() => nachbarn([ohneGeometrie, A2], [A1])).not.toThrow();
   expect(nachbarn([ohneGeometrie, A2], [A1]).map((s) => s.id)).toEqual(['A2']);

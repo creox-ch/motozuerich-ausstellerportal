@@ -55,7 +55,7 @@ export default async function HallenplanPage() {
     supabaseAdmin
       .from('mz_stands')
       .select(
-        'id, halle, lage, breite_m, tiefe_m, flaeche_m2, pos_x, pos_y, status, gaeste_karten, aussteller_karten'
+        'id, plan_id, halle, lage, breite_m, tiefe_m, flaeche_m2, pos_x, pos_y, plan_b, plan_t, status, gaeste_karten, aussteller_karten'
       )
       .order('id'),
     loadPriceRules(),
@@ -77,6 +77,8 @@ export default async function HallenplanPage() {
     tiefe_m: zahl(s.tiefe_m),
     pos_x: zahl(s.pos_x),
     pos_y: zahl(s.pos_y),
+    plan_b: zahl(s.plan_b),
+    plan_t: zahl(s.plan_t),
     ...(preiseFrei
       ? {
           preis: formatPrice(priceFor(s, rules)),

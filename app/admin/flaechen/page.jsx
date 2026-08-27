@@ -10,7 +10,7 @@ export default async function FlaechenPage() {
   const [{ data: stands }, { data: companies }] = await Promise.all([
     supabaseAdmin
       .from('mz_stands')
-      .select('id, halle, lage, breite_m, tiefe_m, status, company_id')
+      .select('id, plan_id, halle, lage, breite_m, tiefe_m, flaeche_m2, status, company_id')
       .order('id'),
     supabaseAdmin.from('mz_companies').select('id, name').order('name'),
   ]);
