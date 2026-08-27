@@ -1,32 +1,49 @@
 -- Каталог площадок MOTO-ZÜRICH 2027 — три зала, 109 площадок.
 --
+-- Снят с боевой базы 27.08.2026 и ей же сверен. Источник правды — база;
+-- этот файл нужен, чтобы чистый проект Supabase поднимался с тем же каталогом.
+--
 -- ---------------------------------------------------------------------------
--- Halle D — 23 площадки, план и список
+-- Два комплекта размеров, и это не дублирование
 -- ---------------------------------------------------------------------------
 --
--- Размеры, площади и контингенты карт — из `Preise_Leistungen.xlsx`
--- (лист Tabelle1, блок «Flächen HALLE D - ADVENTURE CAMP»).
--- Координаты — из `Plan_H550.pptx`: положение фигур на слайде переведено
--- в метры по масштабу 0.225 см на метр. Масштаб не подобран на глаз, а посчитан
--- как медиана отношения «нарисованная высота ÷ глубина по прайсу» по всем 23
--- площадкам. Обе проверки прошли: площадь каждой сошлась с прайсом,
--- пересечений прямоугольников нет.
+--   breite_m / tiefe_m / flaeche_m2 — ДОГОВОРНЫЕ. Из прайса
+--   `Preise_Leistungen.xlsx`, они же идут в счёт и в договор.
 --
--- ⚠️ Координаты приблизительные. В PowerPoint это положения текстовых блоков,
--- а не чертёж: у подписи есть внутренний отступ, поэтому позиция плывёт
--- на десятки сантиметров. Для «вот ваш стенд и соседи» этого достаточно,
--- для монтажных расчётов — нет.
+--   pos_x / pos_y / plan_b / plan_t — как площадка НАРИСОВАНА на публичном
+--   плане motozuerich.ch/Standflaechen. Метры, начало отсчёта у каждого зала
+--   своё.
 --
--- D10 и D11 подписаны в прайсе как «8x5», но на плане нарисованы 5 в ширину
--- и 8 в глубину. Взята ориентация с плана: он внутренне согласован, а порядок
--- чисел в подписях прайса — нет (соседние площадки той же формы подписаны «5x8»).
+-- Одно с другим местами расходится, потому что публичный план — схема, а не
+-- чертёж. Ярче всего на ярусе Galerie: там все площадки нарисованы полосой
+-- глубиной 2.78 м, хотя проданы от 7 до 84 м². Поэтому колонки раздельные:
+-- триггер `mz_stands_flaeche` считает площадь из сторон, и нарисованный
+-- прямоугольник, попади он в `breite_m`, молча переписал бы проданные метры.
+--
+-- `plan_id` — тот же квадрат в нумерации публичного плана. В Halle D и
+-- Halle 550 совпадает с нашим номером, в StageOne нет: «Kubus 1» там K1,
+-- «Fläche 5» — E5B. Соответствие живёт здесь и в базе, а не в чьей-то памяти.
+--
+-- ---------------------------------------------------------------------------
+-- Halle D — 23 площадки
+-- ---------------------------------------------------------------------------
+--
+-- Размеры, площади и контингенты карт — из прайса. Координаты 27.08 заменены
+-- на геометрию публичного плана: до этого они были посчитаны из положения
+-- текстовых блоков в `Plan_H550.pptx` и были приблизительными. Совпадение
+-- старых и новых с точностью до сдвига начала отсчёта — заодно проверка,
+-- что оба разбора читали один и тот же зал.
+--
+-- D10 и D11 подписаны в прайсе как «8x5», но нарисованы 5 в ширину и 8
+-- в глубину. Взята ориентация плана: он внутренне согласован, а порядок
+-- чисел в подписях прайса — нет.
 --
 -- `lage` пустая намеренно: в прототипе там стояли «Nordwand» и «Mittelblock»,
 -- но нумерация изменилась полностью и подписи стали враньём. В файлах
 -- Messeleitung расположения нет — значит нет и у нас.
 --
 -- ---------------------------------------------------------------------------
--- Halle 550 — 25 площадок, только список
+-- Halle 550 — 25 площадок
 -- ---------------------------------------------------------------------------
 --
 -- ⚠️ НУМЕРАЦИЯ ЗДЕСЬ — ДОГОВОРНАЯ. Подтверждена Ксенией 26.08.2026: именно эти
@@ -38,178 +55,178 @@
 -- из площадки 13×5 за 10'925 снова станет 5×3 за 3'050, и разница всплывёт
 -- в договоре.
 --
--- Данные в этом файле сняты с боевой базы после перенумерации, а не из прайса.
--- Проверка сходимости: 1000 м² по залу, ставка 167–207 CHF/м² — та же кривая,
--- что в Halle D.
+-- Сходимость: 1000 м² по залу, ставка 167–207 CHF/м² — та же кривая, что
+-- в Halle D. У H27 сторон нет, известна только площадь 120 м².
 --
--- Координат нет: зал не размечен, витрина показывает его списком. У H27
--- нет и сторон — известна только площадь 120 м².
+-- ⚠️ H22 и H27 на плане слегка налезают друг на друга (0.4 × 2.6 м). Так
+-- нарисовано на публичном плане: H27 показана блоком 178 м² при проданных 120.
+-- Это единственное перекрытие во всём каталоге; выдумывать за площадку
+-- геометрию мы не стали.
+--
+-- H08 и H09 на публичном плане есть (Food Zone и бар), у нас их нет: они
+-- не продаются. Поэтому в зале 25 наших площадок против 27 нарисованных.
 --
 -- ---------------------------------------------------------------------------
--- StageOne — 61 площадка, только список
+-- StageOne — 61 площадка, оба яруса
 -- ---------------------------------------------------------------------------
 --
--- Ни у одной нет ни координат, ни сторон: в прайсе указана только площадь,
--- а плана зала не существует. Идентификаторы взяты как в прайсе — «Kubus 1»,
--- «Galerie 8A», «Fläche E19», «Showroom 3»: именно так их называют между собой
--- Messeleitung и экспонент.
+-- Сторон нет ни у одной: в прайсе указана только площадь. Идентификаторы
+-- взяты как в прайсе — «Kubus 1», «Galerie 8A», «Fläche E19», «Showroom 3»:
+-- именно так их называют между собой Messeleitung и экспонент.
 --
--- **Занятость перенесена из прайса как есть**: на 13.08 занято 55 из 61.
--- Названий компаний в базе нет — mz_stands их не хранит, а на витрине они
--- не показываются ни при каких условиях. Связать площадку с компанией —
--- отдельная задача (D3 в бэклоге).
+-- Геометрия появилась 27.08 из публичного плана. Оба яруса лежат в одной
+-- системе координат — Galerie сверху, Erdgeschoss под ним, как на сайте.
+--
+-- Две площадки остались без координат: «Fläche 18» и «Fläche 23 Erweiterung»
+-- на публичном плане отсутствуют вовсе. «Fläche 18» при этом подозрительна —
+-- у нас три площадки по 50 м² за 8'350 (18, 21, 23), на плане их две. Вопрос
+-- к Ксении открыт; до ответа площадка остаётся как есть, в списке без плана.
+--
+-- Занятость перенесена из прайса как есть. Названий компаний в базе нет —
+-- `mz_stands` их не хранит, а на витрине они не показываются ни при каких
+-- условиях. Связать площадку с компанией — отдельная задача (D3 в бэклоге).
 --
 -- ---------------------------------------------------------------------------
 --
 -- Идемпотентно: повторный запуск обновляет геометрию и контингенты, но НЕ
 -- трогает статус и привязку к компании — их ведёт Messeleitung, и перезатирать
--- их нельзя. Поэтому оперативные закрытия площадок (на 26.08 это D15, D16
--- и H10) живут только в базе и в этот файл не переносятся.
+-- их нельзя. Статус в значениях ниже нужен только для чистой базы: там он
+-- задаёт стартовую занятость, включая D15, D16 и H10 — они закрыты решением
+-- Messeleitung от 26.08 (на публичном плане это бары).
 
 insert into public.mz_stands
-  (id, halle, lage, breite_m, tiefe_m, pos_x, pos_y, gaeste_karten, aussteller_karten)
+  (id, plan_id, halle, lage, breite_m, tiefe_m, flaeche_m2,
+   pos_x, pos_y, plan_b, plan_t, gaeste_karten, aussteller_karten, status)
 values
-  -- Halle D — Adventure Camp. Настоящие данные.
-  ('D01', 'Halle D', null, 10, 8, 74.4, 14.0, 35, 8),
-  ('D02', 'Halle D', null, 10, 5, 72.2, 24.2, 20, 6),
-  ('D03', 'Halle D', null, 10, 8, 64.2, 14.0, 35, 8),
-  ('D04', 'Halle D', null,  6, 4, 68.2,  6.0, 20, 4),
-  ('D05', 'Halle D', null,  6, 4, 59.8,  6.0, 20, 4),
-  ('D06', 'Halle D', null, 10, 5, 61.1, 24.2, 20, 6),
-  ('D07', 'Halle D', null, 10, 5, 50.0, 24.2, 20, 6),
-  ('D08', 'Halle D', null,  5, 4, 54.4, 17.1, 20, 3),
-  ('D09', 'Halle D', null,  5, 4, 54.4, 12.7, 20, 3),
-  ('D10', 'Halle D', null,  5, 8, 49.1,  2.0, 20, 6),
-  ('D11', 'Halle D', null,  5, 8, 43.3,  2.0, 20, 6),
-  ('D12', 'Halle D', null,  8, 4, 42.4, 13.1, 20, 4),
-  ('D13', 'Halle D', null,  8, 4, 42.4, 17.1, 20, 4),
-  ('D14', 'Halle D', null, 10, 5, 38.9, 24.2, 20, 6),
-  ('D15', 'Halle D', null,  5, 4, 37.1, 17.1, 20, 3),
-  ('D16', 'Halle D', null,  5, 4, 37.1, 13.1, 20, 3),
-  ('D17', 'Halle D', null,  7, 4, 28.2,  6.0, 20, 4),
-  ('D18', 'Halle D', null, 10, 8, 22.9, 14.0, 35, 8),
-  ('D19', 'Halle D', null, 15, 5, 21.1, 24.7, 35, 8),
-  ('D20', 'Halle D', null,  5, 8, 14.9, 14.0, 20, 6),
-  ('D21', 'Halle D', null, 13, 5, 10.4,  6.0, 35, 8),
-  ('D22', 'Halle D', null,  5, 8, 10.0, 14.0, 20, 6),
-  ('D23', 'Halle D', null,  5, 8,  2.0, 13.6, 20, 6),
+  -- Halle D — Adventure Camp
+  ('D01', 'D01', 'Halle D', null, 10, 8, 80, 74.51, 12.46, 9.87, 7.96, 35, 8, 'frei'),
+  ('D02', 'D02', 'Halle D', null, 10, 5, 50, 72.26, 23.11, 9.87, 5.02, 20, 6, 'frei'),
+  ('D03', 'D03', 'Halle D', null, 10, 8, 80, 64.12, 12.46, 9.87, 7.96, 35, 8, 'frei'),
+  ('D04', 'D04', 'Halle D', null, 6, 4, 24, 68.26, 4.2, 6.06, 4.04, 20, 4, 'frei'),
+  ('D05', 'D05', 'Halle D', null, 6, 4, 24, 61.88, 4.2, 6.02, 4.04, 20, 4, 'frei'),
+  ('D06', 'D06', 'Halle D', null, 10, 5, 50, 61.1, 23.11, 9.87, 5.02, 20, 6, 'frei'),
+  ('D07', 'D07', 'Halle D', null, 10, 5, 50, 49.42, 23.11, 9.87, 5.02, 20, 6, 'frei'),
+  ('D08', 'D08', 'Halle D', null, 5, 4, 20, 54.17, 15.66, 4.93, 4.15, 20, 3, 'frei'),
+  ('D09', 'D09', 'Halle D', null, 5, 4, 20, 54.17, 11.17, 4.93, 4.15, 20, 3, 'frei'),
+  ('D10', 'D10', 'Halle D', null, 5, 8, 40, 48.28, 0, 5.02, 8.13, 20, 6, 'frei'),
+  ('D11', 'D11', 'Halle D', null, 5, 8, 40, 42.49, 0, 5.02, 8.13, 20, 6, 'frei'),
+  ('D12', 'D12', 'Halle D', null, 8, 4, 32, 41.54, 11.51, 8.31, 4.15, 20, 4, 'frei'),
+  ('D13', 'D13', 'Halle D', null, 8, 4, 32, 41.54, 16.01, 8.31, 4.15, 20, 4, 'frei'),
+  ('D14', 'D14', 'Halle D', null, 10, 5, 50, 38.25, 23.11, 9.87, 5.02, 20, 6, 'frei'),
+  ('D15', 'D15', 'Halle D', null, 5, 4, 20, 36, 16.01, 5.02, 4.15, 20, 3, 'gesperrt'),
+  ('D16', 'D16', 'Halle D', null, 5, 4, 20, 36, 11.51, 5.02, 4.15, 20, 3, 'gesperrt'),
+  ('D17', 'D17', 'Halle D', null, 7, 4, 28, 26.83, 4.24, 7.27, 4.15, 20, 4, 'frei'),
+  ('D18', 'D18', 'Halle D', null, 10, 8, 80, 21.47, 12.46, 9.87, 7.96, 35, 8, 'frei'),
+  ('D19', 'D19', 'Halle D', null, 15, 5, 75, 19.64, 23.63, 15.58, 5.02, 35, 8, 'frei'),
+  ('D20', 'D20', 'Halle D', null, 5, 8, 40, 13.33, 12.29, 5.02, 8.13, 20, 6, 'frei'),
+  ('D21', 'D21', 'Halle D', null, 13, 5, 65, 8.39, 4.24, 12.98, 5.02, 35, 8, 'frei'),
+  ('D22', 'D22', 'Halle D', null, 5, 8, 40, 7.96, 12.29, 5.02, 8.13, 20, 6, 'frei'),
+  ('D23', 'D23', 'Halle D', null, 5, 8, 40, 0, 12.29, 5.02, 8.13, 20, 6, 'frei'),
 
-  -- Halle 550 — без координат: зал продаётся списком.
-  -- Нумерация подтверждена Ксенией 26.08.2026 как договорная.
-  ('H01', 'Halle 550', null,  8,  3, null, null, 20,  4),
-  ('H02', 'Halle 550', null,  7,  4, null, null, 20,  4),
-  ('H03', 'Halle 550', null,  5,  4, null, null, 20,  3),
-  ('H04', 'Halle 550', null,  7,  5, null, null, 20,  4),
-  ('H05', 'Halle 550', null,  7,  5, null, null, 20,  4),
-  ('H06', 'Halle 550', null,  5,  4, null, null, 20,  3),
-  ('H07', 'Halle 550', null,  7,  3, null, null, 20,  4),
-  ('H10', 'Halle 550', null,  4,  5, null, null, 20,  3),
-  ('H11', 'Halle 550', null,  5,  5, null, null, 20,  4),
-  ('H12', 'Halle 550', null,  6,  8, null, null, 20,  6),
-  ('H13', 'Halle 550', null,  5,  5, null, null, 20,  4),
-  ('H14', 'Halle 550', null,  5,  5, null, null, 20,  4),
-  ('H15', 'Halle 550', null,  5,  8, null, null, 20,  6),
-  ('H16', 'Halle 550', null,  5,  8, null, null, 20,  6),
-  ('H17', 'Halle 550', null, 13,  5, null, null, 35,  8),
-  ('H18', 'Halle 550', null, 10,  7, null, null, 35,  8),
-  ('H19', 'Halle 550', null,  5,  4, null, null, 20,  3),
-  ('H20', 'Halle 550', null, 13,  5, null, null, 35,  8),
-  ('H21', 'Halle 550', null,  5,  8, null, null, 20,  6),
-  ('H22', 'Halle 550', null,  5,  3, null, null, 10,  3),
-  ('H23', 'Halle 550', null,  7,  7, null, null, 20,  6),
-  ('H24', 'Halle 550', null, 10,  7, null, null, 35,  8),
-  ('H25', 'Halle 550', null, 10,  6, null, null, 35,  8),
-  ('H26', 'Halle 550', null,  5,  4, null, null, 20,  3)
+  -- Halle 550
+  ('H01', 'H01', 'Halle 550', null, 8, 3, 24, 132.19, 46.56, 7.96, 3.03, 20, 4, 'frei'),
+  ('H02', 'H02', 'Halle 550', null, 7, 4, 28, 122.76, 46.48, 7.27, 3.98, 20, 4, 'frei'),
+  ('H03', 'H03', 'Halle 550', null, 5, 4, 20, 109.52, 46.48, 5.02, 3.98, 20, 3, 'frei'),
+  ('H04', 'H04', 'Halle 550', null, 7, 5, 35, 110.65, 36.96, 7.27, 5.19, 20, 4, 'frei'),
+  ('H05', 'H05', 'Halle 550', null, 7, 5, 35, 102.51, 36.96, 7.27, 5.19, 20, 4, 'frei'),
+  ('H06', 'H06', 'Halle 550', null, 5, 4, 20, 97.14, 46.56, 5.02, 3.98, 20, 3, 'frei'),
+  ('H07', 'H07', 'Halle 550', null, 7, 3, 21, 89.01, 47.6, 7.1, 3.03, 20, 4, 'frei'),
+  ('H10', 'H10', 'Halle 550', null, 4, 5, 20, 41.41, 37.04, 4.15, 5.02, 20, 3, 'gesperrt'),
+  ('H11', 'H11', 'Halle 550', null, 5, 5, 25, 40.55, 30.99, 5.02, 5.02, 20, 4, 'frei'),
+  ('H12', 'H12', 'Halle 550', null, 6, 8, 48, 39.34, 14.8, 6.24, 8.13, 20, 6, 'frei'),
+  ('H13', 'H13', 'Halle 550', null, 5, 5, 25, 40.55, 5.45, 5.02, 5.02, 20, 4, 'frei'),
+  ('H14', 'H14', 'Halle 550', null, 5, 5, 25, 40.55, 0, 5.02, 5.02, 20, 4, 'frei'),
+  ('H15', 'H15', 'Halle 550', null, 5, 8, 40, 30.07, 1.31, 5.03, 8.09, 20, 6, 'frei'),
+  ('H16', 'H16', 'Halle 550', null, 5, 8, 40, 28.72, 14.25, 5.03, 8.09, 20, 6, 'frei'),
+  ('H17', 'H17', 'Halle 550', null, 13, 5, 65, 30.94, 30.04, 5.19, 13.15, 35, 8, 'frei'),
+  ('H18', 'H18', 'Halle 550', null, 10, 7, 70, 26.09, 48.29, 10.21, 7.27, 35, 8, 'frei'),
+  ('H19', 'H19', 'Halle 550', null, 5, 4, 20, 28.17, 59.28, 5.19, 3.98, 20, 3, 'frei'),
+  ('H20', 'H20', 'Halle 550', null, 13, 5, 65, 25.4, 30.04, 5.19, 13.15, 35, 8, 'frei'),
+  ('H21', 'H21', 'Halle 550', null, 5, 8, 40, 23.42, 14.25, 5.03, 8.09, 20, 6, 'frei'),
+  ('H22', 'H22', 'Halle 550', null, 5, 3, 15, 11.21, 60.4, 5.02, 3.12, 10, 3, 'frei'),
+  ('H23', 'H23', 'Halle 550', null, 7, 7, 49, 14.84, 48.29, 7.27, 7.27, 20, 6, 'frei'),
+  ('H24', 'H24', 'Halle 550', null, 10, 7, 70, 11.12, 36.26, 10.21, 7.27, 35, 8, 'frei'),
+  ('H25', 'H25', 'Halle 550', null, 10, 6, 60, 11.12, 30.04, 10.21, 5.88, 35, 8, 'frei'),
+  ('H26', 'H26', 'Halle 550', null, 5, 4, 20, 14.02, 18.88, 5.99, 5.8, 20, 3, 'frei'),
+  ('H27', 'H27', 'Halle 550', null, null, null, 120, 0, 47.69, 11.64, 15.32, 50, 10, 'frei'),
+
+  -- StageOne — Galerie (верхний ярус)
+  ('Galerie 1A', 'G1A', 'StageOne', null, null, null, 49, 0, 8.27, 14.2, 2.79, 20, 6, 'vergeben'),
+  ('Galerie 1B', 'G1B', 'StageOne', null, null, null, 17.5, 14.33, 8.27, 6.73, 2.78, 10, 3, 'frei'),
+  ('Galerie 2', 'G2', 'StageOne', null, null, null, 84, 25.4, 8.27, 18.19, 2.78, 50, 0, 'vergeben'),
+  ('Galerie 3', 'G3', 'StageOne', null, null, null, 14, 47.89, 8.27, 4.85, 2.78, 10, 0, 'vergeben'),
+  ('Galerie 4', 'G4', 'StageOne', null, null, null, 7, 54.24, 8.27, 3.07, 2.78, 10, 2, 'vergeben'),
+  ('Galerie 5', 'G5', 'StageOne', null, null, null, 18, 63.15, 8.27, 6.08, 2.78, 20, 3, 'vergeben'),
+  ('Galerie 6', 'G6', 'StageOne', null, null, null, 10.5, 73.58, 8.27, 3.41, 2.78, 10, 0, 'vergeben'),
+  ('Galerie 7', 'G7', 'StageOne', null, null, null, 7, 78.48, 8.27, 2.88, 2.78, 10, 0, 'vergeben'),
+  ('Galerie 8A', 'G8A', 'StageOne', null, null, null, 7, 87.24, 8.27, 3.14, 2.79, 10, 2, 'vergeben'),
+  ('Galerie 8B', 'G8B', 'StageOne', null, null, null, 21, 90.57, 8.27, 4.4, 2.79, 20, 4, 'vergeben'),
+  ('Galerie 9', 'G9', 'StageOne', null, null, null, 10.5, 99.29, 8.27, 2.33, 2.78, 10, 3, 'frei'),
+  ('Galerie 10', 'G10', 'StageOne', null, null, null, 7, 103.13, 7.37, 2.83, 3.67, 20, 2, 'frei'),
+  ('Galerie 11', 'G11', 'StageOne', null, null, null, 31.5, 111.49, 8.27, 6.78, 2.78, 20, 4, 'vergeben'),
+  ('Galerie 12', 'G12', 'StageOne', null, null, null, 10.5, 122.46, 8.27, 2.9, 2.78, 10, 3, 'frei'),
+  ('Galerie 13', 'G13', 'StageOne', null, null, null, 7, 126.68, 8.36, 3.14, 2.7, 10, 2, 'frei'),
+
+  -- StageOne — Showroom (верхний ярус)
+  ('Showroom 1', 'S1', 'StageOne', null, null, null, 57.75, 1.22, 0, 10.46, 5.56, 35, 10, 'vergeben'),
+  ('Showroom 2', 'S2', 'StageOne', null, null, null, 49.5, 11.86, 0, 8.9, 5.57, 20, 0, 'vergeben'),
+  ('Showroom 3', 'S3', 'StageOne', null, null, null, 66, 20.93, 0, 11.86, 5.57, 35, 8, 'vergeben'),
+  ('Showroom 4', 'S4', 'StageOne', null, null, null, 82.5, 32.98, 0, 15.16, 5.56, 50, 0, 'vergeben'),
+  ('Showroom 5', 'S5', 'StageOne', null, null, null, 66, 57.14, 0, 12.04, 5.57, 35, 12, 'vergeben'),
+  ('Showroom 6', 'S6', 'StageOne', null, null, null, 66, 69.36, 0, 11.86, 5.57, 35, 8, 'vergeben'),
+  ('Showroom 7', 'S7', 'StageOne', null, null, null, 66, 81.4, 0, 11.95, 5.57, 35, 8, 'vergeben'),
+  ('Showroom 8', 'S8', 'StageOne', null, null, null, 66, 93.53, 0, 12.04, 5.57, 35, 8, 'vergeben'),
+  ('Showroom 9', 'S9', 'StageOne', null, null, null, 66, 105.75, 0, 11.86, 5.57, 35, 8, 'vergeben'),
+  ('Showroom 10', 'S10', 'StageOne', null, null, null, 66, 117.79, 0, 12.04, 5.57, 35, 8, 'vergeben'),
+
+  -- StageOne — Kubus (верхний ярус)
+  ('Kubus 1', 'K1', 'StageOne', null, null, null, 54, 51.21, 14.29, 6.02, 9.52, 50, 15, 'vergeben'),
+  ('Kubus 2', 'K2', 'StageOne', null, null, null, 54, 75.47, 14.29, 6.02, 9.52, 50, 15, 'vergeben'),
+  ('Kubus 3', 'K3', 'StageOne', null, null, null, 54, 100.09, 14.29, 6.02, 9.52, 50, 15, 'vergeben'),
+  ('Kubus 4', 'K4', 'StageOne', null, null, null, 54, 124.08, 14.29, 5.93, 9.52, 50, 6, 'vergeben'),
+
+  -- StageOne — Erdgeschoss
+  ('Fläche 1', 'E1', 'StageOne', null, null, null, 31.5, 1.35, 25.97, 10.61, 3.04, 20, 4, 'frei'),
+  ('Fläche 2', 'E2', 'StageOne', null, null, null, 8, 25.16, 32.25, 4.04, 2.02, 10, 2, 'vergeben'),
+  ('Fläche 2B', 'E2B', 'StageOne', null, null, null, 9, 34.55, 24.39, 3.04, 3.04, 10, 2, 'vergeben'),
+  ('Fläche 2C', 'E2C', 'StageOne', null, null, null, 45, 22.55, 24.4, 11.86, 3.86, 20, 6, 'vergeben'),
+  ('Fläche 3', 'E3', 'StageOne', null, null, null, 30, 51.66, 28.21, 12.13, 2.52, 20, 4, 'vergeben'),
+  ('Fläche 4', 'E4', 'StageOne', null, null, null, 20, 64.24, 28.21, 8.09, 2.52, 20, 3, 'vergeben'),
+  ('Fläche 5', 'E5B', 'StageOne', null, null, null, 9, 76.01, 28.21, 4.04, 3.04, 10, 2, 'vergeben'),
+  ('Fläche E5A', 'E5A', 'StageOne', null, null, null, 12, 72.78, 28.21, 3.04, 3.04, 10, 3, 'vergeben'),
+  ('Fläche 6', 'E6', 'StageOne', null, null, null, 25, 91.46, 28.21, 10.11, 2.52, 20, 4, 'vergeben'),
+  ('Fläche 7', 'E7', 'StageOne', null, null, null, 25, 101.8, 28.21, 10.11, 2.52, 20, 4, 'vergeben'),
+  ('Fläche 8', 'E8', 'StageOne', null, null, null, 12.5, 112.58, 28.21, 5.05, 2.52, 10, 3, 'vergeben'),
+  ('Fläche 9', 'E9', 'StageOne', null, null, null, 17.5, 117.88, 28.21, 7.08, 2.52, 10, 3, 'vergeben'),
+  ('Fläche 10', 'E10', 'StageOne', null, null, null, 10.5, 25.7, 34.5, 3.5, 3.04, 10, 3, 'vergeben'),
+  ('Fläche 11', 'E11', 'StageOne', null, null, null, 27, 32.7, 34.5, 9.1, 3.04, 20, 4, 'vergeben'),
+  ('Fläche 12', 'E12', 'StageOne', null, null, null, 30, 63.25, 34.5, 6.06, 5.05, 20, 4, 'vergeben'),
+  ('Fläche 13', 'E13', 'StageOne', null, null, null, 35, 84.28, 34.5, 10.11, 3.54, 20, 6, 'vergeben'),
+  ('Fläche 14A', 'E14A', 'StageOne', null, null, null, 50, 108, 39.89, 10.11, 5.05, 20, 6, 'vergeben'),
+  ('Fläche 14B', 'E14B', 'StageOne', null, null, null, 55, 108.03, 34.52, 11.22, 5, 35, 6, 'vergeben'),
+  ('Fläche 15A', 'E15A', 'StageOne', null, null, null, 100, 21.47, 40.79, 10.11, 10.11, 50, 10, 'vergeben'),
+  ('Fläche 15B', 'E15B', 'StageOne', null, null, null, 100, 31.81, 40.79, 10.11, 10.11, 50, 10, 'vergeben'),
+  ('Fläche 16A', 'E16A', 'StageOne', null, null, null, 9, 75.38, 34.5, 3.04, 3.04, 10, 2, 'vergeben'),
+  ('Fläche 16B', 'E16B', 'StageOne', null, null, null, 6, 78.54, 34.5, 3.04, 2.02, 10, 2, 'vergeben'),
+  ('Fläche 17', 'E17', 'StageOne', null, null, null, 32, 46.18, 37.87, 10.35, 13.02, 20, 0, 'vergeben'),
+  ('Fläche 18', null, 'StageOne', null, null, null, 50, null, null, null, null, 20, 0, 'vergeben'),
+  ('Fläche E19', 'E19', 'StageOne', null, null, null, 27, 58.39, 33.46, 4.55, 6.06, 20, 4, 'vergeben'),
+  ('Fläche 20', 'E20', 'StageOne', null, null, null, 103.5, 58.42, 41.78, 11.63, 9.1, 50, 10, 'vergeben'),
+  ('Fläche 21', 'E21', 'StageOne', null, null, null, 50, 75.38, 40.79, 5.05, 10.11, 20, 6, 'vergeben'),
+  ('Fläche 22', 'E22', 'StageOne', null, null, null, 130, 84.26, 40.69, 13.15, 10.11, 50, 12, 'vergeben'),
+  ('Fläche 23', 'E23', 'StageOne', null, null, null, 50, 100.94, 34.55, 6.06, 16.35, 20, 0, 'vergeben'),
+  ('Fläche 23 Erweiterung', null, 'StageOne', null, null, null, 18, null, null, null, null, 20, 0, 'vergeben'),
+  ('Fläche 24', 'E24', 'StageOne', null, null, null, 35, 115.18, 48.16, 10.11, 3.54, 50, 4, 'frei'),
+  ('Fläche 25', 'E25', 'StageOne', null, null, null, 98, 125.7, 37.56, 7.08, 14.15, 50, 10, 'vergeben')
 on conflict (id) do update set
-  halle             = excluded.halle,
-  lage              = excluded.lage,
-  breite_m          = excluded.breite_m,
-  tiefe_m           = excluded.tiefe_m,
-  pos_x             = excluded.pos_x,
-  pos_y             = excluded.pos_y,
-  gaeste_karten     = excluded.gaeste_karten,
-  aussteller_karten = excluded.aussteller_karten;
-
--- Особая площадка: H27.
---
--- У неё нет сторон — в прайсе указана только площадь 120 м². Триггер
--- mz_stands_flaeche считает площадь из сторон, когда они есть; здесь их нет,
--- поэтому значение задаётся напрямую.
---
--- `status` намеренно НЕ входит в do update: начальное значение ставим мы,
--- дальше им распоряжается Messeleitung, и повторный прогон файла не должен
--- переоткрывать или закрывать площадку заново.
-insert into public.mz_stands
-  (id, halle, breite_m, tiefe_m, flaeche_m2, gaeste_karten, aussteller_karten, status)
-values
-  ('H27', 'Halle 550', null, null,  120,  50, 10, 'frei'),
-
-  -- StageOne: ни координат, ни сторон — только площадь. Занятость из прайса.
-  ('Kubus 1',               'StageOne', null, null,  54, 50, 15, 'vergeben'),
-  ('Kubus 2',               'StageOne', null, null,  54, 50, 15, 'vergeben'),
-  ('Kubus 3',               'StageOne', null, null,  54, 50, 15, 'vergeben'),
-  ('Kubus 4',               'StageOne', null, null,  54, 50,  6, 'vergeben'),
-  ('Galerie 1A',            'StageOne', null, null,  49, 20,  6, 'vergeben'),
-  ('Galerie 1B',            'StageOne', null, null, 17.5, 10, 3, 'frei'),
-  ('Galerie 2',             'StageOne', null, null,  84, 50,  0, 'vergeben'),
-  ('Galerie 3',             'StageOne', null, null,  14, 10,  0, 'vergeben'),
-  ('Galerie 4',             'StageOne', null, null,   7, 10,  2, 'vergeben'),
-  ('Galerie 5',             'StageOne', null, null,  18, 20,  3, 'vergeben'),
-  ('Galerie 6',             'StageOne', null, null, 10.5, 10, 0, 'vergeben'),
-  ('Galerie 7',             'StageOne', null, null,   7, 10,  0, 'vergeben'),
-  ('Galerie 8A',            'StageOne', null, null,   7, 10,  2, 'vergeben'),
-  ('Galerie 8B',            'StageOne', null, null,  21, 20,  4, 'vergeben'),
-  ('Galerie 9',             'StageOne', null, null, 10.5, 10, 3, 'frei'),
-  ('Galerie 10',            'StageOne', null, null,   7, 20,  2, 'frei'),
-  ('Galerie 11',            'StageOne', null, null, 31.5, 20, 4, 'vergeben'),
-  ('Galerie 12',            'StageOne', null, null, 10.5, 10, 3, 'frei'),
-  ('Galerie 13',            'StageOne', null, null,   7, 10,  2, 'frei'),
-  ('Fläche 1',              'StageOne', null, null, 31.5, 20, 4, 'frei'),
-  ('Fläche 2',              'StageOne', null, null,   8, 10,  2, 'vergeben'),
-  ('Fläche 2B',             'StageOne', null, null,   9, 10,  2, 'vergeben'),
-  ('Fläche 2C',             'StageOne', null, null,  45, 20,  6, 'vergeben'),
-  ('Fläche 3',              'StageOne', null, null,  30, 20,  4, 'vergeben'),
-  ('Fläche 4',              'StageOne', null, null,  20, 20,  3, 'vergeben'),
-  ('Fläche 5',              'StageOne', null, null,   9, 10,  2, 'vergeben'),
-  ('Fläche E5A',            'StageOne', null, null,  12, 10,  3, 'vergeben'),
-  ('Fläche 6',              'StageOne', null, null,  25, 20,  4, 'vergeben'),
-  ('Fläche 7',              'StageOne', null, null,  25, 20,  4, 'vergeben'),
-  ('Fläche 8',              'StageOne', null, null, 12.5, 10, 3, 'vergeben'),
-  ('Fläche 9',              'StageOne', null, null, 17.5, 10, 3, 'vergeben'),
-  ('Fläche 10',             'StageOne', null, null, 10.5, 10, 3, 'vergeben'),
-  ('Fläche 11',             'StageOne', null, null,  27, 20,  4, 'vergeben'),
-  ('Fläche 12',             'StageOne', null, null,  30, 20,  4, 'vergeben'),
-  ('Fläche 13',             'StageOne', null, null,  35, 20,  6, 'vergeben'),
-  ('Fläche 14A',            'StageOne', null, null,  50, 20,  6, 'vergeben'),
-  ('Fläche 14B',            'StageOne', null, null,  55, 35,  6, 'vergeben'),
-  ('Fläche 15A',            'StageOne', null, null, 100, 50, 10, 'vergeben'),
-  ('Fläche 15B',            'StageOne', null, null, 100, 50, 10, 'vergeben'),
-  ('Fläche 16A',            'StageOne', null, null,   9, 10,  2, 'vergeben'),
-  ('Fläche 16B',            'StageOne', null, null,   6, 10,  2, 'vergeben'),
-  ('Fläche 17',             'StageOne', null, null,  32, 20,  0, 'vergeben'),
-  ('Fläche 18',             'StageOne', null, null,  50, 20,  0, 'vergeben'),
-  ('Fläche E19',            'StageOne', null, null,  27, 20,  4, 'vergeben'),
-  ('Fläche 20',             'StageOne', null, null, 103.5, 50, 10, 'vergeben'),
-  ('Fläche 21',             'StageOne', null, null,  50, 20,  6, 'vergeben'),
-  ('Fläche 22',             'StageOne', null, null, 130, 50, 12, 'vergeben'),
-  ('Fläche 23',             'StageOne', null, null,  50, 20,  0, 'vergeben'),
-  ('Fläche 23 Erweiterung', 'StageOne', null, null,  18, 20,  0, 'vergeben'),
-  ('Fläche 24',             'StageOne', null, null,  35, 50,  4, 'vergeben'),
-  ('Fläche 25',             'StageOne', null, null,  98, 50, 10, 'vergeben'),
-  ('Showroom 1',            'StageOne', null, null, 57.75, 35, 10, 'vergeben'),
-  ('Showroom 2',            'StageOne', null, null, 49.5, 20, 0, 'vergeben'),
-  ('Showroom 3',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
-  ('Showroom 4',            'StageOne', null, null, 82.5, 50, 0, 'vergeben'),
-  ('Showroom 5',            'StageOne', null, null,  66, 35, 12, 'vergeben'),
-  ('Showroom 6',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
-  ('Showroom 7',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
-  ('Showroom 8',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
-  ('Showroom 9',            'StageOne', null, null,  66, 35,  8, 'vergeben'),
-  ('Showroom 10',           'StageOne', null, null,  66, 35,  8, 'vergeben')
-on conflict (id) do update set
+  plan_id           = excluded.plan_id,
   halle             = excluded.halle,
   breite_m          = excluded.breite_m,
   tiefe_m           = excluded.tiefe_m,
   flaeche_m2        = excluded.flaeche_m2,
+  pos_x             = excluded.pos_x,
+  pos_y             = excluded.pos_y,
+  plan_b            = excluded.plan_b,
+  plan_t            = excluded.plan_t,
   gaeste_karten     = excluded.gaeste_karten,
   aussteller_karten = excluded.aussteller_karten;

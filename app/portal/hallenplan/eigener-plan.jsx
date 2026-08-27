@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { planLabel, planRect } from '../../../lib/plan-geometrie';
 import {
   EIGENE_FARBE,
   STAND_RAHMEN,
@@ -31,13 +32,21 @@ export default function EigenerPlan({ alle, eigeneIds, hallen, nachbarIds }) {
   const visible = useMemo(() => alle.filter((s) => s.halle === halle), [alle, halle]);
   const selected = visible.find((s) => s.id === selectedId) || null;
 
+  // Площадка без геометрии в план не попадает, но остаётся в списке под ним.
+  // Без этого отбора Number(null) даёт ноль, и такая площадка рисуется точкой
+  // в левом верхнем углу поверх чужого стенда.
+  const gezeichnet = useMemo(
+    () => visible.map((s) => ({ stand: s, rect: planRect(s) })).filter((e) => e.rect),
+    [visible]
+  );
+
   const box = useMemo(() => {
-    if (visible.length === 0) return { w: 70, h: 30 };
+    if (gezeichnet.length === 0) return { w: 70, h: 30 };
     return {
-      w: Math.max(...visible.map((s) => Number(s.pos_x) + Number(s.breite_m))) + 2,
-      h: Math.max(...visible.map((s) => Number(s.pos_y) + Number(s.tiefe_m))) + 2,
+      w: Math.max(...gezeichnet.map((e) => e.rect.x + e.rect.w)) + 2,
+      h: Math.max(...gezeichnet.map((e) => e.rect.y + e.rect.h)) + 2,
     };
-  }, [visible]);
+  }, [gezeichnet]);
 
   return (
     <div className="split">
@@ -61,23 +70,24 @@ export default function EigenerPlan({ alle, eigeneIds, hallen, nachbarIds }) {
           </div>
         )}
 
+        {gezeichnet.length > 0 && (
         <svg viewBox={`-1 -1 ${box.w} ${box.h}`} style={S.svg} aria-hidden="true" focusable="false">
-          {visible.map((s) => {
+          {gezeichnet.map(({ stand: s, rect }) => {
             const mein = eigene.has(s.id);
             return (
               <g key={s.id} onClick={() => setSelectedId(s.id)} style={{ cursor: 'pointer' }}>
                 <rect
-                  x={Number(s.pos_x)}
-                  y={Number(s.pos_y)}
-                  width={Number(s.breite_m)}
-                  height={Number(s.tiefe_m)}
+                  x={rect.x}
+                  y={rect.y}
+                  width={rect.w}
+                  height={rect.h}
                   fill={mein ? EIGENE_FARBE : statusFarbe(s.status)}
                   stroke={s.id === selectedId ? '#0E1E37' : mein ? '#0E1E37' : STAND_RAHMEN}
                   strokeWidth={s.id === selectedId ? 0.35 : mein ? 0.3 : 0.12}
                 />
                 <text
-                  x={Number(s.pos_x) + Number(s.breite_m) / 2}
-                  y={Number(s.pos_y) + Number(s.tiefe_m) / 2 + 0.35}
+                  x={rect.x + rect.w / 2}
+                  y={rect.y + rect.h / 2 + 0.35}
                   textAnchor="middle"
                   style={{
                     fontSize: 1.2,
@@ -86,12 +96,13 @@ export default function EigenerPlan({ alle, eigeneIds, hallen, nachbarIds }) {
                     pointerEvents: 'none',
                   }}
                 >
-                  {s.id}
+                  {planLabel(s)}
                 </text>
               </g>
             );
           })}
         </svg>
+        )}
 
         <div style={S.legend}>
           <span style={S.legendItem}>
@@ -159,7 +170,17 @@ function StandDetail({ stand, mein, nachbar }) {
       <dl style={{ margin: 0 }}>
         <Row label="Halle" value={stand.halle} />
         <Row label="Lage" value={stand.lage || '—'} />
-        <Row label="Format" value={`${stand.breite_m} × ${stand.tiefe_m} m`} />
+        {/* Номер на публичном плане отличается только в StageOne: там наши
+            «Kubus 1» и «Fläche 5» называются K1 и E5B. Показываем оба, пока
+            две нумерации не сведены в одну. */}
+        {stand.plan_id && stand.plan_id !== stand.id && (
+          <Row label="Auf motozuerich.ch" value={stand.plan_id} />
+        )}
+        {/* Сторон может не быть — в прайсе у StageOne указана одна площадь.
+            «null × null m» хуже отсутствия строки. */}
+        {stand.breite_m != null && stand.tiefe_m != null && (
+          <Row label="Format" value={`${stand.breite_m} × ${stand.tiefe_m} m`} />
+        )}
         <Row label="Fläche" value={`${Math.round(Number(stand.flaeche_m2))} m²`} />
         {!mein && <Row label="Status" value={statusText(stand.status)} />}
       </dl>

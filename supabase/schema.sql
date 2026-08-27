@@ -197,6 +197,17 @@ create table if not exists public.mz_stands (
   flaeche_m2 numeric(7,2),
   pos_x      numeric(6,2),
   pos_y      numeric(6,2),
+
+  -- Геометрия публичного плана, отдельно от договорных размеров выше.
+  -- Публичный план — схема, а не чертёж: у части площадок нарисованный
+  -- прямоугольник не совпадает с проданной площадью (весь ярус Galerie
+  -- нарисован полосой одинаковой глубины). Смешать их в одну пару колонок
+  -- нельзя — триггер mz_stands_flaeche ниже считает площадь из сторон
+  -- и молча переписал бы проданные метры.
+  plan_id    text,
+  plan_b     numeric(6,2),
+  plan_t     numeric(6,2),
+
   status     text not null default 'frei'
              constraint mz_stands_status_check
              check (status in ('frei', 'reserviert', 'vergeben', 'gesperrt')),
@@ -215,19 +226,32 @@ create table if not exists public.mz_stands (
 -- create table if not exists их не создаст.
 alter table public.mz_stands
   add column if not exists gaeste_karten     int,
-  add column if not exists aussteller_karten int;
+  add column if not exists aussteller_karten int,
+  add column if not exists plan_id           text,
+  add column if not exists plan_b            numeric(6,2),
+  add column if not exists plan_t            numeric(6,2);
 
 comment on table public.mz_stands is
-  'Каталог площадок с геометрией для плана залов. Идентификаторы как на плане: D09, H14.';
+  'Каталог площадок с геометрией для плана залов. Идентификаторы договорные; соответствие публичному плану — в plan_id.';
 comment on column public.mz_stands.status is
   'frei — свободна · reserviert — забронирована по заявке · vergeben — продана · gesperrt — не продаётся (проход, склад).';
 comment on column public.mz_stands.flaeche_m2 is
-  'Считается базой из ширины и глубины. Вручную не заполнять — рассинхрон с планом залов был бы незаметен.';
+  'Проданная площадь, метры. Когда известны стороны — считается из них триггером; когда нет (StageOne, H27) — берётся из прайса как есть.';
 comment on column public.mz_stands.pos_x is
-  'Координата на плане в метрах, начало отсчёта — левый верхний угол зала.';
+  'Левый край на плане зала, метры от начала отсчёта зала. Оба яруса StageOne лежат в одной системе координат: Galerie сверху, Erdgeschoss под ним — как на публичном плане.';
+comment on column public.mz_stands.plan_id is
+  'Идентификатор той же площадки на публичном плане motozuerich.ch/Standflaechen. Отличается у StageOne: K1 = «Kubus 1», E5B = «Fläche 5». Нужен, чтобы связь между двумя нумерациями жила в базе, а не в чьей-то голове.';
+comment on column public.mz_stands.plan_b is
+  'Ширина прямоугольника на плане, метры. Для отрисовки, не для договора: у части площадок расходится с breite_m.';
+comment on column public.mz_stands.plan_t is
+  'Глубина прямоугольника на плане, метры. См. plan_b.';
 
 create index if not exists mz_stands_status_idx on public.mz_stands (status);
 create index if not exists mz_stands_company_idx on public.mz_stands (company_id);
+
+-- Одна площадка публичного плана не может соответствовать двум нашим.
+create unique index if not exists mz_stands_plan_id_key
+  on public.mz_stands (plan_id) where plan_id is not null;
 
 -- Колонки стали необязательными после первого применения схемы, а flaeche_m2
 -- перестала быть генерируемой: у площадки без размеров площадь всё равно

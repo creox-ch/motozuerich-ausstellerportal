@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import AnfrageForm from './anfrage-form';
 import PreisGate from './preis-gate';
+import { planLabel, planRect } from '../../lib/plan-geometrie';
 import {
   STAND_RAHMEN,
   STATUS_FARBE,
@@ -17,6 +18,10 @@ import {
  *
  * Координаты и размеры в метрах по обеим осям, поэтому масштаб один и план
  * не сплющен. В прототипе ширина масштабировалась, а глубина нет.
+ *
+ * Рисуем по геометрии публичного плана (`plan_b`/`plan_t`), а не по договорным
+ * сторонам: см. `lib/plan-geometrie.js`. У StageOne оба яруса лежат на одном
+ * полотне — Galerie сверху, Erdgeschoss под ним, как на motozuerich.ch.
  */
 export default function HallPlan({ stands, hallen, preiseFrei = false }) {
   const [halle, setHalle] = useState(hallen[0] || 'Halle D');
@@ -30,16 +35,20 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
   // а разметка ещё не готова. Тогда показываем список — он и на телефоне
   // основной способ выбора, так что теряется только картинка.
   const gezeichnet = useMemo(
-    () => visible.filter((s) => s.pos_x !== null && s.pos_y !== null),
+    () => visible.map((s) => ({ stand: s, rect: planRect(s) })).filter((e) => e.rect),
     [visible]
   );
   const hatPlan = gezeichnet.length > 0;
+  // Часть площадок зала может быть в каталоге, но не на плане. Молча их
+  // не показать — значит соврать: человек считает прямоугольники и делает
+  // вывод, что зал маленький.
+  const ungezeichnet = visible.length - gezeichnet.length;
 
   const box = useMemo(() => {
     if (gezeichnet.length === 0) return { w: 70, h: 30 };
     return {
-      w: Math.max(...gezeichnet.map((s) => s.pos_x + s.breite_m)) + 2,
-      h: Math.max(...gezeichnet.map((s) => s.pos_y + s.tiefe_m)) + 2,
+      w: Math.max(...gezeichnet.map((e) => e.rect.x + e.rect.w)) + 2,
+      h: Math.max(...gezeichnet.map((e) => e.rect.y + e.rect.h)) + 2,
     };
   }, [gezeichnet]);
 
@@ -85,7 +94,7 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
           aria-hidden="true"
           focusable="false"
         >
-          {gezeichnet.map((s) => {
+          {gezeichnet.map(({ stand: s, rect }) => {
             const frei = s.status === 'frei';
             const dim = nurFrei && !frei ? 0.25 : 1;
             return (
@@ -96,26 +105,34 @@ export default function HallPlan({ stands, hallen, preiseFrei = false }) {
                 style={{ cursor: 'pointer' }}
               >
                 <rect
-                  x={s.pos_x}
-                  y={s.pos_y}
-                  width={s.breite_m}
-                  height={s.tiefe_m}
+                  x={rect.x}
+                  y={rect.y}
+                  width={rect.w}
+                  height={rect.h}
                   fill={statusFarbe(s.status)}
                   stroke={s.id === selectedId ? '#0E1E37' : STAND_RAHMEN}
                   strokeWidth={s.id === selectedId ? 0.35 : 0.12}
                 />
                 <text
-                  x={s.pos_x + s.breite_m / 2}
-                  y={s.pos_y + s.tiefe_m / 2 + 0.35}
+                  x={rect.x + rect.w / 2}
+                  y={rect.y + rect.h / 2 + 0.35}
                   textAnchor="middle"
                   style={{ fontSize: 1.2, fill: '#12253F', pointerEvents: 'none' }}
                 >
-                  {s.id}
+                  {planLabel(s)}
                 </text>
               </g>
             );
           })}
         </svg>
+        )}
+
+        {hatPlan && ungezeichnet > 0 && (
+          <p style={S.ohnePlan}>
+            {ungezeichnet === 1
+              ? 'Eine Fläche dieser Halle ist im Plan noch nicht eingezeichnet — sie steht in der Liste unten.'
+              : `${ungezeichnet} Flächen dieser Halle sind im Plan noch nicht eingezeichnet — sie stehen in der Liste unten.`}
+          </p>
         )}
 
         <div style={S.legend}>
@@ -186,6 +203,13 @@ function StandDetail({ stand, preiseFrei }) {
       <dl style={{ margin: 0 }}>
         <Row label="Halle" value={stand.halle} />
         {stand.lage && <Row label="Lage" value={stand.lage} />}
+        {/* Два номера у одной площадки — временное состояние: наша нумерация
+            идёт в договор, нумерация публичного плана стоит на motozuerich.ch.
+            Пока они не сведены, показываем оба: клиент приходит с сайта и
+            ищет ту площадку, которую там увидел. */}
+        {stand.plan_id && stand.plan_id !== stand.id && (
+          <Row label="Auf motozuerich.ch" value={stand.plan_id} />
+        )}
         {/* Размеров может не быть: в прайсе у части площадок указана только
             площадь. Строку тогда не рисуем вовсе — «null × null m» хуже
             отсутствия. */}
