@@ -111,3 +111,13 @@ textarea {
   display: inline-flex;
   align-items: center;
 }
+
+/* Ausstellungsbedingungen (/agb) — markdown-generiertes Fragment. */
+.agb-body h1 { font-size: 22px; letter-spacing: -0.4px; margin: 0 0 6px; }
+.agb-body h2 { font-size: 17px; margin: 30px 0 10px; }
+.agb-body h3 { font-size: 15px; margin: 20px 0 8px; }
+.agb-body p { margin: 0 0 12px; }
+.agb-body ul, .agb-body ol { margin: 0 0 12px; padding-left: 22px; }
+.agb-body li { margin: 0 0 4px; }
+.agb-body hr { border: none; border-top: 1px solid var(--line); margin: 24px 0; }
+.agb-body strong { color: var(--ink); }

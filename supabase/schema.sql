@@ -76,8 +76,29 @@ create table if not exists public.mz_companies (
 
   status          text not null default 'interessent'
                   constraint mz_companies_status_check
-                  check (status in ('interessent', 'angemeldet', 'bestaetigt', 'abgesagt'))
+                  check (status in ('interessent', 'angemeldet', 'bestaetigt', 'abgesagt')),
+
+  -- Протокол электронного акцепта Ausstellungsbedingungen. Договор заключается
+  -- этими галочками: бумажных договоров и подписей у выставки больше нет,
+  -- так написано в самом тексте условий. Поэтому храним не факт «принял»,
+  -- а доказательство: кто, когда, какую редакцию и откуда.
+  agb_akzeptiert_am            timestamptz,
+  agb_version                  text,
+  agb_akzeptiert_von_name      text,
+  agb_akzeptiert_von_funktion  text,
+  agb_akzeptiert_von_email     text,
+  agb_akzeptiert_ip            text
 );
+
+-- Колонки добавлены после первого применения схемы: на существующей базе
+-- create table if not exists их не создаст.
+alter table public.mz_companies
+  add column if not exists agb_akzeptiert_am           timestamptz,
+  add column if not exists agb_version                 text,
+  add column if not exists agb_akzeptiert_von_name     text,
+  add column if not exists agb_akzeptiert_von_funktion text,
+  add column if not exists agb_akzeptiert_von_email    text,
+  add column if not exists agb_akzeptiert_ip           text;
 
 comment on table public.mz_companies is
   'Компании-экспоненты. Заводятся вручную Ивом и Ксенией по мере продажи стендов; 44 участника 2027 перенесены с публичного плана — supabase/import-aussteller-2027.sql.';
@@ -89,6 +110,12 @@ comment on column public.mz_companies.beschreibung is
   'Описание для каталога, до 300 знаков. Длину проверяет приложение, не база: обрезать текст человеку по дороге нельзя, ему нужно сообщение об ошибке.';
 comment on column public.mz_companies.logo_path is
   'Ключ файла в Supabase Storage, не публичная ссылка. Отдаём подписанной ссылкой на короткий срок.';
+comment on column public.mz_companies.agb_akzeptiert_am is
+  'Zeitpunkt der elektronischen Zustimmung zu den Ausstellungsbedingungen. NULL = noch nicht akzeptiert.';
+comment on column public.mz_companies.agb_version is
+  'Fassung der akzeptierten Ausstellungsbedingungen, z. B. "1.0". Старые согласия остаются под своей редакцией — поэтому версия хранится, а не выводится из текущего текста.';
+comment on column public.mz_companies.agb_akzeptiert_ip is
+  'IP подписанта как доказательство акцепта. Персональные данные, СВЯЗАННЫЕ с компанией: описаны в Datenschutz отдельным пунктом, а не в разделе про логи сервера — там сказано, что логи с другими данными не объединяются.';
 
 -- Две компании с одинаковым названием в справочнике одной выставки — ошибка
 -- данных, а не законный случай. Индекс нужен и практически: без него повторный

@@ -47,6 +47,16 @@ export default function DatenschutzPage() {
           und Rechnung, Angaben für den Verzeichniseintrag samt Logo, Zeitpunkte der
           Anmeldungen und Änderungen.
         </li>
+        {/* Отдельным пунктом, а не в логах сервера: эти данные СВЯЗАНЫ
+            с компанией и человеком — в отличие от логов, про которые ниже
+            сказано, что они с другими данными не объединяются. */}
+        <li>
+          <b>Zustimmung zu den Ausstellungsbedingungen:</b> Name und Funktion der
+          handelnden Person, ihre E-Mail-Adresse, Zeitpunkt der Zustimmung, akzeptierte
+          Fassung sowie die IP-Adresse, von der die Zustimmung erfolgt ist. Diese Angaben
+          werden dem Ausstellerkonto zugeordnet und dienen ausschliesslich dem Nachweis
+          des Vertragsschlusses.
+        </li>
       </ul>
 
       <h2 style={S.h2}>Wozu</h2>
@@ -81,6 +91,9 @@ export default function DatenschutzPage() {
         Beim Aufruf des Portals fallen technische Protokolldaten an: IP-Adresse,
         Zeitpunkt, aufgerufene Adresse und Browserangaben. Sie dienen dem sicheren
         Betrieb und der Fehlersuche und werden nicht mit anderen Daten zusammengeführt.
+        Davon zu unterscheiden ist die IP-Adresse, die bei der Zustimmung zu den
+        Ausstellungsbedingungen als Nachweis erfasst und dem Ausstellerkonto zugeordnet
+        wird — siehe oben.
       </p>
 
       <h2 style={S.h2}>Aufbewahrung</h2>

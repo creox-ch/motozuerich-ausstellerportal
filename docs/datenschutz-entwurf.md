@@ -75,6 +75,13 @@ Telefon, Nachricht, выбранная площадка, адрес страни
 Für das Ausstellerportal der MOTO-ZÜRICH 2027 und die Standanfrage über den
 Hallenplan.
 
+⚠️ **Дописано 02.09 вместе с приёмом Ausstellungsbedingungen.** В разделе
+«Welche Daten wir bearbeiten» появился пункт про фиксацию акцепта: имя
+и функция подписанта, его почта, время, версия и IP. Это отдельный пункт,
+а не часть логов сервера, потому что данные **связаны** с компанией
+и человеком — а про логи в тексте сказано, что они с другими данными
+не объединяются. Оставить как было значило бы написать в политике неправду.
+
 ## Verantwortlich
 
 Creox GmbH, Grabenstrasse 15b, 6340 Baar (ZG), Schweiz.
